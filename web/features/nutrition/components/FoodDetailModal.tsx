@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import Modal from "@/components/modal";
 import CustomInput from "@/ui/CustomInput";
 import NutritionInfo from "@/features/nutrition/components/NutritionInfo";
+import DetailedNutrients from "@/features/nutrition/components/DetailedNutrients";
 import MealTypePicker from "@/features/nutrition/components/MealTypePicker";
 
 type FoodForDetail = {
@@ -180,19 +181,6 @@ export default function FoodDetailModal({
           </div>
         )}
 
-        {/* Nutrition per 100g */}
-        <NutritionInfo
-          calories={food.calories_per_100g}
-          protein={food.protein_per_100g}
-          carbs={food.carbs_per_100g}
-          fat={food.fat_per_100g}
-          saturatedFat={food.saturated_fat_per_100g}
-          sugar={food.sugar_per_100g}
-          fiber={food.fiber_per_100g}
-          sodium={food.sodium_per_100g}
-          per100g
-        />
-
         {/* Serving size input */}
         <div className="grid grid-cols-2 gap-3">
           <CustomInput
@@ -225,6 +213,11 @@ export default function FoodDetailModal({
           sodium={calculated.sodium}
           per100g={false}
         />
+
+        {/* Detailed nutrients (only for foods in local DB) */}
+        {food.id && (
+          <DetailedNutrients foodId={food.id} scale={(servingSizeNum * quantityNum) / 100} />
+        )}
 
         {/* Meal type picker */}
         <MealTypePicker

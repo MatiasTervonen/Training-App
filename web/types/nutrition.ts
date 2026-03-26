@@ -25,6 +25,7 @@ export type DailyFoodLog = {
   carbs_per_100g: number | null;
   fat_per_100g: number | null;
   created_at: string;
+  meal_time: string | null;
 };
 
 export type NutritionGoals = {

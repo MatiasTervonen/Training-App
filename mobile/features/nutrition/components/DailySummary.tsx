@@ -57,19 +57,22 @@ export default function DailySummary(props: DailySummaryProps) {
           value={props.protein}
           goal={props.proteinGoal}
           label={t("daily.protein")}
-          color="#3b82f6"
+          color="#38bdf8"
+          totalMacros={props.protein + props.carbs + props.fat}
         />
         <MacroRing
           value={props.carbs}
           goal={props.carbsGoal}
           label={t("daily.carbs")}
           color="#f59e0b"
+          totalMacros={props.protein + props.carbs + props.fat}
         />
         <MacroRing
           value={props.fat}
           goal={props.fatGoal}
           label={t("daily.fat")}
           color="#f43f5e"
+          totalMacros={props.protein + props.carbs + props.fat}
         />
       </View>
       <View className="w-full gap-3">

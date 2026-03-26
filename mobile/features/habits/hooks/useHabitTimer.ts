@@ -14,6 +14,7 @@ import { useConfirmAction } from "@/lib/confirmAction";
 import { useTranslation } from "react-i18next";
 import Toast from "react-native-toast-message";
 import { Habit } from "@/types/habit";
+import { getTrackingDate } from "@/lib/formatDate";
 import { router, usePathname } from "expo-router";
 import * as Haptics from "expo-haptics";
 
@@ -113,7 +114,7 @@ export function useHabitTimer() {
       const remaining = targetSeconds - accumulatedSeconds;
       if (remaining <= 0) return;
 
-      const today = new Date().toLocaleDateString("en-CA");
+      const today = getTrackingDate();
       const ctx: HabitTimerContext = {
         habitId: habit.id,
         habitName: habit.name,

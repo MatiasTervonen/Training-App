@@ -93,16 +93,10 @@ const HabitShareCard = forwardRef<View, HabitShareCardProps>(
             </View>
           </View>
 
-          {/* Footer watermark */}
-          <View className="items-center">
-            <AppText
-              style={{
-                fontSize: 28,
-                color: theme.colors.textMuted,
-                opacity: 0.5,
-              }}
-            >
-              {APP_NAME}
+          {/* URL bottom center */}
+          <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
+            <AppText style={{ fontSize: 24, color: theme.colors.textMuted, opacity: 0.5 }}>
+              kurvi.io
             </AppText>
           </View>
         </ThemedCardWrapper>
@@ -179,16 +173,10 @@ const HabitShareCard = forwardRef<View, HabitShareCardProps>(
             </View>
           </View>
 
-          {/* Footer watermark */}
-          <View className="items-center">
-            <AppText
-              style={{
-                fontSize: 28,
-                color: theme.colors.textMuted,
-                opacity: 0.5,
-              }}
-            >
-              {APP_NAME}
+          {/* URL bottom center */}
+          <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
+            <AppText style={{ fontSize: 28, color: theme.colors.textMuted, opacity: 0.5 }}>
+              kurvi.io
             </AppText>
           </View>
         </ThemedCardWrapper>
@@ -261,6 +249,13 @@ const HabitShareCard = forwardRef<View, HabitShareCardProps>(
               />
             </View>
           </View>
+        </View>
+
+        {/* URL bottom center */}
+        <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
+          <AppText style={{ fontSize: 24, color: theme.colors.textMuted, opacity: 0.5 }}>
+            kurvi.io
+          </AppText>
         </View>
       </ThemedCardWrapper>
     );

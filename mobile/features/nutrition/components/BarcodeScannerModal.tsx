@@ -17,6 +17,9 @@ const BARCODE_SCANNER_SETTINGS: BarcodeSettings = {
   barcodeTypes: ["ean13", "ean8", "upc_a", "upc_e"],
 };
 
+/** Require the same barcode to be read this many consecutive times before accepting */
+const REQUIRED_CONSECUTIVE_READS = 3;
+
 type BarcodeScannerModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -31,12 +34,16 @@ export default function BarcodeScannerModal({
   const { t } = useTranslation("nutrition");
   const [permission, requestPermission] = useCameraPermissions();
   const scannedRef = useRef(false);
+  const lastBarcodeRef = useRef<string | null>(null);
+  const consecutiveCountRef = useRef(0);
   const [ready, setReady] = useState(false);
 
   // Reset scanned state when modal opens
   useEffect(() => {
     if (visible) {
       scannedRef.current = false;
+      lastBarcodeRef.current = null;
+      consecutiveCountRef.current = 0;
       setReady(false);
     }
   }, [visible]);
@@ -51,12 +58,26 @@ export default function BarcodeScannerModal({
   const handleBarCodeScanned = useCallback(
     (result: BarcodeScanningResult) => {
       if (scannedRef.current) return;
+
+      const barcode = result.data;
+
+      // Require the same barcode to be read multiple consecutive times
+      // to filter out misreads and reduce sensitivity
+      if (barcode === lastBarcodeRef.current) {
+        consecutiveCountRef.current += 1;
+      } else {
+        lastBarcodeRef.current = barcode;
+        consecutiveCountRef.current = 1;
+      }
+
+      if (consecutiveCountRef.current < REQUIRED_CONSECUTIVE_READS) return;
+
       scannedRef.current = true;
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
       onClose();
-      onScanned(result.data);
+      onScanned(barcode);
     },
     [onClose, onScanned],
   );

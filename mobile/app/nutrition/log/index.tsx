@@ -27,6 +27,7 @@ import { useTranslation } from "react-i18next";
 import { useLocalSearchParams } from "expo-router";
 import { Search, ScanLine, Heart, Clock, PenLine, UtensilsCrossed } from "lucide-react-native";
 import type { NutritionSearchResult } from "@/features/nutrition/hooks/useFoodSearch";
+import { getTrackingDate } from "@/lib/formatDate";
 import type { SavedMeal } from "@/database/nutrition/get-saved-meals";
 
 type Tab = "search" | "scan" | "favorites" | "recent" | "custom" | "meals";
@@ -34,7 +35,7 @@ type Tab = "search" | "scan" | "favorites" | "recent" | "custom" | "meals";
 export default function LogFoodScreen() {
   const { t } = useTranslation("nutrition");
   const { date } = useLocalSearchParams<{ date: string }>();
-  const loggedAt = date || new Date().toLocaleDateString("en-CA");
+  const loggedAt = date || getTrackingDate();
 
   const [activeTab, setActiveTab] = useState<Tab>("search");
   const [query, setQuery] = useState("");
@@ -237,11 +238,11 @@ export default function LogFoodScreen() {
 
   // Other tabs: no keyboard scroll needed
   return (
-    <Pressable onPress={Keyboard.dismiss} className="flex-1">
-      <View className="px-5 pt-5">
+    <View className="flex-1">
+      <Pressable onPress={Keyboard.dismiss} className="px-5 pt-5">
         <AppText className="text-xl text-center mb-4">{t("log.title")}</AppText>
         {renderTabs()}
-      </View>
+      </Pressable>
 
       <View className="flex-1 px-5">
         {activeTab === "search" && (
@@ -330,6 +331,6 @@ export default function LogFoodScreen() {
           setLoggingMeal(null);
         }}
       />
-    </Pressable>
+    </View>
   );
 }

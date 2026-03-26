@@ -848,7 +848,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       {isEditing && <AutoSaveIndicator status={status} />}
 
       <KeyboardAwareScrollView
-        bottomOffset={50}
+        bottomOffset={80}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}

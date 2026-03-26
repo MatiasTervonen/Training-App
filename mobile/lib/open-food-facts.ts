@@ -1,4 +1,4 @@
-const BASE_URL = "https://world.openfoodfacts.net";
+const BASE_URL = "https://world.openfoodfacts.org";
 const USER_AGENT = "Kurvi/1.0 (https://kurvi.app)";
 const TIMEOUT_MS = 5000;
 

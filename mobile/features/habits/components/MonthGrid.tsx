@@ -5,6 +5,7 @@ import { DayStatus, Habit, HabitLog } from "@/types/habit";
 import { countScheduledHabits } from "@/features/habits/utils/isHabitScheduled";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+import { getTrackingDate } from "@/lib/formatDate";
 
 type MonthGridProps = {
   year: number;
@@ -108,7 +109,7 @@ export default function MonthGrid({
   const { t } = useTranslation("habits");
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfWeek(year, month);
-  const today = new Date().toLocaleDateString("en-CA");
+  const today = getTrackingDate();
 
   const cells: (number | null)[] = [];
   for (let i = 0; i < firstDay; i++) {

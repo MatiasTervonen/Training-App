@@ -6,7 +6,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { formatDateShort } from "@/lib/formatDate";
 import { StatItem } from "@/features/activities/lib/activityShareCardUtils";
 import { useTranslation } from "react-i18next";
-import { APP_NAME } from "@/lib/app-config";
 import {
   ShareCardTheme,
   ShareCardSize,
@@ -218,15 +217,13 @@ const GPSLayout = forwardRef<View, GPSLayoutProps>(
           {/* Stats overlaid at bottom */}
           <View className="absolute bottom-[40px] left-[50px] right-[50px]">
             <FlexibleStatsGrid stats={selectedStats} theme={theme} />
-            <View className="flex-row items-center gap-3 self-end mt-4">
-              <Image
-                source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
-                className="w-[64px] h-[64px] rounded-xl"
-              />
-              <AppText className="text-[38px]" style={{ color: noGradientOverride?.textMuted ?? colors.textMuted, ...textShadow }}>
-                {APP_NAME}
-              </AppText>
-            </View>
+          </View>
+
+          {/* URL bottom center */}
+          <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
+            <AppText style={{ fontSize: 24, color: noGradientOverride?.textMuted ?? colors.textMuted, opacity: 0.5, ...textShadow }}>
+              kurvi.io
+            </AppText>
           </View>
         </View>
       );
@@ -285,15 +282,13 @@ const GPSLayout = forwardRef<View, GPSLayoutProps>(
           style={{ bottom: size === "story" ? 100 : 40 }}
         >
           <FlexibleStatsGrid stats={selectedStats} theme={theme} />
-          <View className="flex-row items-center gap-3 self-end mt-4">
-            <Image
-              source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
-              className="w-[64px] h-[64px] rounded-xl"
-            />
-            <AppText className="text-[38px]" style={{ color: noGradientOverride?.textMuted ?? colors.textMuted, ...textShadow }}>
-              {APP_NAME}
-            </AppText>
-          </View>
+        </View>
+
+        {/* URL bottom center */}
+        <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
+          <AppText style={{ fontSize: size === "story" ? 28 : 24, color: noGradientOverride?.textMuted ?? colors.textMuted, opacity: 0.5, ...textShadow }}>
+            kurvi.io
+          </AppText>
         </View>
       </View>
     );
@@ -351,14 +346,10 @@ const NoGPSLayout = forwardRef<View, NoGPSLayoutProps>(
             <NoMapStatsLayout stats={selectedStats} theme={theme} statSize="large" />
           </View>
 
-          {/* App logo at bottom */}
-          <View className="flex-row items-center gap-3 self-end">
-            <Image
-              source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
-              className="w-[64px] h-[64px] rounded-xl"
-            />
-            <AppText className="text-[38px]" style={{ color: colors.textMuted }}>
-              {APP_NAME}
+          {/* URL bottom center */}
+          <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
+            <AppText style={{ fontSize: 28, color: colors.textMuted, opacity: 0.5 }}>
+              kurvi.io
             </AppText>
           </View>
         </ThemedCardWrapper>
@@ -398,13 +389,10 @@ const NoGPSLayout = forwardRef<View, NoGPSLayoutProps>(
             ))}
           </View>
 
-          <View className="flex-row items-center gap-3 self-end">
-            <Image
-              source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
-              className="w-[64px] h-[64px] rounded-xl"
-            />
-            <AppText className="text-[38px]" style={{ color: colors.textMuted }}>
-              {APP_NAME}
+          {/* URL bottom center */}
+          <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
+            <AppText style={{ fontSize: 24, color: colors.textMuted, opacity: 0.5 }}>
+              kurvi.io
             </AppText>
           </View>
         </ThemedCardWrapper>
@@ -443,14 +431,10 @@ const NoGPSLayout = forwardRef<View, NoGPSLayoutProps>(
           <NoMapStatsLayout stats={selectedStats} theme={theme} />
         </View>
 
-        {/* App logo at bottom-right */}
-        <View className="flex-row items-center gap-3 self-end">
-          <Image
-            source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
-            className="w-[64px] h-[64px] rounded-xl"
-          />
-          <AppText className="text-[38px]" style={{ color: colors.textMuted }}>
-            {APP_NAME}
+        {/* URL bottom center */}
+        <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
+          <AppText style={{ fontSize: 24, color: colors.textMuted, opacity: 0.5 }}>
+            kurvi.io
           </AppText>
         </View>
       </ThemedCardWrapper>

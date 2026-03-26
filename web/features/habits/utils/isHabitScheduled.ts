@@ -1,4 +1,5 @@
 import { Habit } from "@/types/habit";
+import { getTrackingDate } from "@/lib/formatDate";
 
 /**
  * Check if a habit is scheduled for a given date string (YYYY-MM-DD).
@@ -6,7 +7,7 @@ import { Habit } from "@/types/habit";
  * JS Date.getDay() returns 0=Sun, 1=Mon, ..., 6=Sat, so we add 1.
  */
 export function isHabitScheduledForDate(habit: Habit, dateStr: string): boolean {
-  const createdDate = new Date(habit.created_at).toLocaleDateString("en-CA");
+  const createdDate = getTrackingDate(habit.created_at);
   if (dateStr < createdDate) return false;
 
   if (!habit.frequency_days) return true; // daily

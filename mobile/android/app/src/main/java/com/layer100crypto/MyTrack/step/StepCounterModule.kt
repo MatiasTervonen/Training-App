@@ -287,6 +287,14 @@ class StepCounterModule(private val reactContext: ReactApplicationContext)
         reactContext.startService(intent)
     }
 
+    // --- Day Reset Hour ---
+
+    @ReactMethod
+    fun setDayResetHour(hour: Int) {
+        val helper = StepCounterHelper(reactContext)
+        helper.setDayResetHour(hour)
+    }
+
     // --- Sensor Health Check ---
 
     @ReactMethod

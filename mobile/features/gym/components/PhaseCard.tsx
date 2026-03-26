@@ -362,7 +362,7 @@ export default function PhaseCard(props: Props) {
           </View>
           <View className="flex-row">
             <View className="flex-1 items-center">
-              <AppText className="p-2 font-mono">{formattedDuration}</AppText>
+              <AppText className="p-2 font-mono">{formatDurationLong(phase.duration_seconds)}</AppText>
             </View>
             {phase.is_step_relevant && phase.steps != null && (
               <View className="flex-1 items-center">

@@ -6,8 +6,10 @@ import MealSection from "@/features/nutrition/components/MealSection";
 import { useDailyLogs } from "@/features/nutrition/hooks/useDailyLogs";
 import { useNutritionGoals } from "@/features/nutrition/hooks/useNutritionGoals";
 import { useDeleteFoodLog } from "@/features/nutrition/hooks/useDeleteFoodLog";
+import { useUpdateMealTime } from "@/features/nutrition/hooks/useUpdateMealTime";
 import { FeedItemUI } from "@/types/session";
 import { useTranslation } from "react-i18next";
+import { getTrackingDate } from "@/lib/formatDate";
 
 type NutritionPayload = {
   total_calories: number;
@@ -26,11 +28,12 @@ const DEFAULT_MEALS = ["breakfast", "lunch", "dinner", "snack"];
 
 export default function NutritionExpanded({ item }: NutritionExpandedProps) {
   const { t } = useTranslation("nutrition");
-  const date = new Date(item.created_at).toLocaleDateString("en-CA");
+  const date = getTrackingDate(item.created_at);
   const payload = item.extra_fields as NutritionPayload;
   const { data: logs, isLoading } = useDailyLogs(date);
   const { data: goals } = useNutritionGoals();
   const { handleDelete } = useDeleteFoodLog();
+  const { updateMealTime } = useUpdateMealTime();
   const mealGroups = new Map<string, NonNullable<typeof logs>>();
 
   if (logs) {
@@ -102,6 +105,9 @@ export default function NutritionExpanded({ item }: NutritionExpandedProps) {
               title={getMealLabel(mealType)}
               items={mealGroups.get(mealType) ?? []}
               onDelete={(id) => handleDelete(id, date)}
+              onUpdateMealTime={(mealTime) =>
+                updateMealTime({ loggedAt: date, mealType, mealTime })
+              }
             />
           ))}
         </div>

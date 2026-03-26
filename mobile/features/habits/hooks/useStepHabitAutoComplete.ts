@@ -7,6 +7,7 @@ import { useHabitLogs } from "@/features/habits/hooks/useHabitLogs";
 import { isHabitScheduledForDate } from "@/features/habits/utils/isHabitScheduled";
 import { useQueryClient } from "@tanstack/react-query";
 import { HabitLog } from "@/types/habit";
+import { getTrackingDate } from "@/lib/formatDate";
 
 const POLL_INTERVAL_MS = 30_000; // 30 seconds
 
@@ -16,7 +17,7 @@ export function StepHabitAutoCompleteListener() {
 }
 
 export function useStepHabitAutoComplete() {
-  const today = new Date().toLocaleDateString("en-CA");
+  const today = getTrackingDate();
   const { data: habits = [] } = useHabits();
   const { data: logs = [] } = useHabitLogs({ startDate: today, endDate: today });
   const queryClient = useQueryClient();

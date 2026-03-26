@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useQueryClient } from "@tanstack/react-query";
+import { getTrackingDate } from "@/lib/formatDate";
 import { upsertHabitProgress } from "@/database/habits/upsert-habit-progress";
 import { useTranslation } from "react-i18next";
 import { Habit } from "@/types/habit";
@@ -94,7 +95,7 @@ export function useHabitTimer() {
       const remaining = targetSeconds - accumulatedSeconds;
       if (remaining <= 0) return;
 
-      const today = new Date().toLocaleDateString("en-CA");
+      const today = getTrackingDate();
       const ctx: HabitTimerContext = {
         habitId: habit.id,
         habitName: habit.name,

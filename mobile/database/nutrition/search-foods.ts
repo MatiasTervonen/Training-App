@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
+import i18n from "@/app/i18n";
 
 export type FoodSearchResult = {
   id: string;
@@ -28,9 +29,9 @@ export async function searchFoods(query: string): Promise<FoodSearchResult[]> {
     supabase
       .from("foods")
       .select(
-        "id, name, brand, serving_size_g, serving_description, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g, fiber_per_100g, sugar_per_100g, sodium_per_100g, saturated_fat_per_100g, image_url, nutrition_label_url, barcode",
+        "id, name, name_en, brand, serving_size_g, serving_description, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g, fiber_per_100g, sugar_per_100g, sodium_per_100g, saturated_fat_per_100g, image_url, nutrition_label_url, barcode",
       )
-      .ilike("name", pattern)
+      .or(`name.ilike.${pattern},name_en.ilike.${pattern}`)
       .limit(20),
     supabase
       .from("custom_foods")
@@ -59,9 +60,11 @@ export async function searchFoods(query: string): Promise<FoodSearchResult[]> {
     throw new Error("Error searching custom foods");
   }
 
+  const isFinnish = i18n.language === "fi";
+
   const foods: FoodSearchResult[] = (foodsResult.data ?? []).map((f) => ({
     id: f.id,
-    name: f.name,
+    name: isFinnish ? f.name : (f.name_en ?? f.name),
     brand: f.brand,
     serving_size_g: f.serving_size_g,
     serving_description: f.serving_description,

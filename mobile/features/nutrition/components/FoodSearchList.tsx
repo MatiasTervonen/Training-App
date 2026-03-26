@@ -23,7 +23,9 @@ export default function FoodSearchList({
 }: FoodSearchListProps) {
   const { t } = useTranslation("nutrition");
 
-  if (isSearching) {
+  // Show spinner only when searching AND there are no results to display
+  // (when results exist from a previous query, keep showing them via keepPreviousData)
+  if (isSearching && results.length === 0) {
     return (
       <View className="items-center py-10">
         <ActivityIndicator />
@@ -32,7 +34,9 @@ export default function FoodSearchList({
     );
   }
 
-  if (query.length > 0 && results.length === 0) {
+  // Only show "no results" when the query meets the search threshold (2+ chars)
+  // and we're not mid-search
+  if (query.trim().length >= 2 && !isSearching && results.length === 0) {
     return (
       <View className="items-center py-10 px-6">
         <AppText className="text-base mb-2">{t("log.noResults")}</AppText>
@@ -46,10 +50,20 @@ export default function FoodSearchList({
   return (
     <FlatList
       data={results}
-      keyExtractor={(item, index) => item.barcode ?? item.id ?? `${index}`}
+      keyExtractor={(item, index) =>
+        `${item.source}-${item.barcode ?? item.id ?? index}`
+      }
       keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
       showsVerticalScrollIndicator={false}
       contentContainerStyle={CONTENT_CONTAINER_STYLE}
+      ListHeaderComponent={
+        isSearching ? (
+          <View className="items-center py-2">
+            <ActivityIndicator size="small" />
+          </View>
+        ) : null
+      }
       renderItem={({ item }) => (
         <AnimatedButton
           onPress={() => onSelect(item)}
@@ -57,9 +71,9 @@ export default function FoodSearchList({
         >
           <View className="flex-row justify-between items-center">
             <View className="flex-1 mr-3">
-              <AppText className="text-sm" numberOfLines={1}>
+              <BodyText className="text-sm" numberOfLines={1}>
                 {item.name}
-              </AppText>
+              </BodyText>
               {item.brand && (
                 <BodyTextNC
                   className="text-xs text-slate-400"

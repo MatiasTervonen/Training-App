@@ -115,19 +115,21 @@ export default function HabitRow({
         >
           {habit.name}
         </AppTextNC>
-        {isDurationHabit && !isCompleted ? (
-          <DurationTimerButton
-            timerState={habitTimerState}
-            onStart={onStartTimer}
-            onPause={onPauseTimer}
-            onResume={onResumeTimer}
-          />
-        ) : (
-          <Toggle
-            isOn={isCompleted}
-            onToggle={isDurationHabit && isCompleted ? handleDurationToggleOff : onToggle}
-          />
-        )}
+        <View onStartShouldSetResponder={() => true}>
+          {isDurationHabit && !isCompleted ? (
+            <DurationTimerButton
+              timerState={habitTimerState}
+              onStart={onStartTimer}
+              onPause={onPauseTimer}
+              onResume={onResumeTimer}
+            />
+          ) : (
+            <Toggle
+              isOn={isCompleted}
+              onToggle={isDurationHabit && isCompleted ? handleDurationToggleOff : onToggle}
+            />
+          )}
+        </View>
       </View>
       {isStepHabit && currentSteps !== undefined && (
         <View className="mt-2">

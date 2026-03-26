@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { archiveHabit } from "@/database/habits/archive-habit";
 import { refreshHabitFeed } from "@/database/habits/refresh-habit-feed";
+import { getTrackingDate } from "@/lib/formatDate";
 
 export function useArchiveHabit() {
   const queryClient = useQueryClient();
@@ -8,7 +9,7 @@ export function useArchiveHabit() {
   return useMutation({
     mutationFn: async (habitId: string) => {
       await archiveHabit(habitId);
-      const today = new Date().toLocaleDateString("en-CA");
+      const today = getTrackingDate();
       await refreshHabitFeed(today);
     },
     onSuccess: () => {

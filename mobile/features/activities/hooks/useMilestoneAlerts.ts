@@ -246,8 +246,16 @@ export function useMilestoneAlerts(
     }
 
     if (hitLines.length > 0) {
-      milestoneSound.seekTo(0);
-      milestoneSound.play();
+      // Re-apply ducking — other components (recording, voice playback) may have
+      // overridden the global audio mode since module load
+      setAudioModeAsync({
+        interruptionMode: "duckOthers",
+        interruptionModeAndroid: "duckOthers",
+      }).then(() => {
+        milestoneSound.volume = 1.0;
+        milestoneSound.seekTo(0);
+        milestoneSound.play();
+      });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       showMilestoneToast(hitLines);
     }

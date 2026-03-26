@@ -7,6 +7,7 @@ import AppInput from "@/components/AppInput";
 import BodyTextNC from "@/components/BodyTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import NutritionInfo from "@/features/nutrition/components/NutritionInfo";
+import DetailedNutrients from "@/features/nutrition/components/DetailedNutrients";
 import MealTypePicker from "@/features/nutrition/components/MealTypePicker";
 import { Heart } from "lucide-react-native";
 import { Image } from "expo-image";
@@ -82,18 +83,15 @@ export default function FoodDetailSheet({
   const servingG = parseFloat(servingSizeG) || 0;
   const qty = parseFloat(quantity) || 0;
 
-  const calculatedCalories = food
-    ? (food.calories_per_100g * servingG * qty) / 100
-    : 0;
-  const calculatedProtein = food
-    ? (food.protein_per_100g * servingG * qty) / 100
-    : 0;
-  const calculatedCarbs = food
-    ? (food.carbs_per_100g * servingG * qty) / 100
-    : 0;
-  const calculatedFat = food
-    ? (food.fat_per_100g * servingG * qty) / 100
-    : 0;
+  const scale = food ? (servingG * qty) / 100 : 0;
+  const calculatedCalories = food ? food.calories_per_100g * scale : 0;
+  const calculatedProtein = food ? food.protein_per_100g * scale : 0;
+  const calculatedCarbs = food ? food.carbs_per_100g * scale : 0;
+  const calculatedFat = food ? food.fat_per_100g * scale : 0;
+  const calculatedSaturatedFat = food?.saturated_fat_per_100g != null ? food.saturated_fat_per_100g * scale : null;
+  const calculatedSugar = food?.sugar_per_100g != null ? food.sugar_per_100g * scale : null;
+  const calculatedFiber = food?.fiber_per_100g != null ? food.fiber_per_100g * scale : null;
+  const calculatedSodium = food?.sodium_per_100g != null ? food.sodium_per_100g * scale : null;
 
   const handleLog = () => {
     if (!food) return;
@@ -125,7 +123,7 @@ export default function FoodDetailSheet({
       <PageContainer className="justify-between">
         <Pressable onPress={Keyboard.dismiss}>
           {/* Header */}
-          <View className="flex-row justify-between items-start mb-2">
+          <View className={`flex-row justify-between items-start ${food.brand ? "mb-2" : "mb-4"}`}>
             <View className="flex-1 mr-3">
               <AppText className="text-lg">{food.name}</AppText>
               {food.brand && (
@@ -172,21 +170,6 @@ export default function FoodDetailSheet({
             </View>
           )}
 
-          {/* Nutrition per 100g */}
-          <View className="mb-4">
-            <NutritionInfo
-              calories={food.calories_per_100g}
-              protein={food.protein_per_100g}
-              carbs={food.carbs_per_100g}
-              fat={food.fat_per_100g}
-              saturatedFat={food.saturated_fat_per_100g}
-              sugar={food.sugar_per_100g}
-              fiber={food.fiber_per_100g}
-              sodium={food.sodium_per_100g}
-              per100g
-            />
-          </View>
-
           {/* Serving size input */}
           <View className="mb-4">
             <AppInput
@@ -209,16 +192,27 @@ export default function FoodDetailSheet({
             />
           </View>
 
-          {/* Calculated nutrition */}
+          {/* Nutrition */}
           <View className="mb-4">
             <NutritionInfo
               calories={calculatedCalories}
               protein={calculatedProtein}
               carbs={calculatedCarbs}
               fat={calculatedFat}
+              saturatedFat={calculatedSaturatedFat}
+              sugar={calculatedSugar}
+              fiber={calculatedFiber}
+              sodium={calculatedSodium}
               per100g={false}
             />
           </View>
+
+          {/* Detailed nutrients (only for foods in local DB) */}
+          {food.id && (
+            <View className="mb-4">
+              <DetailedNutrients foodId={food.id} scale={scale} />
+            </View>
+          )}
 
           {/* Meal type picker */}
           <View className="mb-4">

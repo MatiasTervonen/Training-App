@@ -78,6 +78,10 @@
       "en": "Englanti",
       "fi": "Suomi"
     },
+    "dayReset": {
+      "title": "Päivä alkaa",
+      "description": "Ravinnon ja tapojen seuranta nollautuu tähän aikaan. Aseta aika, jolloin nukut varmasti."
+    },
     "pushNotifications": {
       "title": "Push-ilmoitukset",
       "enabled": "Push-ilmoitukset käytössä",

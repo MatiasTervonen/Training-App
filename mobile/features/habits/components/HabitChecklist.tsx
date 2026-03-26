@@ -7,6 +7,7 @@ import { useHabitTimer } from "@/features/habits/hooks/useHabitTimer";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo } from "react";
+import { getTrackingDate } from "@/lib/formatDate";
 
 type HabitChecklistProps = {
   habits: Habit[];
@@ -57,7 +58,7 @@ export default function HabitChecklist({
     return set;
   }, [logs, selectedDate, habits]);
 
-  const isToday = selectedDate === new Date().toLocaleDateString("en-CA");
+  const isToday = selectedDate === getTrackingDate();
 
   const handleToggle = useCallback(
     (habitId: string) => onToggle(habitId, selectedDate),

@@ -29,6 +29,7 @@ import { useFavorites } from "@/features/nutrition/hooks/useFavorites";
 import { useNutritionGoals } from "@/features/nutrition/hooks/useNutritionGoals";
 import { useLogSavedMeal } from "@/features/nutrition/hooks/useLogSavedMeal";
 import { saveSharedFood } from "@/database/nutrition/save-shared-food";
+import { getTrackingDate } from "@/lib/formatDate";
 import type { NutritionSearchResult, SavedMeal } from "@/types/nutrition";
 
 type Tab = "search" | "favorites" | "recent" | "custom" | "meals";
@@ -37,7 +38,7 @@ function LogFoodContent() {
   const { t } = useTranslation("nutrition");
   const searchParams = useSearchParams();
   const loggedAt =
-    searchParams.get("date") || new Date().toLocaleDateString("en-CA");
+    searchParams.get("date") || getTrackingDate();
 
   const [activeTab, setActiveTab] = useState<Tab>("search");
   const [query, setQuery] = useState("");
@@ -169,8 +170,8 @@ function LogFoodContent() {
   );
 
   return (
-    <div className="page-padding h-full">
-      <div className="max-w-xl mx-auto">
+    <div className="page-padding min-h-[calc(100dvh-72px)] flex flex-col">
+      <div className="max-w-xl mx-auto w-full flex-1 flex flex-col">
         <p className="text-xl text-center mb-4">{t("log.title")}</p>
 
         {/* Tab bar */}
@@ -256,11 +257,13 @@ function LogFoodContent() {
         )}
 
         {activeTab === "custom" && (
-          <CustomFoodForm
-            onSaved={() => {
-              setActiveTab("search");
-            }}
-          />
+          <div className="flex-1 flex flex-col">
+            <CustomFoodForm
+              onSaved={() => {
+                setActiveTab("search");
+              }}
+            />
+          </div>
         )}
 
         {activeTab === "meals" && (

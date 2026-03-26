@@ -260,8 +260,9 @@ export default function CustomFoodForm({ onSaved, barcode }: CustomFoodFormProps
       {/* Barcode info when creating from failed scan */}
       {barcode && (
         <View className="bg-fuchsia-500/10 border border-fuchsia-500/30 rounded-lg p-3">
-          <AppText className="text-sm">{t("log.notFound")}</AppText>
-          <BodyTextNC className="text-xs text-slate-400 mt-1">{t("custom.barcodeInfo")}: {barcode}</BodyTextNC>
+          <AppText className="text-sm">{t("log.notFoundBannerTitle")}</AppText>
+          <BodyTextNC className="text-xs text-slate-400 mt-2">{t("log.notFoundBannerSteps")}</BodyTextNC>
+          <BodyTextNC className="text-xs text-slate-500 mt-2">{t("custom.barcodeInfo")}: {barcode}</BodyTextNC>
         </View>
       )}
 

@@ -20,7 +20,7 @@ import { useState, useCallback } from "react";
 import Toast from "react-native-toast-message";
 import * as Haptics from "expo-haptics";
 import { Share2 } from "lucide-react-native";
-import { formatDuration } from "@/lib/formatDate";
+import { formatDuration, getTrackingDate } from "@/lib/formatDate";
 import { useHabitTimer } from "@/features/habits/hooks/useHabitTimer";
 
 function getMonthRange(year: number, month: number) {
@@ -187,7 +187,7 @@ export default function HabitDetailScreen() {
               logs={logs}
               habits={[habit]}
               totalHabits={1}
-              selectedDate={new Date().toLocaleDateString("en-CA")}
+              selectedDate={getTrackingDate()}
               onPrevMonth={handlePrevMonth}
               onNextMonth={handleNextMonth}
               canGoPrev={canGoPrev}

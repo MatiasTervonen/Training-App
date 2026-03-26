@@ -236,16 +236,10 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
             </View>
           </View>
 
-          {/* Footer watermark */}
-          <View className="items-center">
-            <AppTextNC
-              style={{
-                fontSize: 28,
-                color: theme.colors.textMuted,
-                opacity: 0.5,
-              }}
-            >
-              {APP_NAME}
+          {/* URL bottom center */}
+          <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
+            <AppTextNC style={{ fontSize: 24, color: theme.colors.textMuted, opacity: 0.5 }}>
+              kurvi.io
             </AppTextNC>
           </View>
         </ThemedCardWrapper>
@@ -314,6 +308,13 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
               />
             </View>
           </View>
+
+          {/* URL bottom center */}
+          <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
+            <AppTextNC style={{ fontSize: 28, color: theme.colors.textMuted, opacity: 0.5 }}>
+              kurvi.io
+            </AppTextNC>
+          </View>
         </ThemedCardWrapper>
       );
     }
@@ -374,6 +375,13 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
               theme={theme}
             />
           </View>
+        </View>
+
+        {/* URL bottom center */}
+        <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
+          <AppTextNC style={{ fontSize: 24, color: theme.colors.textMuted, opacity: 0.5 }}>
+            kurvi.io
+          </AppTextNC>
         </View>
       </ThemedCardWrapper>
     );

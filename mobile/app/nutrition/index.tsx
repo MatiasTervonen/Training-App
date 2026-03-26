@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { View, ScrollView, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
@@ -7,15 +7,18 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import FloatingActionButton from "@/components/buttons/FloatingActionButton";
 import DailySummary from "@/features/nutrition/components/DailySummary";
 import MealSection from "@/features/nutrition/components/MealSection";
+import NutritionShareModal from "@/features/nutrition/components/NutritionShareModal";
 import { useDailyLogs } from "@/features/nutrition/hooks/useDailyLogs";
 import { useNutritionGoals } from "@/features/nutrition/hooks/useNutritionGoals";
 import { useDeleteFoodLog } from "@/features/nutrition/hooks/useDeleteFoodLog";
+import { useUpdateMealTime } from "@/features/nutrition/hooks/useUpdateMealTime";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Plus, Settings, ChevronLeft, ChevronRight } from "lucide-react-native";
+import { Plus, Settings, ChevronLeft, ChevronRight, Share2 } from "lucide-react-native";
 import FoodDetailSheet from "@/features/nutrition/components/FoodDetailSheet";
 import { useToggleFavorite } from "@/features/nutrition/hooks/useToggleFavorite";
 import { useFavorites } from "@/features/nutrition/hooks/useFavorites";
+import { getTrackingDate } from "@/lib/formatDate";
 import type { DailyFoodLog } from "@/database/nutrition/get-daily-logs";
 
 const DEFAULT_MEALS = ["breakfast", "lunch", "dinner", "snack"];
@@ -23,14 +26,14 @@ const DEFAULT_MEALS = ["breakfast", "lunch", "dinner", "snack"];
 export default function NutritionScreen() {
   const { t } = useTranslation("nutrition");
   const router = useRouter();
-  const [date, setDate] = useState(() =>
-    new Date().toLocaleDateString("en-CA"),
-  );
+  const [date, setDate] = useState(() => getTrackingDate());
   const [selectedLog, setSelectedLog] = useState<DailyFoodLog | null>(null);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const { data: logs } = useDailyLogs(date);
   const { data: goals } = useNutritionGoals();
   const { handleDelete } = useDeleteFoodLog();
+  const { updateMealTime } = useUpdateMealTime();
   const { handleToggle } = useToggleFavorite();
   const { data: favorites } = useFavorites();
 
@@ -148,7 +151,7 @@ export default function NutritionScreen() {
     return { mealGroups: groups, orderedMeals: ordered };
   }, [logs, customMealTypes]);
 
-  const getMealLabel = (type: string) => {
+  const getMealLabel = useCallback((type: string) => {
     if (DEFAULT_MEALS.includes(type)) {
       return t(
         `meals.${type}` as
@@ -159,7 +162,7 @@ export default function NutritionScreen() {
       );
     }
     return type;
-  };
+  }, [t]);
 
   const changeDate = (offset: number) => {
     const d = new Date(date);
@@ -167,7 +170,7 @@ export default function NutritionScreen() {
     setDate(d.toLocaleDateString("en-CA"));
   };
 
-  const today = new Date().toLocaleDateString("en-CA");
+  const today = getTrackingDate();
   const isToday = date === today;
 
   const formatDisplayDate = (dateStr: string) => {
@@ -182,17 +185,25 @@ export default function NutritionScreen() {
 
   return (
     <View className="flex-1">
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
         <PageContainer>
           {/* Header */}
           <View className="flex-row justify-between items-center mb-4">
             <AppText className="text-xl">{t("title")}</AppText>
-            <AnimatedButton
-              onPress={() => router.push("/nutrition/goals")}
-              hitSlop={10}
-            >
-              <Settings size={22} color="#94a3b8" />
-            </AnimatedButton>
+            <View className="flex-row items-center gap-4">
+              <AnimatedButton
+                onPress={() => setIsShareModalOpen(true)}
+                hitSlop={10}
+              >
+                <Share2 size={20} color="#9ca3af" />
+              </AnimatedButton>
+              <AnimatedButton
+                onPress={() => router.push("/nutrition/goals")}
+                hitSlop={10}
+              >
+                <Settings size={22} color="#94a3b8" />
+              </AnimatedButton>
+            </View>
           </View>
 
           {/* Date picker */}
@@ -243,6 +254,9 @@ export default function NutritionScreen() {
                   items={mealGroups.get(mealType) ?? []}
                   onPress={(item) => setSelectedLog(item)}
                   onDelete={(id) => handleDelete(id, date)}
+                  onUpdateMealTime={(mealTime) =>
+                    updateMealTime({ loggedAt: date, mealType, mealTime })
+                  }
                 />
               ))}
             </View>
@@ -280,6 +294,22 @@ export default function NutritionScreen() {
           });
         }}
         customMealTypes={customMealTypes}
+      />
+
+      <NutritionShareModal
+        visible={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        date={date}
+        calories={totals.calories}
+        calorieGoal={calorieGoal}
+        protein={totals.protein}
+        proteinGoal={proteinGoal}
+        carbs={totals.carbs}
+        carbsGoal={carbsGoal}
+        fat={totals.fat}
+        fatGoal={fatGoal}
+        logs={logs ?? null}
+        getMealLabel={getMealLabel}
       />
     </View>
   );

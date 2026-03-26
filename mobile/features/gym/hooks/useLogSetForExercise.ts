@@ -38,9 +38,9 @@ export default function useLogSetForExercise({
     // Start rest timer: exercise-level → template-level → global default
     const { restTimerEnabled, restTimerDurationSeconds } =
       useGymSettingsStore.getState();
-    if (restTimerEnabled) {
-      const duration =
-        exercise.rest_timer_seconds ?? templateRestTimerSeconds ?? restTimerDurationSeconds;
+    const duration =
+      exercise.rest_timer_seconds ?? templateRestTimerSeconds ?? (restTimerEnabled ? restTimerDurationSeconds : null);
+    if (duration != null) {
       useRestTimerStore.getState().startRestTimer(duration);
     }
   };

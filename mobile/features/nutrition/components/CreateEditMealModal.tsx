@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { View, TextInput, Keyboard, Pressable, Alert } from "react-native";
-import FullScreenModal from "@/components/FullScreenModal";
-import PageContainer from "@/components/PageContainer";
+import { View, TextInput, Keyboard, Pressable, Alert, ScrollView } from "react-native";
+import FullScreenModal, { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import BodyTextNC from "@/components/BodyTextNC";
@@ -55,6 +54,157 @@ type CreateEditMealModalProps = {
 };
 
 type AddFoodTab = "search" | "scan" | "favorites" | "recent";
+
+function MealModalContent({
+  name,
+  setName,
+  items,
+  totals,
+  editingMeal,
+  isSaving,
+  onDelete,
+  onSetShowAddFood,
+  onUpdateItem,
+  onRemoveItem,
+  onSave,
+  onHandleDelete,
+}: {
+  name: string;
+  setName: (v: string) => void;
+  items: MealBuilderItem[];
+  totals: { calories: number; protein: number; carbs: number; fat: number };
+  editingMeal?: SavedMeal | null;
+  isSaving: boolean;
+  onDelete?: (mealId: string) => void;
+  onSetShowAddFood: (v: boolean) => void;
+  onUpdateItem: (localId: string, field: "serving_size_g" | "quantity", value: string) => void;
+  onRemoveItem: (localId: string) => void;
+  onSave: () => void;
+  onHandleDelete: () => void;
+}) {
+  const { t } = useTranslation("nutrition");
+  const { t: tCommon } = useTranslation();
+  const modalScroll = useFullScreenModalScroll();
+
+  const handleScroll = useCallback(
+    (e: { nativeEvent: { contentOffset: { y: number } } }) => {
+      if (modalScroll) {
+        modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+      }
+    },
+    [modalScroll],
+  );
+
+  return (
+    <Pressable onPress={Keyboard.dismiss} className="flex-1">
+      <ScrollView
+        className="flex-1"
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        keyboardShouldPersistTaps="handled"
+        contentContainerClassName="px-5 pt-5 pb-4"
+      >
+        <AppText className="text-xl text-center mb-4">
+          {editingMeal ? t("savedMeals.edit") : t("savedMeals.create")}
+        </AppText>
+
+        {/* Meal name */}
+        <View className="mb-4">
+          <AppInput
+            value={name}
+            setValue={setName}
+            label={t("savedMeals.mealName")}
+            placeholder={t("savedMeals.mealNamePlaceholder")}
+          />
+        </View>
+
+        {/* Items list */}
+        {items.length > 0 && (
+          <View className="mb-4">
+            {items.map((item) => {
+              const cal = Math.round((item.calories_per_100g * item.serving_size_g * item.quantity) / 100);
+              return (
+                <View key={item.localId} className="flex-row items-center py-3 border-b border-slate-700/50">
+                  <View className="flex-1 mr-2">
+                    <AppText className="text-sm" numberOfLines={1}>{item.food_name}</AppText>
+                    {item.brand && (
+                      <BodyTextNC className="text-xs text-slate-400" numberOfLines={1}>{item.brand}</BodyTextNC>
+                    )}
+                    <View className="flex-row gap-2 mt-1">
+                      <TextInput
+                        value={item.serving_size_g ? String(item.serving_size_g) : ""}
+                        onChangeText={(v) => onUpdateItem(item.localId, "serving_size_g", v)}
+                        keyboardType="decimal-pad"
+                        placeholder="100"
+                        placeholderTextColor="#4b5563"
+                        className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-gray-100 font-lexend text-xs w-16"
+                      />
+                      <BodyTextNC className="text-xs text-slate-500 self-center">g ×</BodyTextNC>
+                      <TextInput
+                        value={item.quantity ? String(item.quantity) : ""}
+                        onChangeText={(v) => onUpdateItem(item.localId, "quantity", v)}
+                        keyboardType="decimal-pad"
+                        placeholder="1"
+                        placeholderTextColor="#4b5563"
+                        className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-gray-100 font-lexend text-xs w-12"
+                      />
+                    </View>
+                  </View>
+                  <BodyTextNC className="text-sm text-slate-400 mr-2">{cal} kcal</BodyTextNC>
+                  <AnimatedButton onPress={() => onRemoveItem(item.localId)} hitSlop={10}>
+                    <X size={16} color="#ef4444" />
+                  </AnimatedButton>
+                </View>
+              );
+            })}
+          </View>
+        )}
+
+        {/* Add food button */}
+        <AnimatedButton
+          onPress={() => onSetShowAddFood(true)}
+          className="btn-add py-3 mb-4"
+        >
+          <View className="flex-row items-center justify-center gap-2">
+            <Plus size={18} color="#60a5fa" />
+            <AppText className="text-sm">{t("savedMeals.addFood")}</AppText>
+          </View>
+        </AnimatedButton>
+
+        {/* Total nutrition */}
+        {items.length > 0 && (
+          <View className="mb-4">
+            <AppText className="text-sm mb-2">{t("savedMeals.totalNutrition")}</AppText>
+            <NutritionInfo
+              calories={totals.calories}
+              protein={totals.protein}
+              carbs={totals.carbs}
+              fat={totals.fat}
+              per100g={false}
+            />
+          </View>
+        )}
+      </ScrollView>
+
+      {/* Action buttons pinned to bottom */}
+      <View className="flex-row gap-3 px-5 pb-5">
+        {editingMeal && onDelete && (
+          <AnimatedButton
+            onPress={onHandleDelete}
+            className="btn-danger py-3 flex-1"
+            label={tCommon("common.delete")}
+          />
+        )}
+        <AnimatedButton
+          onPress={onSave}
+          className="btn-save py-3 flex-1"
+          label={isSaving ? tCommon("common.saving") : tCommon("common.save")}
+          disabled={isSaving}
+        />
+      </View>
+    </Pressable>
+  );
+}
 
 export default function CreateEditMealModal({
   visible,
@@ -255,108 +405,21 @@ export default function CreateEditMealModal({
 
   return (
     <>
-    <FullScreenModal isOpen={visible} onClose={onClose}>
-      <PageContainer className="justify-between">
-        <View>
-          <AppText className="text-xl text-center mb-4">
-            {editingMeal ? t("savedMeals.edit") : t("savedMeals.create")}
-          </AppText>
-
-          {/* Meal name */}
-          <View className="mb-4">
-            <AppInput
-              value={name}
-              setValue={setName}
-              label={t("savedMeals.mealName")}
-              placeholder={t("savedMeals.mealNamePlaceholder")}
-            />
-          </View>
-
-          {/* Items list */}
-          {items.length > 0 && (
-            <View className="mb-4">
-              {items.map((item) => {
-                const cal = Math.round((item.calories_per_100g * item.serving_size_g * item.quantity) / 100);
-                return (
-                  <View key={item.localId} className="flex-row items-center py-3 border-b border-slate-700/50">
-                    <View className="flex-1 mr-2">
-                      <AppText className="text-sm" numberOfLines={1}>{item.food_name}</AppText>
-                      {item.brand && (
-                        <BodyTextNC className="text-xs text-slate-400" numberOfLines={1}>{item.brand}</BodyTextNC>
-                      )}
-                      <View className="flex-row gap-2 mt-1">
-                        <TextInput
-                          value={item.serving_size_g ? String(item.serving_size_g) : ""}
-                          onChangeText={(v) => updateItem(item.localId, "serving_size_g", v)}
-                          keyboardType="decimal-pad"
-                          placeholder="100"
-                          placeholderTextColor="#4b5563"
-                          className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-gray-100 font-lexend text-xs w-16"
-                        />
-                        <BodyTextNC className="text-xs text-slate-500 self-center">g ×</BodyTextNC>
-                        <TextInput
-                          value={item.quantity ? String(item.quantity) : ""}
-                          onChangeText={(v) => updateItem(item.localId, "quantity", v)}
-                          keyboardType="decimal-pad"
-                          placeholder="1"
-                          placeholderTextColor="#4b5563"
-                          className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-gray-100 font-lexend text-xs w-12"
-                        />
-                      </View>
-                    </View>
-                    <BodyTextNC className="text-sm text-slate-400 mr-2">{cal} kcal</BodyTextNC>
-                    <AnimatedButton onPress={() => removeItem(item.localId)} hitSlop={10}>
-                      <X size={16} color="#ef4444" />
-                    </AnimatedButton>
-                  </View>
-                );
-              })}
-            </View>
-          )}
-
-          {/* Add food button */}
-          <AnimatedButton
-            onPress={() => setShowAddFood(true)}
-            className="btn-add py-3 mb-4"
-          >
-            <View className="flex-row items-center justify-center gap-2">
-              <Plus size={18} color="#60a5fa" />
-              <AppText className="text-sm">{t("savedMeals.addFood")}</AppText>
-            </View>
-          </AnimatedButton>
-
-          {/* Total nutrition */}
-          {items.length > 0 && (
-            <View className="mb-4">
-              <AppText className="text-sm mb-2">{t("savedMeals.totalNutrition")}</AppText>
-              <NutritionInfo
-                calories={totals.calories}
-                protein={totals.protein}
-                carbs={totals.carbs}
-                fat={totals.fat}
-                per100g={false}
-              />
-            </View>
-          )}
-        </View>
-
-        {/* Action buttons pinned to bottom */}
-        <View className="flex-row gap-3">
-          {editingMeal && onDelete && (
-            <AnimatedButton
-              onPress={handleDelete}
-              className="btn-danger py-3 flex-1"
-              label={tCommon("common.delete")}
-            />
-          )}
-          <AnimatedButton
-            onPress={handleSave}
-            className="btn-save py-3 flex-1"
-            label={isSaving ? tCommon("common.saving") : tCommon("common.save")}
-            disabled={isSaving}
-          />
-        </View>
-      </PageContainer>
+    <FullScreenModal isOpen={visible} onClose={onClose} scrollable={false}>
+      <MealModalContent
+        name={name}
+        setName={setName}
+        items={items}
+        totals={totals}
+        editingMeal={editingMeal}
+        isSaving={isSaving}
+        onDelete={onDelete}
+        onSetShowAddFood={setShowAddFood}
+        onUpdateItem={updateItem}
+        onRemoveItem={removeItem}
+        onSave={handleSave}
+        onHandleDelete={handleDelete}
+      />
     </FullScreenModal>
 
     <FullScreenModal isOpen={showAddFood} onClose={() => setShowAddFood(false)} scrollable={false}>

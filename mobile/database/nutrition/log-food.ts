@@ -14,12 +14,13 @@ type LogFoodParams = {
   fat: number;
   loggedAt: string; // YYYY-MM-DD
   notes?: string;
+  mealTime?: string; // HH:MM
 };
 
 export async function logFood(params: LogFoodParams): Promise<string> {
   const { data, error } = await supabase.rpc("nutrition_log_food", {
-    p_food_id: params.foodId ?? null,
-    p_custom_food_id: params.customFoodId ?? null,
+    p_food_id: params.foodId,
+    p_custom_food_id: params.customFoodId,
     p_food_name: params.foodName,
     p_meal_type: params.mealType,
     p_serving_size_g: params.servingSizeG,
@@ -29,7 +30,8 @@ export async function logFood(params: LogFoodParams): Promise<string> {
     p_carbs: params.carbs,
     p_fat: params.fat,
     p_logged_at: params.loggedAt,
-    p_notes: params.notes ?? null,
+    p_notes: params.notes,
+    p_meal_time: params.mealTime,
   });
 
   if (error) {

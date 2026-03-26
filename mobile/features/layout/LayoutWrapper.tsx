@@ -24,6 +24,7 @@ import { queryClient } from "@/lib/queryClient";
 import { syncNotifications } from "@/database/reminders/syncNotifications";
 import { syncHabitNotifications } from "@/database/habits/syncHabitNotifications";
 import { syncAlarms } from "@/database/reminders/syncAlarms";
+import { setDayResetHour } from "@/native/android/NativeStepCounter";
 import BootScreen from "@/features/feed/fakeFeedLoader";
 
 type PendingSession = {
@@ -127,6 +128,8 @@ export default function LayoutWrapper({
           if (settingsData?.language) {
             i18n.changeLanguage(settingsData.language);
           }
+          // Sync day reset hour to native step counter
+          setDayResetHour(settingsData?.day_reset_hour ?? 5);
         } else if (settings?.language) {
           // Only override device language if user explicitly set a preference (from cache)
           i18n.changeLanguage(settings.language);

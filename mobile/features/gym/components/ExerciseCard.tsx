@@ -105,7 +105,9 @@ export default function ExerciseCard({
             { value: "delete", label: t("gym.exerciseCard.delete") },
             { value: "change", label: t("gym.exerciseCard.change") },
             { value: "history", label: t("gym.exerciseCard.history") },
-            { value: "restTimer", label: t("gym.exerciseCard.restTimer") },
+            ...(mode !== "session"
+              ? [{ value: "restTimer", label: t("gym.exerciseCard.restTimer") }]
+              : []),
           ]}
           onChange={(value) => {
             switch (value) {
@@ -163,7 +165,7 @@ export default function ExerciseCard({
           </BodyTextNC>
         </View>
       )}
-      {showRestTimerInput && (
+      {showRestTimerInput && mode !== "session" && (
         <View className="mt-3 mb-1">
           <AppInput
             value={

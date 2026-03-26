@@ -145,13 +145,10 @@ const ShareCard = forwardRef<View, ShareCardProps>(
             </View>
           </View>
 
-          {/* Footer watermark */}
-          <View className="items-center">
-            <AppText
-              className="text-[28px]"
-              style={{ color: colors.textMuted, opacity: 0.5 }}
-            >
-              {APP_NAME}
+          {/* URL bottom center */}
+          <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
+            <AppText style={{ fontSize: 24, color: colors.textMuted, opacity: 0.5 }}>
+              kurvi.io
             </AppText>
           </View>
         </ThemedCardWrapper>
@@ -257,12 +254,10 @@ const ShareCard = forwardRef<View, ShareCardProps>(
           ))}
         </View>
 
-        {/* Footer watermark */}
-        <View className="items-center">
-          <AppText
-            style={{ fontSize: isStory ? 34 : 28, color: colors.textMuted, opacity: 0.5 }}
-          >
-            {APP_NAME}
+        {/* URL bottom center */}
+        <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
+          <AppText style={{ fontSize: isStory ? 28 : 24, color: colors.textMuted, opacity: 0.5 }}>
+            kurvi.io
           </AppText>
         </View>
       </ThemedCardWrapper>

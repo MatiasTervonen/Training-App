@@ -14,6 +14,7 @@ type LogFoodParams = {
   fat: number;
   loggedAt: string;
   notes?: string;
+  mealTime?: string; // HH:MM
 };
 
 export async function logFood(params: LogFoodParams): Promise<string> {
@@ -32,6 +33,7 @@ export async function logFood(params: LogFoodParams): Promise<string> {
     p_fat: params.fat,
     p_logged_at: params.loggedAt,
     p_notes: params.notes,
+    p_meal_time: params.mealTime ?? undefined,
   });
 
   if (error) {

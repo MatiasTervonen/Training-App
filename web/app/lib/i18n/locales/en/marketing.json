@@ -58,7 +58,7 @@
     "barcodeTitle": "Barcode Scanning",
     "barcodeDesc": "Scan any product barcode on mobile and instantly log its nutrition info",
     "searchTitle": "Food Search",
-    "searchDesc": "Search from millions of foods across USDA and Open Food Facts databases",
+    "searchDesc": "Search from millions of foods across USDA, Open Food Facts, and Fineli databases",
     "trackingTitle": "Calorie & Macro Tracking",
     "trackingDesc": "Set daily goals for calories, protein, carbs, and fat — track your progress with a visual ring",
     "mealsTitle": "Saved Meals",

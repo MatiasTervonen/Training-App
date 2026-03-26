@@ -34,8 +34,8 @@ export default function SavedMealsList({ onCreate, onEdit, onLog }: SavedMealsLi
       <View className="items-center py-10">
         <AppText className="text-base mb-2">{t("savedMeals.noMeals")}</AppText>
         <BodyText className="text-sm text-center mb-6">{t("savedMeals.noMealsDesc")}</BodyText>
-        <AnimatedButton onPress={onCreate} className="btn-add py-3 px-6">
-          <View className="flex-row items-center gap-2">
+        <AnimatedButton onPress={onCreate} className="btn-add">
+          <View className="flex-row items-center gap-2 px-6 py-1">
             <Plus size={18} color="#60a5fa" />
             <AppText className="text-sm">{t("savedMeals.create")}</AppText>
           </View>
@@ -69,12 +69,16 @@ export default function SavedMealsList({ onCreate, onEdit, onLog }: SavedMealsLi
                   {itemCount} {itemCount === 1 ? t("savedMeals.item") : t("savedMeals.items")} · {totalCal} kcal
                 </BodyTextNC>
               </AnimatedButton>
-              <View className="flex-row items-center gap-4">
-                <AnimatedButton onPress={() => onEdit(meal)} hitSlop={8}>
-                  <Pencil size={16} color="#94a3b8" />
+              <View className="flex-row items-center gap-2">
+                <AnimatedButton onPress={() => onEdit(meal)} className="btn-edit">
+                  <View className="px-1 py-0.5">
+                    <Pencil size={16} color="#f59e0b" />
+                  </View>
                 </AnimatedButton>
-                <AnimatedButton onPress={() => onLog(meal)} className="btn-start px-3 py-1.5">
-                  <AppText className="text-xs">{t("savedMeals.logMeal")}</AppText>
+                <AnimatedButton onPress={() => onLog(meal)} className="btn-start">
+                  <View className="px-1 py-0.5">
+                    <AppText className="text-xs" numberOfLines={1}>{t("savedMeals.logMeal")}</AppText>
+                  </View>
                 </AnimatedButton>
               </View>
             </View>

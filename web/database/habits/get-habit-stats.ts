@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/client";
 import { handleError } from "@/utils/handleError";
+import { getTrackingDate } from "@/lib/formatDate";
 import { HabitStats } from "@/types/habit";
 
 export async function getHabitStats(habitId: string): Promise<HabitStats> {
@@ -7,7 +8,7 @@ export async function getHabitStats(habitId: string): Promise<HabitStats> {
 
   const { data, error } = await supabase.rpc("habit_get_stats", {
     p_habit_id: habitId,
-    p_date: new Date().toLocaleDateString("en-CA"),
+    p_date: getTrackingDate(),
   });
 
   if (error || !data) {

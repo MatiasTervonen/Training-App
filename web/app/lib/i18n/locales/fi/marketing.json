@@ -58,7 +58,7 @@
     "barcodeTitle": "Viivakoodiskannaus",
     "barcodeDesc": "Skannaa mikä tahansa tuotteen viivakoodi mobiilissa ja kirjaa ravintotiedot heti",
     "searchTitle": "Ruokahaku",
-    "searchDesc": "Hae miljoonista ruoista USDA:n ja Open Food Facts -tietokannoista",
+    "searchDesc": "Hae miljoonista ruoista USDA:n, Open Food Facts- ja Fineli-tietokannoista",
     "trackingTitle": "Kalori- ja makroseuranta",
     "trackingDesc": "Aseta päivittäiset tavoitteet kaloreille, proteiinille, hiilihydraateille ja rasvalle — seuraa edistymistäsi visuaalisella kehällä",
     "mealsTitle": "Tallennetut ateriat",

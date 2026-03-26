@@ -91,7 +91,7 @@ export default function CustomFoodForm({ onSaved }: CustomFoodFormProps) {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4 flex-1">
       <p className="text-base">{t("custom.title")}</p>
 
       {/* Basic info */}
@@ -208,10 +208,11 @@ export default function CustomFoodForm({ onSaved }: CustomFoodFormProps) {
         />
       </div>
 
+      <div className="flex-1" />
       <button
         onClick={handleSave}
         disabled={isSaving}
-        className="btn-save w-full mt-2"
+        className="btn-save w-full mt-4"
       >
         {isSaving ? t("custom.saving") : t("custom.save")}
       </button>

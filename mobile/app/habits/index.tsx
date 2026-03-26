@@ -17,6 +17,7 @@ import { Plus, ListChecks } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import { SESSION_COLORS } from "@/lib/sessionColors";
 import BodyTextNC from "@/components/BodyTextNC";
+import { getTrackingDate } from "@/lib/formatDate";
 
 function getMonthRange(year: number, month: number) {
   const start = `${year}-${String(month + 1).padStart(2, "0")}-01`;
@@ -28,7 +29,7 @@ function getMonthRange(year: number, month: number) {
 export default function HabitsScreen() {
   const { t } = useTranslation("habits");
   const colors = SESSION_COLORS.habits;
-  const today = new Date().toLocaleDateString("en-CA");
+  const today = getTrackingDate();
   const [selectedDate, setSelectedDate] = useState(today);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());

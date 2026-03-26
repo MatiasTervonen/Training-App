@@ -5,6 +5,7 @@ import { useTimerStore } from "@/lib/stores/timerStore";
 import { useHabitContextStore } from "@/features/habits/hooks/useHabitTimer";
 import { cancelNativeAlarm } from "@/native/android/NativeAlarm";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getTrackingDate } from "@/lib/formatDate";
 
 export function useDeleteHabit() {
   const queryClient = useQueryClient();
@@ -21,7 +22,7 @@ export function useDeleteHabit() {
       }
 
       await deleteHabit(habitId);
-      const today = new Date().toLocaleDateString("en-CA");
+      const today = getTrackingDate();
       await refreshHabitFeed(today);
     },
     onSuccess: () => {

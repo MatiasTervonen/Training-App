@@ -75,8 +75,14 @@ export const useRestTimerStore = create<RestTimerState>()((set, get) => ({
         // Only play JS sound if caught in real-time (foreground).
         // If app was backgrounded the native notification already played the sound.
         if (timeSinceEnd < 2000) {
-          restTimerSound.seekTo(0);
-          restTimerSound.play();
+          setAudioModeAsync({
+            interruptionMode: "duckOthers",
+            interruptionModeAndroid: "duckOthers",
+          }).then(() => {
+            restTimerSound.volume = 1.0;
+            restTimerSound.seekTo(0);
+            restTimerSound.play();
+          });
         }
 
         set({ isRunning: false });

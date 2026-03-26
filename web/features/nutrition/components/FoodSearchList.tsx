@@ -42,7 +42,7 @@ export default function FoodSearchList({ results, isSearching, query, onSelect }
         >
           <div className="flex justify-between items-center">
             <div className="flex-1 mr-3 overflow-hidden">
-              <p className="text-sm truncate">{item.name}</p>
+              <p className="font-body text-sm truncate">{item.name}</p>
               {item.brand && (
                 <p className="font-body text-xs text-slate-400 truncate">{item.brand}</p>
               )}

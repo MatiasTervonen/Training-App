@@ -5,6 +5,7 @@ import {
   HABIT_DONE_ACTION_ID,
 } from "@/features/push-notifications/constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getTrackingDate } from "@/lib/formatDate";
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
@@ -89,8 +90,8 @@ TaskManager.defineTask(HABIT_BG_TASK_NAME, async ({ data, error }) => {
   // Use the notification's date (when it fired), not the current date
   const notifDate = notification?.date as number | undefined;
   const date = notifDate
-    ? new Date(notifDate).toLocaleDateString("en-CA")
-    : new Date().toLocaleDateString("en-CA");
+    ? getTrackingDate(new Date(notifDate))
+    : getTrackingDate();
 
   // Always save to pending first (survives if network fails)
   await addPending(habitId, date);

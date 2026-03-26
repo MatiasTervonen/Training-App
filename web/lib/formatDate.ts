@@ -1,5 +1,21 @@
 import { useUserStore } from "@/lib/stores/useUserStore";
 
+const DEFAULT_DAY_RESET_HOUR = 5;
+
+/**
+ * Returns the tracking "day" as YYYY-MM-DD.
+ * The day boundary is shifted so that hours before the reset hour
+ * still count as the previous calendar day.
+ * Used for nutrition, habits, and any feature that needs a shifted day boundary.
+ */
+export function getTrackingDate(from?: Date | string): string {
+  const resetHour =
+    useUserStore.getState().preferences?.day_reset_hour ?? DEFAULT_DAY_RESET_HOUR;
+  const d = from ? new Date(from) : new Date();
+  d.setHours(d.getHours() - resetHour);
+  return d.toLocaleDateString("en-CA");
+}
+
 // Get locale based on user's language setting
 const getLocale = () => {
   const language = useUserStore.getState().preferences?.language ?? "en";

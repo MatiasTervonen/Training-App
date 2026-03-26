@@ -161,6 +161,21 @@ export default function CreateEditMealModal({
     }
   }, [mealName, items, isEditing]);
 
+  const hasChanges = useMemo(() => {
+    if (!meal) return mealName.trim() !== "" || items.length > 0;
+    if (mealName !== meal.name) return true;
+    if (items.length !== meal.items.length) return true;
+    return items.some((item, i) => {
+      const orig = meal.items[i];
+      return (
+        item.food_id !== orig.food_id ||
+        item.custom_food_id !== orig.custom_food_id ||
+        item.serving_size_g !== orig.serving_size_g ||
+        item.quantity !== orig.quantity
+      );
+    });
+  }, [meal, mealName, items]);
+
   const totals = useMemo(() => {
     return items.reduce(
       (acc, item) => {
@@ -278,7 +293,7 @@ export default function CreateEditMealModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      confirmBeforeClose={isEditing}
+      confirmBeforeClose={hasChanges}
     >
       <div className="p-4 flex flex-col gap-4 max-w-xl mx-auto min-h-full justify-between">
         <div className="flex flex-col gap-4">

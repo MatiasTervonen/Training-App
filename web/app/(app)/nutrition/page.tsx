@@ -13,6 +13,7 @@ import {
 import { useDailyLogs } from "@/features/nutrition/hooks/useDailyLogs";
 import { useNutritionGoals } from "@/features/nutrition/hooks/useNutritionGoals";
 import { useDeleteFoodLog } from "@/features/nutrition/hooks/useDeleteFoodLog";
+import { useUpdateMealTime } from "@/features/nutrition/hooks/useUpdateMealTime";
 import { useToggleFavorite } from "@/features/nutrition/hooks/useToggleFavorite";
 import { useFavorites } from "@/features/nutrition/hooks/useFavorites";
 import DailySummary from "@/features/nutrition/components/DailySummary";
@@ -22,20 +23,20 @@ import dynamic from "next/dynamic";
 const FoodDetailModal = dynamic(() => import("@/features/nutrition/components/FoodDetailModal"), { ssr: false });
 import Spinner from "@/components/spinner";
 import EmptyState from "@/components/EmptyState";
+import { getTrackingDate } from "@/lib/formatDate";
 import type { DailyFoodLog } from "@/types/nutrition";
 
 const DEFAULT_MEALS = ["breakfast", "lunch", "dinner", "snack"];
 
 export default function NutritionPage() {
   const { t } = useTranslation("nutrition");
-  const [date, setDate] = useState(() =>
-    new Date().toLocaleDateString("en-CA"),
-  );
+  const [date, setDate] = useState(() => getTrackingDate());
   const [selectedLog, setSelectedLog] = useState<DailyFoodLog | null>(null);
 
   const { data: logs, isLoading } = useDailyLogs(date);
   const { data: goals } = useNutritionGoals();
   const { handleDelete } = useDeleteFoodLog();
+  const { updateMealTime } = useUpdateMealTime();
   const { handleToggle } = useToggleFavorite();
   const { data: favorites } = useFavorites();
 
@@ -175,7 +176,7 @@ export default function NutritionPage() {
     setDate(d.toLocaleDateString("en-CA"));
   };
 
-  const today = new Date().toLocaleDateString("en-CA");
+  const today = getTrackingDate();
   const isToday = date === today;
 
   const formatDisplayDate = (dateStr: string) => {
@@ -189,115 +190,118 @@ export default function NutritionPage() {
   };
 
   return (
-    <div className="page-padding h-full relative">
-      <div className="max-w-xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-xl">{t("title")}</span>
+      <div className="h-full relative">
+        <div className="max-w-xl mx-auto relative page-padding h-full overflow-y-auto pb-24">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-xl">{t("title")}</span>
+            <Link
+              href="/nutrition/goals"
+              className="p-2 rounded-full hover:bg-slate-700/50 transition-colors"
+            >
+              <Settings size={22} className="text-slate-400" />
+            </Link>
+          </div>
+
+          {/* Date picker */}
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <button
+              onClick={() => changeDate(-1)}
+              className="p-1 cursor-pointer hover:bg-slate-700/50 rounded transition-colors"
+            >
+              <ChevronLeft size={24} className="text-slate-400" />
+            </button>
+            <span className="text-base">{formatDisplayDate(date)}</span>
+            <button
+              onClick={() => changeDate(1)}
+              disabled={isToday}
+              className="p-1 cursor-pointer hover:bg-slate-700/50 rounded transition-colors disabled:opacity-30 disabled:cursor-default"
+            >
+              <ChevronRight
+                size={24}
+                className={isToday ? "text-slate-700" : "text-slate-400"}
+              />
+            </button>
+          </div>
+
+          {/* Daily summary */}
+          <DailySummary
+            calories={totals.calories}
+            protein={totals.protein}
+            carbs={totals.carbs}
+            fat={totals.fat}
+            calorieGoal={calorieGoal}
+            proteinGoal={proteinGoal}
+            carbsGoal={carbsGoal}
+            fatGoal={fatGoal}
+            fiber={totals.fiber}
+            sugar={totals.sugar}
+            sodium={totals.sodium}
+            saturatedFat={totals.saturatedFat}
+            fiberGoal={fiberGoal}
+            sugarGoal={sugarGoal}
+            sodiumGoal={sodiumGoal}
+            saturatedFatGoal={saturatedFatGoal}
+            visibleNutrients={visibleNutrients}
+          />
+
+          {/* Meal sections */}
+          {isLoading ? (
+            <div className="flex justify-center mt-6">
+              <Spinner />
+            </div>
+          ) : logs && logs.length > 0 ? (
+            <div className="mt-4">
+              {orderedMeals.map((mealType) => (
+                <MealSection
+                  key={mealType}
+                  title={getMealLabel(mealType)}
+                  items={mealGroups.get(mealType) ?? []}
+                  onPress={(item) => setSelectedLog(item)}
+                  onDelete={(id) => handleDelete(id, date)}
+                  onUpdateMealTime={(mealTime) =>
+                    updateMealTime({ loggedAt: date, mealType, mealTime })
+                  }
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              icon={UtensilsCrossed}
+              title={t("daily.noLogs")}
+              description={t("daily.noLogsDesc")}
+            />
+          )}
+
+          {/* Food Detail Modal (read-only view from dashboard) */}
+          <FoodDetailModal
+            food={selectedFood}
+            isOpen={!!selectedLog}
+            onClose={() => setSelectedLog(null)}
+            onLog={() => setSelectedLog(null)}
+            isFavorite={isSelectedFavorite}
+            onToggleFavorite={() => {
+              if (!selectedLog) return;
+              handleToggle({
+                foodId: selectedLog.is_custom ? null : selectedLog.food_id,
+                customFoodId: selectedLog.is_custom
+                  ? selectedLog.custom_food_id
+                  : null,
+              });
+            }}
+            customMealTypes={customMealTypes}
+          />
+        </div>
+
+        {/* Floating Action Button */}
+        <div className="absolute bottom-8 right-6 z-50 pointer-events-none">
           <Link
-            href="/nutrition/goals"
-            className="p-2 rounded-full hover:bg-slate-700/50 transition-colors"
+            href={`/nutrition/log?date=${date}`}
+            className="pointer-events-auto w-14 h-14 rounded-full bg-slate-800 border-[1.5px] border-fuchsia-400/60 shadow-lg shadow-fuchsia-400/30 flex items-center justify-center hover:scale-110 transition-transform"
           >
-            <Settings size={22} className="text-slate-400" />
+            <Plus size={30} className="text-fuchsia-400" />
           </Link>
         </div>
-
-        {/* Date picker */}
-        <div className="flex items-center justify-center gap-4 mb-4">
-          <button
-            onClick={() => changeDate(-1)}
-            className="p-1 cursor-pointer hover:bg-slate-700/50 rounded transition-colors"
-          >
-            <ChevronLeft size={24} className="text-slate-400" />
-          </button>
-          <span className="text-base">{formatDisplayDate(date)}</span>
-          <button
-            onClick={() => changeDate(1)}
-            disabled={isToday}
-            className="p-1 cursor-pointer hover:bg-slate-700/50 rounded transition-colors disabled:opacity-30 disabled:cursor-default"
-          >
-            <ChevronRight
-              size={24}
-              className={isToday ? "text-slate-700" : "text-slate-400"}
-            />
-          </button>
-        </div>
-
-        {/* Daily summary */}
-        <DailySummary
-          calories={totals.calories}
-          protein={totals.protein}
-          carbs={totals.carbs}
-          fat={totals.fat}
-          calorieGoal={calorieGoal}
-          proteinGoal={proteinGoal}
-          carbsGoal={carbsGoal}
-          fatGoal={fatGoal}
-          fiber={totals.fiber}
-          sugar={totals.sugar}
-          sodium={totals.sodium}
-          saturatedFat={totals.saturatedFat}
-          fiberGoal={fiberGoal}
-          sugarGoal={sugarGoal}
-          sodiumGoal={sodiumGoal}
-          saturatedFatGoal={saturatedFatGoal}
-          visibleNutrients={visibleNutrients}
-        />
-
-        {/* Meal sections */}
-        {isLoading ? (
-          <div className="flex justify-center mt-6">
-            <Spinner />
-          </div>
-        ) : logs && logs.length > 0 ? (
-          <div className="mt-4">
-            {orderedMeals.map((mealType) => (
-              <MealSection
-                key={mealType}
-                title={getMealLabel(mealType)}
-                items={mealGroups.get(mealType) ?? []}
-                onPress={(item) => setSelectedLog(item)}
-                onDelete={(id) => handleDelete(id, date)}
-              />
-            ))}
-          </div>
-        ) : (
-          <EmptyState
-            icon={UtensilsCrossed}
-            title={t("daily.noLogs")}
-            description={t("daily.noLogsDesc")}
-          />
-        )}
       </div>
-
-      {/* Floating Action Button */}
-      <div className="absolute bottom-8 right-6 z-50 pointer-events-none">
-        <Link
-          href={`/nutrition/log?date=${date}`}
-          className="pointer-events-auto w-14 h-14 rounded-full bg-slate-800 border-[1.5px] border-fuchsia-400/60 shadow-lg shadow-fuchsia-400/30 flex items-center justify-center hover:scale-110 transition-transform"
-        >
-          <Plus size={30} className="text-fuchsia-400" />
-        </Link>
-      </div>
-
-      {/* Food Detail Modal (read-only view from dashboard) */}
-      <FoodDetailModal
-        food={selectedFood}
-        isOpen={!!selectedLog}
-        onClose={() => setSelectedLog(null)}
-        onLog={() => setSelectedLog(null)}
-        isFavorite={isSelectedFavorite}
-        onToggleFavorite={() => {
-          if (!selectedLog) return;
-          handleToggle({
-            foodId: selectedLog.is_custom ? null : selectedLog.food_id,
-            customFoodId: selectedLog.is_custom
-              ? selectedLog.custom_food_id
-              : null,
-          });
-        }}
-        customMealTypes={customMealTypes}
-      />
-    </div>
   );
 }

@@ -12,6 +12,7 @@ import MonthGrid from "@/features/habits/components/MonthGrid";
 import Spinner from "@/components/spinner";
 import LinkButton from "@/components/buttons/LinkButton";
 import EmptyState from "@/components/EmptyState";
+import { getTrackingDate } from "@/lib/formatDate";
 
 function getMonthRange(year: number, month: number) {
   const start = `${year}-${String(month + 1).padStart(2, "0")}-01`;
@@ -22,7 +23,7 @@ function getMonthRange(year: number, month: number) {
 
 export default function HabitsPage() {
   const { t } = useTranslation("habits");
-  const today = new Date().toLocaleDateString("en-CA");
+  const today = getTrackingDate();
   const [selectedDate, setSelectedDate] = useState(today);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());

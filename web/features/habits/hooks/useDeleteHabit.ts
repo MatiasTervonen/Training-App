@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteHabit } from "@/database/habits/delete-habit";
 import { refreshHabitFeed } from "@/database/habits/refresh-habit-feed";
+import { getTrackingDate } from "@/lib/formatDate";
 
 export function useDeleteHabit() {
   const queryClient = useQueryClient();
@@ -8,7 +9,7 @@ export function useDeleteHabit() {
   return useMutation({
     mutationFn: async (habitId: string) => {
       await deleteHabit(habitId);
-      const today = new Date().toLocaleDateString("en-CA");
+      const today = getTrackingDate();
       await refreshHabitFeed(today);
     },
     onSuccess: () => {

@@ -21,6 +21,8 @@ class StepCounterHelper(private val context: Context) {
         private const val KEY_DAILY_STEPS = "daily_steps"
         private const val KEY_SESSION_START_VALUE = "session_start_value"
         private const val MAX_HISTORY_DAYS = 60
+        private const val KEY_DAY_RESET_HOUR = "day_reset_hour"
+        private const val DEFAULT_DAY_RESET_HOUR = 5
         // Safety cap: no single sensor event can produce more than 100K steps.
         // Prevents inflated counts from sensor glitches or false reboot detection.
         private const val MAX_SINGLE_DELTA = 100_000L
@@ -32,6 +34,16 @@ class StepCounterHelper(private val context: Context) {
     fun hasSensor(): Boolean {
         val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         return sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null
+    }
+
+    /** Returns the tracking "today" date, shifted by the day reset hour. */
+    private fun getTrackingDate(): String {
+        val resetHour = prefs.getInt(KEY_DAY_RESET_HOUR, DEFAULT_DAY_RESET_HOUR)
+        return dateFormat.format(Date(System.currentTimeMillis() - resetHour * 3600_000L))
+    }
+
+    fun setDayResetHour(hour: Int) {
+        prefs.edit().putInt(KEY_DAY_RESET_HOUR, hour).apply()
     }
 
     fun readSensorValueSync(timeoutMs: Long = 5000L): Long? {
@@ -71,7 +83,7 @@ class StepCounterHelper(private val context: Context) {
     fun recordReadingWithValue(currentValue: Long) {
 
         val lastValue = prefs.getLong(KEY_LAST_SENSOR_VALUE, -1L)
-        val today = dateFormat.format(Date())
+        val today = getTrackingDate()
 
         val delta = when {
             lastValue == -1L -> 0L // First ever read, no delta yet
@@ -95,7 +107,7 @@ class StepCounterHelper(private val context: Context) {
     }
 
     fun getTodaySteps(): Long {
-        val today = dateFormat.format(Date())
+        val today = getTrackingDate()
         val dailySteps = loadDailySteps()
         return dailySteps.optLong(today, 0L)
     }
@@ -109,7 +121,8 @@ class StepCounterHelper(private val context: Context) {
         val dailySteps = loadDailySteps()
         val result = JSONObject()
         val keys = dailySteps.keys()
-        val cutoffDate = dateFormat.format(Date(System.currentTimeMillis() - days.toLong() * 24 * 60 * 60 * 1000))
+        val resetHour = prefs.getInt(KEY_DAY_RESET_HOUR, DEFAULT_DAY_RESET_HOUR)
+        val cutoffDate = dateFormat.format(Date(System.currentTimeMillis() - resetHour * 3600_000L - days.toLong() * 24 * 60 * 60 * 1000))
 
         while (keys.hasNext()) {
             val key = keys.next()

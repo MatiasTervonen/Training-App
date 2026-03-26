@@ -1,10 +1,10 @@
 import {
-  ScrollView,
   TouchableWithoutFeedback,
   View,
   Keyboard,
   ActivityIndicator,
 } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import AppInput from "@/components/AppInput";
@@ -287,10 +287,11 @@ export default function TemplateForm() {
   return (
     <>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <ScrollView
+        <KeyboardAwareScrollView
           scrollEnabled={isScrollEnabled}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ flexGrow: 1 }}
+          bottomOffset={80}
         >
           <PageContainer className="justify-between">
             <View>
@@ -570,7 +571,7 @@ export default function TemplateForm() {
               </View>
             </View>
           </PageContainer>
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </TouchableWithoutFeedback>
       <PhaseActivityPicker
         isOpen={phasePickerOpen}

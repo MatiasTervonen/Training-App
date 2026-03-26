@@ -99,6 +99,12 @@ export function setStepNotificationText(text: string): void {
   }
 }
 
+export function setDayResetHour(hour: number): void {
+  if (Platform.OS === "android" && nativeStepCounter) {
+    nativeStepCounter.setDayResetHour(hour);
+  }
+}
+
 export function setStepGoals(
   goals: { id: string; target: number }[],
   notifTitle: string,

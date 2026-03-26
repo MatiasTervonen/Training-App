@@ -7,6 +7,18 @@ import type { FoodSearchResult } from "@/database/nutrition/search-foods";
 import type { OpenFoodFactsProduct } from "@/lib/open-food-facts";
 import type { USDAFoodResult } from "@/lib/usda-food-data";
 
+function toTitleCase(str: string): string {
+  if (str !== str.toUpperCase()) return str; // only convert ALL CAPS
+  return str
+    .toLowerCase()
+    .split(/([,;]\s*)/)
+    .map((part) => {
+      if (/^[,;]\s*$/.test(part)) return part;
+      return part.charAt(0).toUpperCase() + part.slice(1);
+    })
+    .join("");
+}
+
 export type NutritionSearchResult = {
   id: string | null;
   name: string;
@@ -32,8 +44,8 @@ export type NutritionSearchResult = {
 function mapLocalResult(r: FoodSearchResult): NutritionSearchResult {
   return {
     id: r.id,
-    name: r.name,
-    brand: r.brand,
+    name: toTitleCase(r.name),
+    brand: r.brand ? toTitleCase(r.brand) : null,
     calories_per_100g: r.calories_per_100g,
     protein_per_100g: r.protein_per_100g,
     carbs_per_100g: r.carbs_per_100g,
@@ -55,8 +67,8 @@ function mapLocalResult(r: FoodSearchResult): NutritionSearchResult {
 function mapOFFResult(r: OpenFoodFactsProduct): NutritionSearchResult {
   return {
     id: null,
-    name: r.name,
-    brand: r.brand,
+    name: toTitleCase(r.name),
+    brand: r.brand ? toTitleCase(r.brand) : null,
     calories_per_100g: r.calories_per_100g,
     protein_per_100g: r.protein_per_100g,
     carbs_per_100g: r.carbs_per_100g,
@@ -79,8 +91,8 @@ function mapOFFResult(r: OpenFoodFactsProduct): NutritionSearchResult {
 function mapUSDAResult(r: USDAFoodResult): NutritionSearchResult {
   return {
     id: null,
-    name: r.name,
-    brand: r.brand,
+    name: toTitleCase(r.name),
+    brand: r.brand ? toTitleCase(r.brand) : null,
     calories_per_100g: r.calories_per_100g,
     protein_per_100g: r.protein_per_100g,
     carbs_per_100g: r.carbs_per_100g,
@@ -133,7 +145,8 @@ async function searchAllSources(
 const EMPTY_RESULTS: NutritionSearchResult[] = [];
 
 export function useFoodSearch(query: string) {
-  const [debouncedQuery] = useDebounce(query.trim(), 500);
+  const trimmedQuery = query.trim();
+  const [debouncedQuery] = useDebounce(trimmedQuery, 500);
 
   const { data, isFetching } = useQuery({
     queryKey: ["foodSearch", debouncedQuery],
@@ -143,8 +156,15 @@ export function useFoodSearch(query: string) {
     staleTime: 60 * 1000,
   });
 
+  // Treat debounce period as "searching" when there are no cached results yet,
+  // so the UI shows a spinner instead of flashing "No results"
+  const isDebouncing =
+    trimmedQuery.length >= 2 &&
+    trimmedQuery !== debouncedQuery &&
+    !data?.length;
+
   return {
     results: data ?? EMPTY_RESULTS,
-    isSearching: isFetching,
+    isSearching: isFetching || isDebouncing,
   };
 }

@@ -16,7 +16,15 @@ export function useLogSavedMeal() {
   const { t } = useTranslation(["nutrition", "common"]);
 
   const mutation = useMutation({
-    mutationFn: (params: LogSavedMealParams) => logSavedMeal(params),
+    mutationFn: (params: LogSavedMealParams) =>
+      logSavedMeal({
+        ...params,
+        mealTime: new Date().toLocaleTimeString("en-GB", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }),
+      }),
     onSuccess: async (_data, params) => {
       await Promise.all([
         queryClient.invalidateQueries({

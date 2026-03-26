@@ -10,10 +10,11 @@ export default async function UserLoader() {
     getUserSettings(),
   ]);
 
-  // Merge language from user_settings into preferences
+  // Merge settings into preferences
   const preferencesWithLanguage = {
     ...preferences,
     language: settings?.language as "en" | "fi" | null,
+    day_reset_hour: settings?.day_reset_hour ?? 5,
   };
 
   return <HydrateUser preferences={preferencesWithLanguage} role={role} />;

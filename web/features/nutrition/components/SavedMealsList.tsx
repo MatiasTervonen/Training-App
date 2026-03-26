@@ -44,7 +44,7 @@ export default function SavedMealsList({
         </p>
         <button
           onClick={onCreate}
-          className="btn-add py-3 px-6 flex items-center gap-2 cursor-pointer"
+          className="bg-blue-500/20 rounded-md shadow-md border border-blue-500/40 hover:bg-blue-500/35 hover:scale-105 transition-all duration-200 cursor-pointer px-10 py-3 flex items-center gap-2"
         >
           <Plus size={18} className="text-blue-400" />
           <span className="text-sm">{t("savedMeals.create")}</span>
@@ -57,7 +57,7 @@ export default function SavedMealsList({
     <div className="flex flex-col">
       <button
         onClick={onCreate}
-        className="btn-add py-3 mb-4 flex items-center justify-center gap-2 cursor-pointer"
+        className="btn-add py-3 mb-4 w-full flex items-center justify-center gap-2 cursor-pointer"
       >
         <Plus size={18} className="text-blue-400" />
         <span className="text-sm">{t("savedMeals.create")}</span>
@@ -85,12 +85,12 @@ export default function SavedMealsList({
                 · {totalCalories} kcal
               </span>
             </button>
-            <div className="flex items-center gap-4 shrink-0">
+            <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => onEdit(meal)}
-                className="p-1 cursor-pointer hover:bg-slate-700/50 rounded transition-colors"
+                className="btn-edit px-2 py-1.5 cursor-pointer"
               >
-                <Pencil size={16} className="text-slate-400" />
+                <Pencil size={16} className="text-amber-400" />
               </button>
               <button
                 onClick={() => onLog(meal)}

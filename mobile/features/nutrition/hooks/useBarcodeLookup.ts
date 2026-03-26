@@ -36,7 +36,12 @@ export function useBarcodeLookup() {
 
     try {
       // 1. Check local DB first
-      const localResult = await lookupLocal(barcode);
+      let localResult: FoodItem | null = null;
+      try {
+        localResult = await lookupLocal(barcode);
+      } catch {
+        // Local DB error — fall through to API lookup
+      }
       if (localResult) {
         return mapFoodItem(localResult);
       }
@@ -44,26 +49,31 @@ export function useBarcodeLookup() {
       // 2. If not found, call Open Food Facts API
       const apiResult = await lookupAPI(barcode);
       if (apiResult) {
-        // 3. Cache it locally for future lookups
-        const cachedId = await saveSharedFood({
-          barcode: apiResult.barcode,
-          name: apiResult.name,
-          brand: apiResult.brand,
-          servingSizeG: apiResult.serving_size_g,
-          servingDescription: apiResult.serving_description,
-          caloriesPer100g: apiResult.calories_per_100g,
-          proteinPer100g: apiResult.protein_per_100g,
-          carbsPer100g: apiResult.carbs_per_100g,
-          fatPer100g: apiResult.fat_per_100g,
-          fiberPer100g: apiResult.fiber_per_100g,
-          sugarPer100g: apiResult.sugar_per_100g,
-          sodiumPer100g: apiResult.sodium_per_100g,
-          saturatedFatPer100g: apiResult.saturated_fat_per_100g,
-          imageUrl: apiResult.image_url,
-          nutritionLabelUrl: apiResult.image_nutrition_url,
-        });
+        // 3. Try to cache it locally, but don't lose the result if caching fails
+        let cachedId: string | null = null;
+        try {
+          cachedId = await saveSharedFood({
+            barcode: apiResult.barcode,
+            name: apiResult.name,
+            brand: apiResult.brand,
+            servingSizeG: apiResult.serving_size_g,
+            servingDescription: apiResult.serving_description,
+            caloriesPer100g: apiResult.calories_per_100g,
+            proteinPer100g: apiResult.protein_per_100g,
+            carbsPer100g: apiResult.carbs_per_100g,
+            fatPer100g: apiResult.fat_per_100g,
+            fiberPer100g: apiResult.fiber_per_100g,
+            sugarPer100g: apiResult.sugar_per_100g,
+            sodiumPer100g: apiResult.sodium_per_100g,
+            saturatedFatPer100g: apiResult.saturated_fat_per_100g,
+            imageUrl: apiResult.image_url,
+            nutritionLabelUrl: apiResult.image_nutrition_url,
+          });
+        } catch {
+          // Cache failed — still return the API result
+        }
         const mapped: NutritionSearchResult = {
-          id: cachedId,
+          id: cachedId ?? "",
           name: apiResult.name,
           brand: apiResult.brand,
           calories_per_100g: apiResult.calories_per_100g,

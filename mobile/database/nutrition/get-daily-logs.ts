@@ -28,6 +28,7 @@ export type DailyFoodLog = {
   carbs_per_100g: number | null;
   fat_per_100g: number | null;
   created_at: string;
+  meal_time: string | null;
 };
 
 export async function getDailyLogs(date: string): Promise<DailyFoodLog[]> {

@@ -267,9 +267,16 @@ class StepTrackingService : Service(), SensorEventListener {
         }
     }
 
+    private fun getTrackingDate(): String {
+        val prefs = getSharedPreferences("step_counter_prefs", Context.MODE_PRIVATE)
+        val resetHour = prefs.getInt("day_reset_hour", 5)
+        val fmt = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+        return fmt.format(java.util.Date(System.currentTimeMillis() - resetHour * 3600_000L))
+    }
+
     private fun checkStepGoals(todaySteps: Long) {
         // Reload goals once per day (picks up changes + resets notified flags)
-        val today = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(java.util.Date())
+        val today = getTrackingDate()
         if (goalsLoadedForDate != today) {
             reloadGoals()
             goalsLoadedForDate = today

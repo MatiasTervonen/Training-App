@@ -15,7 +15,7 @@ export async function getUserSettings() {
 
   const { data: settings, error } = await supabase
     .from("user_settings")
-    .select("push_enabled, language")
+    .select("push_enabled, language, day_reset_hour")
     .eq("user_id", user.sub)
     .single();
 

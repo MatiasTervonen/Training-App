@@ -78,6 +78,10 @@
       "en": "English",
       "fi": "Finnish"
     },
+    "dayReset": {
+      "title": "Day Starts At",
+      "description": "Tracking for nutrition and habits resets at this time. Set it to an hour when you're always asleep."
+    },
     "pushNotifications": {
       "title": "Push Notifications",
       "enabled": "Push notifications enabled",

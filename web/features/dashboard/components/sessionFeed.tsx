@@ -145,10 +145,10 @@ export default function SessionFeed() {
   });
 
   return (
-    <div className="h-full relative max-w-2xl mx-auto">
+    <div className="h-full relative">
       <div
         ref={containerRef}
-        className="relative bg-linear-to-b from-slate-950 via-slate-900 to-slate-800 px-5 pt-3 pb-10 overflow-y-auto touch-pan-y h-full"
+        className="max-w-2xl mx-auto relative bg-linear-to-b from-slate-950 via-slate-900 to-slate-800 px-5 pt-3 pb-10 overflow-y-auto touch-pan-y h-full"
       >
         <div
           className="flex items-center justify-center transition-all"

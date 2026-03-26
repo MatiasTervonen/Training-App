@@ -6,6 +6,7 @@ interface UserPreferences {
   weight_unit: string;
   profile_picture: string | null | undefined;
   language?: "en" | "fi" | null;
+  day_reset_hour?: number;
 }
 
 interface UserStore {

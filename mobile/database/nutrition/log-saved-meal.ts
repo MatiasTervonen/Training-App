@@ -5,6 +5,7 @@ type LogSavedMealParams = {
   savedMealId: string;
   mealType: string;
   loggedAt: string;
+  mealTime?: string; // HH:MM
 };
 
 export async function logSavedMeal(params: LogSavedMealParams): Promise<void> {
@@ -12,6 +13,7 @@ export async function logSavedMeal(params: LogSavedMealParams): Promise<void> {
     p_saved_meal_id: params.savedMealId,
     p_meal_type: params.mealType,
     p_logged_at: params.loggedAt,
+    p_meal_time: params.mealTime,
   });
 
   if (error) {

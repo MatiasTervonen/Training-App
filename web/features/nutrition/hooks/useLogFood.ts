@@ -39,6 +39,11 @@ export function useLogFood() {
         fat: params.fat,
         loggedAt: params.loggedAt,
         notes: params.notes,
+        mealTime: new Date().toLocaleTimeString("en-GB", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }),
       }),
     onSuccess: (_data, params) => {
       Promise.all([

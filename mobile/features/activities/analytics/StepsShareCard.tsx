@@ -228,12 +228,10 @@ const StepsShareCard = forwardRef<View, StepsShareCardProps>(
             </View>
           </View>
 
-          {/* Footer watermark */}
-          <View className="items-center">
-            <AppText
-              style={{ fontSize: 28, color: colors.textMuted, opacity: 0.5 }}
-            >
-              {APP_NAME}
+          {/* URL bottom center */}
+          <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
+            <AppText style={{ fontSize: 24, color: colors.textMuted, opacity: 0.5 }}>
+              kurvi.io
             </AppText>
           </View>
         </ThemedCardWrapper>
@@ -299,6 +297,13 @@ const StepsShareCard = forwardRef<View, StepsShareCardProps>(
               size={isStory ? "large" : "normal"}
             />
           </View>
+        </View>
+
+        {/* URL bottom center */}
+        <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
+          <AppText style={{ fontSize: isStory ? 28 : 24, color: colors.textMuted, opacity: 0.5 }}>
+            kurvi.io
+          </AppText>
         </View>
       </ThemedCardWrapper>
     );

@@ -7,11 +7,23 @@ import type { NutritionSearchResult, FoodSearchResult } from "@/types/nutrition"
 import type { OpenFoodFactsProduct } from "@/lib/open-food-facts";
 import type { USDAFoodResult } from "@/lib/usda-food-data";
 
+function toTitleCase(str: string): string {
+  if (str !== str.toUpperCase()) return str;
+  return str
+    .toLowerCase()
+    .split(/([,;]\s*)/)
+    .map((part) => {
+      if (/^[,;]\s*$/.test(part)) return part;
+      return part.charAt(0).toUpperCase() + part.slice(1);
+    })
+    .join("");
+}
+
 function mapLocalResult(r: FoodSearchResult): NutritionSearchResult {
   return {
     id: r.id,
-    name: r.name,
-    brand: r.brand,
+    name: toTitleCase(r.name),
+    brand: r.brand ? toTitleCase(r.brand) : null,
     calories_per_100g: r.calories_per_100g,
     protein_per_100g: r.protein_per_100g,
     carbs_per_100g: r.carbs_per_100g,
@@ -33,8 +45,8 @@ function mapLocalResult(r: FoodSearchResult): NutritionSearchResult {
 function mapOFFResult(r: OpenFoodFactsProduct): NutritionSearchResult {
   return {
     id: null,
-    name: r.name,
-    brand: r.brand,
+    name: toTitleCase(r.name),
+    brand: r.brand ? toTitleCase(r.brand) : null,
     calories_per_100g: r.calories_per_100g,
     protein_per_100g: r.protein_per_100g,
     carbs_per_100g: r.carbs_per_100g,
@@ -57,8 +69,8 @@ function mapOFFResult(r: OpenFoodFactsProduct): NutritionSearchResult {
 function mapUSDAResult(r: USDAFoodResult): NutritionSearchResult {
   return {
     id: null,
-    name: r.name,
-    brand: r.brand,
+    name: toTitleCase(r.name),
+    brand: r.brand ? toTitleCase(r.brand) : null,
     calories_per_100g: r.calories_per_100g,
     protein_per_100g: r.protein_per_100g,
     carbs_per_100g: r.carbs_per_100g,

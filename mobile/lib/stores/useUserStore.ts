@@ -17,6 +17,7 @@ export interface UserSettings {
   gps_tracking_enabled: boolean;
   language: "en" | "fi" | null;
   has_completed_onboarding: boolean;
+  day_reset_hour: number;
 }
 
 interface UserStore {

@@ -94,8 +94,8 @@ export default function NutritionGoalsPage() {
   }
 
   return (
-    <div className="page-padding h-full">
-      <div className="max-w-xl mx-auto">
+    <div className="page-padding flex flex-col min-h-full">
+      <div className="max-w-xl mx-auto w-full flex-1">
         <p className="text-xl text-center mb-6">{t("goals.title")}</p>
 
         {/* Calorie goal */}
@@ -244,7 +244,10 @@ export default function NutritionGoalsPage() {
           </div>
         </div>
 
-        {/* Save button */}
+      </div>
+
+      {/* Save button */}
+      <div className="max-w-xl mx-auto w-full pt-4 pb-4">
         <button
           onClick={onSave}
           className="btn-save w-full py-3 cursor-pointer"

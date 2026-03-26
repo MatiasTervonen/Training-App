@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       activities: {
@@ -821,6 +846,7 @@ export type Database = {
           food_id: string | null
           id: string
           logged_at: string
+          meal_time: string | null
           meal_type: string
           notes: string | null
           protein: number | null
@@ -837,6 +863,7 @@ export type Database = {
           food_id?: string | null
           id?: string
           logged_at: string
+          meal_time?: string | null
           meal_type?: string
           notes?: string | null
           protein?: number | null
@@ -853,6 +880,7 @@ export type Database = {
           food_id?: string | null
           id?: string
           logged_at?: string
+          meal_time?: string | null
           meal_type?: string
           notes?: string | null
           protein?: number | null
@@ -877,6 +905,38 @@ export type Database = {
           },
         ]
       }
+      food_nutrients: {
+        Row: {
+          food_id: string
+          id: string
+          nutrient_code: string
+          unit: string
+          value: number
+        }
+        Insert: {
+          food_id: string
+          id?: string
+          nutrient_code: string
+          unit: string
+          value: number
+        }
+        Update: {
+          food_id?: string
+          id?: string
+          nutrient_code?: string
+          unit?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "food_nutrients_food_id_fkey"
+            columns: ["food_id"]
+            isOneToOne: false
+            referencedRelation: "foods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       foods: {
         Row: {
           barcode: string | null
@@ -889,6 +949,7 @@ export type Database = {
           id: string
           image_url: string | null
           name: string
+          name_en: string | null
           nutrition_label_url: string | null
           protein_per_100g: number | null
           saturated_fat_per_100g: number | null
@@ -909,6 +970,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           name: string
+          name_en?: string | null
           nutrition_label_url?: string | null
           protein_per_100g?: number | null
           saturated_fat_per_100g?: number | null
@@ -929,6 +991,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           name?: string
+          name_en?: string | null
           nutrition_label_url?: string | null
           protein_per_100g?: number | null
           saturated_fat_per_100g?: number | null
@@ -2773,6 +2836,7 @@ export type Database = {
       }
       user_settings: {
         Row: {
+          day_reset_hour: number
           gps_tracking_enabled: boolean
           has_completed_onboarding: boolean | null
           language: string
@@ -2781,6 +2845,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          day_reset_hour?: number
           gps_tracking_enabled?: boolean
           has_completed_onboarding?: boolean | null
           language?: string
@@ -2789,6 +2854,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          day_reset_hour?: number
           gps_tracking_enabled?: boolean
           has_completed_onboarding?: boolean | null
           language?: string
@@ -3485,6 +3551,7 @@ export type Database = {
           id: string
           image_url: string
           is_custom: boolean
+          meal_time: string
           meal_type: string
           notes: string
           nutrition_label_url: string
@@ -3517,6 +3584,7 @@ export type Database = {
           p_food_id?: string
           p_food_name?: string
           p_logged_at?: string
+          p_meal_time?: string
           p_meal_type?: string
           p_notes?: string
           p_protein?: number
@@ -3528,6 +3596,7 @@ export type Database = {
       nutrition_log_saved_meal: {
         Args: {
           p_logged_at?: string
+          p_meal_time?: string
           p_meal_type?: string
           p_saved_meal_id: string
         }
@@ -3540,6 +3609,10 @@ export type Database = {
       nutrition_toggle_favorite: {
         Args: { p_custom_food_id?: string; p_food_id?: string }
         Returns: boolean
+      }
+      nutrition_update_meal_time: {
+        Args: { p_logged_at: string; p_meal_time: string; p_meal_type: string }
+        Returns: undefined
       }
       nutrition_upsert_food_from_barcode: {
         Args: {
@@ -4022,6 +4095,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },

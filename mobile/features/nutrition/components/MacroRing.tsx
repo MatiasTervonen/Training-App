@@ -9,6 +9,7 @@ type MacroRingProps = {
   label: string;
   color: string;
   size?: number;
+  totalMacros?: number;
 };
 
 export default function MacroRing({
@@ -17,11 +18,17 @@ export default function MacroRing({
   label,
   color,
   size = 56,
+  totalMacros,
 }: MacroRingProps) {
   const strokeWidth = 5;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const progress = goal && goal > 0 ? Math.min(value / goal, 1) : 0;
+  const hasGoal = goal != null && goal > 0;
+  const progress = hasGoal
+    ? Math.min(value / goal, 1)
+    : totalMacros && totalMacros > 0
+      ? value / totalMacros
+      : 0;
   const strokeDashoffset = circumference * (1 - progress);
 
   return (
@@ -36,7 +43,7 @@ export default function MacroRing({
             strokeWidth={strokeWidth}
             fill="none"
           />
-          {goal && goal > 0 && (
+          {progress > 0 && (
             <Circle
               cx={size / 2}
               cy={size / 2}

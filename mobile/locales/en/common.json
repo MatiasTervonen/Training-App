@@ -86,7 +86,10 @@
   },
   "navigation": {
     "back": "back",
-    "home": "home"
+    "home": "home",
+    "start": "start",
+    "log": "log",
+    "new": "new"
   },
   "share": {
     "sizeLabel": "Size",

@@ -76,7 +76,7 @@ export default function SavedMealsList({ onCreate, onEdit, onLog }: SavedMealsLi
                   </View>
                 </AnimatedButton>
                 <AnimatedButton onPress={() => onLog(meal)} className="btn-start">
-                  <View className="px-1 py-0.5">
+                  <View className="px-1 py-1">
                     <AppText className="text-xs" numberOfLines={1}>{t("savedMeals.logMeal")}</AppText>
                   </View>
                 </AnimatedButton>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { X, Plus, Search } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Modal from "@/components/modal";
 import CustomInput from "@/ui/CustomInput";

@@ -29,6 +29,8 @@ export default function FeedHeader({
           onExpand={(item) => {
             if (item.type === "habits") {
               router.push("/habits");
+            } else if (item.type === "nutrition") {
+              router.push("/nutrition");
             } else {
               setExpandedItem(item);
             }

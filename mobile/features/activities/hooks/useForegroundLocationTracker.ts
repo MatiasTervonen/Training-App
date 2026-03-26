@@ -157,6 +157,11 @@ export function useForegroundLocationTracker({
             isStationary: false,
           };
 
+          // Skip locations from before the session started (stale cache from OS)
+          if (activeSession && point.timestamp < activeSession.started_at) {
+            return;
+          }
+
           // ---------- Timestamp sanity ----------
           if (
             lastAcceptedPointRef.current &&

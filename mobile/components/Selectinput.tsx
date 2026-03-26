@@ -92,7 +92,7 @@ export default function SelectInput({
                     onChange?.(option.value);
                     setIsOpen(false);
                   }}
-                  className={`flex-row items-center border p-2 my-2 rounded-xl mx-6 px-4 ${option.value === value ? "bg-blue-900/40 border-blue-500" : "bg-slate-800 border-slate-700"}`}
+                  className={`flex-row items-center border p-2 my-2 rounded-xl mx-6 px-4 py-3 ${option.value === value ? "bg-blue-900/40 border-blue-500" : "bg-slate-800 border-slate-700"}`}
                 >
                   <AppText className="flex-1 text-center">{option.label}</AppText>
                   {option.value === value && (

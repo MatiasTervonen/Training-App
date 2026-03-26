@@ -58,6 +58,11 @@
     "heightFtPlaceholder": "5",
     "heightInPlaceholder": "9",
     "startingWeight": "Starting weight",
+    "genderTitle": "Gender",
+    "genderMale": "Male",
+    "genderFemale": "Female",
+    "birthDateTitle": "Date of Birth",
+    "birthDatePlaceholder": "Select date",
     "continue": "Continue"
   },
   "preferences": {

@@ -7,7 +7,7 @@ import * as FileSystem from "expo-file-system/legacy";
 import { onlineManager } from "@tanstack/react-query";
 
 type MediaType = "image" | "video" | "recording";
-export type TargetType = "session" | "note" | "weight";
+export type TargetType = "session" | "note" | "weight" | "todo_task";
 
 type QueueItemStatus =
   | "pending"
@@ -69,6 +69,7 @@ const RPC_MAP: Record<TargetType, { rpcName: string; idParam: string }> = {
   session: { rpcName: "attach_session_media", idParam: "p_session_id" },
   note: { rpcName: "attach_note_media", idParam: "p_note_id" },
   weight: { rpcName: "attach_weight_media", idParam: "p_weight_id" },
+  todo_task: { rpcName: "attach_todo_task_media", idParam: "p_task_id" },
 };
 
 function buildRpcPayload(item: QueueItem) {

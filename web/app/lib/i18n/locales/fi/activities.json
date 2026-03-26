@@ -222,7 +222,32 @@
       "created": "Luotu:",
       "distance": "Matka:",
       "startActivity": "Aloita aktiviteetti",
-      "mobileOnly": "Pohjat voi käynnistää vain mobiilisovelluksesta"
+      "mobileOnly": "Pohjat voi käynnistää vain mobiilisovelluksesta",
+      "timesCompleted": "Suoritettu {{count}} kertaa",
+      "lastCompleted": "Viimeisin",
+      "avgDuration": "Keskim. kesto",
+      "avgPace": "Keskim. vauhti",
+      "avgSpeed": "Keskim. nopeus",
+      "avgDistance": "Keskim. matka"
+    },
+    "templateHistory": {
+      "loading": "Ladataan historiaa...",
+      "loadError": "Pohjan historian lataus epäonnistui. Yritä myöhemmin uudelleen.",
+      "noHistory": "Tälle pohjalle ei ole vielä tallennettuja sessioita.",
+      "personalBests": "Henkilökohtaiset ennätykset",
+      "personalBest": "Henkilökohtainen ennätys",
+      "fastestPace": "Nopein vauhti",
+      "shortestDuration": "Lyhin kesto",
+      "metricPace": "Vauhti",
+      "metricDuration": "Kesto",
+      "metricSpeed": "Nopeus",
+      "metricCalories": "Kalorit",
+      "metricSteps": "Askeleet",
+      "range1m": "1K",
+      "range3m": "3K",
+      "range6m": "6K",
+      "range1y": "1V",
+      "noChartData": "Ei tarpeeksi datapisteitä kaavion näyttämiseen"
     },
     "editTemplateScreen": {
       "title": "Muokkaa pohjaa",

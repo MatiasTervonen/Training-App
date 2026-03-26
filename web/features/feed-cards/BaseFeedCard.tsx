@@ -2,7 +2,7 @@
 
 import { Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "@/components/dropdownMenu";
-import { formatDate, formatDateShort } from "@/lib/formatDate";
+import { formatDateShort } from "@/lib/formatDate";
 import { FeedCardProps } from "@/types/session";
 import { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -77,7 +77,7 @@ export default function BaseFeedCard({
       >
         {/* Header - title + menu */}
         <div className="flex justify-between items-center px-4 pt-2 pb-1">
-          <div className="flex-1 mr-4 text-lg line-clamp-1 text-gray-100">
+          <div className="flex-1 mr-4 text-base line-clamp-1 text-gray-100">
             {item.title}
           </div>
           <DropdownMenu
@@ -103,15 +103,6 @@ export default function BaseFeedCard({
           {statsContent}
         </div>
 
-        {/* Updated timestamp (optional) */}
-        {showUpdatedAt && item.updated_at && (
-          <div className="px-4 pb-1">
-            <p className="text-sm font-body text-slate-400">
-              {t("feed.card.updated")} {formatDate(item.updated_at)}
-            </p>
-          </div>
-        )}
-
         {/* Footer - type, date, details */}
         <div className="flex items-center justify-between bg-slate-900/40 px-4 py-2">
           <div className="flex items-center gap-2">
@@ -119,7 +110,9 @@ export default function BaseFeedCard({
             <span className="text-slate-400 text-sm">{typeName}</span>
             <span className="text-slate-500 text-sm">·</span>
             <span className="text-slate-400 text-sm">
-              {formatDateShort(item.created_at)}
+              {showUpdatedAt && item.updated_at
+                ? formatDateShort(item.updated_at)
+                : formatDateShort(item.created_at)}
             </span>
           </div>
           <button

@@ -11,6 +11,9 @@ Developer docs: `web/app/content/docs/` — covers backend (edge functions, migr
 ## Terminal Commands
 Every command run in the terminal must include a short explanation of what it does. This applies to all commands — git, npm, pnpm, supabase, or anything else.
 
+## Memory
+- Never write to the memory system. Do not create, update, or use memory files under `.claude/projects/*/memory/`.
+
 ## Tool Usage
 - Never use `find`, `ls`, `cat`, `head`, `tail`, or `grep` via Bash when the dedicated Glob, Read, or Grep tools can do the job. These tools don't require Bash permissions and are faster.
 - Only use Bash for commands that have no dedicated tool equivalent (e.g., git, npm, pnpm, supabase CLI).

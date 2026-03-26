@@ -5,7 +5,7 @@ import { saveSharedFood } from "@/database/nutrition/save-shared-food";
 import type { NutritionSearchResult } from "@/features/nutrition/hooks/useFoodSearch";
 import type { FoodItem } from "@/database/nutrition/lookup-barcode";
 
-function mapFoodItem(f: FoodItem): NutritionSearchResult {
+export function mapFoodItem(f: FoodItem): NutritionSearchResult {
   return {
     id: f.id,
     name: f.name,

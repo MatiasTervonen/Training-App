@@ -6,7 +6,7 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from "react-native";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { FeedSkeleton } from "@/components/skeletetons";
 import FeedFooter from "@/features/feed/FeedFooter";
@@ -28,14 +28,24 @@ import FloatingActionButton from "@/components/buttons/FloatingActionButton";
 import { Plus, ClipboardList } from "lucide-react-native";
 import type { TodoFilter } from "@/database/todo/get-todo-sessions";
 import AppTextNC from "@/components/AppTextNC";
+import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 
 type TodoExtraFields = { completed?: number; total?: number } | null;
 
 const FILTERS: TodoFilter[] = ["active", "completed", "all"];
 
 export default function TodoScreen() {
-  const { t } = useTranslation("todo");
+  const { t } = useTranslation(["todo", "common"]);
   const router = useRouter();
+  const setModalPageConfig = useModalPageConfig((s) => s.setModalPageConfig);
+
+  useEffect(() => {
+    setModalPageConfig({
+      rightLabel: t("common:navigation.new"),
+      onSwipeLeft: () => router.push("/todo/create-todo"),
+    });
+    return () => setModalPageConfig(null);
+  }, [router, setModalPageConfig, t]);
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);

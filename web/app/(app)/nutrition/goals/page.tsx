@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, X } from "lucide-react";
 import CustomInput from "@/ui/CustomInput";
@@ -34,23 +34,21 @@ export default function NutritionGoalsPage() {
   const [newMealType, setNewMealType] = useState("");
 
   const hasInitialized = useRef(false);
-  useEffect(() => {
-    if (goals && !hasInitialized.current) {
-      hasInitialized.current = true;
-      setCalorieGoal(String(goals.calorie_goal ?? 2000));
-      setProteinGoal(goals.protein_goal ? String(goals.protein_goal) : "");
-      setCarbsGoal(goals.carbs_goal ? String(goals.carbs_goal) : "");
-      setFatGoal(goals.fat_goal ? String(goals.fat_goal) : "");
-      setFiberGoal(goals.fiber_goal ? String(goals.fiber_goal) : "");
-      setSugarGoal(goals.sugar_goal ? String(goals.sugar_goal) : "");
-      setSodiumGoal(goals.sodium_goal ? String(goals.sodium_goal) : "");
-      setSaturatedFatGoal(
-        goals.saturated_fat_goal ? String(goals.saturated_fat_goal) : "",
-      );
-      setVisibleNutrients(goals.visible_nutrients ?? []);
-      setCustomMealTypes(goals.custom_meal_types ?? []);
-    }
-  }, [goals]);
+  if (goals && !hasInitialized.current) {
+    hasInitialized.current = true;
+    setCalorieGoal(String(goals.calorie_goal ?? 2000));
+    setProteinGoal(goals.protein_goal ? String(goals.protein_goal) : "");
+    setCarbsGoal(goals.carbs_goal ? String(goals.carbs_goal) : "");
+    setFatGoal(goals.fat_goal ? String(goals.fat_goal) : "");
+    setFiberGoal(goals.fiber_goal ? String(goals.fiber_goal) : "");
+    setSugarGoal(goals.sugar_goal ? String(goals.sugar_goal) : "");
+    setSodiumGoal(goals.sodium_goal ? String(goals.sodium_goal) : "");
+    setSaturatedFatGoal(
+      goals.saturated_fat_goal ? String(goals.saturated_fat_goal) : "",
+    );
+    setVisibleNutrients(goals.visible_nutrients ?? []);
+    setCustomMealTypes(goals.custom_meal_types ?? []);
+  }
 
   const toggleNutrient = (key: string) => {
     setVisibleNutrients((prev) =>

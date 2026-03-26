@@ -10,6 +10,8 @@ export interface UserProfile {
   profile_picture: string | null;
   role: string;
   height_cm: number | null;
+  birth_date: string | null;
+  gender: string | null;
 }
 
 export interface UserSettings {

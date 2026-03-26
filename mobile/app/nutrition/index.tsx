@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { View, ScrollView, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
@@ -16,17 +16,28 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Plus, Settings, ChevronLeft, ChevronRight, Share2 } from "lucide-react-native";
 import FoodDetailSheet from "@/features/nutrition/components/FoodDetailSheet";
+import EnergyBalanceCard from "@/features/energy-balance/components/EnergyBalanceCard";
 import { useToggleFavorite } from "@/features/nutrition/hooks/useToggleFavorite";
 import { useFavorites } from "@/features/nutrition/hooks/useFavorites";
 import { getTrackingDate } from "@/lib/formatDate";
+import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import type { DailyFoodLog } from "@/database/nutrition/get-daily-logs";
 
 const DEFAULT_MEALS = ["breakfast", "lunch", "dinner", "snack"];
 
 export default function NutritionScreen() {
-  const { t } = useTranslation("nutrition");
+  const { t } = useTranslation(["nutrition", "common"]);
   const router = useRouter();
   const [date, setDate] = useState(() => getTrackingDate());
+  const setModalPageConfig = useModalPageConfig((s) => s.setModalPageConfig);
+
+  useEffect(() => {
+    setModalPageConfig({
+      rightLabel: t("common:navigation.log"),
+      onSwipeLeft: () => router.push(`/nutrition/log?date=${date}`),
+    });
+    return () => setModalPageConfig(null);
+  }, [router, setModalPageConfig, t, date]);
   const [selectedLog, setSelectedLog] = useState<DailyFoodLog | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
@@ -190,18 +201,22 @@ export default function NutritionScreen() {
           {/* Header */}
           <View className="flex-row justify-between items-center mb-4">
             <AppText className="text-xl">{t("title")}</AppText>
-            <View className="flex-row items-center gap-4">
+            <View className="flex-row items-center gap-3">
               <AnimatedButton
                 onPress={() => setIsShareModalOpen(true)}
-                hitSlop={10}
+                className="btn-base"
               >
-                <Share2 size={20} color="#9ca3af" />
+                <View className="px-1 py-0.5">
+                  <Share2 size={18} color="#94a3b8" />
+                </View>
               </AnimatedButton>
               <AnimatedButton
                 onPress={() => router.push("/nutrition/goals")}
-                hitSlop={10}
+                className="btn-base"
               >
-                <Settings size={22} color="#94a3b8" />
+                <View className="px-1 py-0.5">
+                  <Settings size={18} color="#94a3b8" />
+                </View>
               </AnimatedButton>
             </View>
           </View>
@@ -241,6 +256,9 @@ export default function NutritionScreen() {
             saturatedFatGoal={saturatedFatGoal}
             visibleNutrients={visibleNutrients}
           />
+
+          {/* Energy Balance */}
+          <EnergyBalanceCard date={date} />
 
           {/* Meal sections */}
           {logs === undefined ? (

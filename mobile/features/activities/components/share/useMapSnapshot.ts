@@ -209,6 +209,19 @@ export default function useMapSnapshot(
     };
   }, []);
 
+  const markersClose = useMemo(() => {
+    if (allCoordinates.length < 2 || !bounds) return false;
+    const start = allCoordinates[0];
+    const end = allCoordinates[allCoordinates.length - 1];
+    const mapSpan = Math.sqrt(
+      (bounds.ne[0] - bounds.sw[0]) ** 2 + (bounds.ne[1] - bounds.sw[1]) ** 2,
+    );
+    const dist = Math.sqrt(
+      (start[0] - end[0]) ** 2 + (start[1] - end[1]) ** 2,
+    );
+    return mapSpan === 0 || dist / mapSpan < 0.05;
+  }, [allCoordinates, bounds]);
+
   return {
     mapViewRef,
     mapSnapshotUri,
@@ -216,6 +229,7 @@ export default function useMapSnapshot(
     routeFeature,
     bounds,
     startEndGeoJSON,
+    markersClose,
     onMapDidFinishLoading,
     onMapIdle,
     noLabelsStyleJSON,

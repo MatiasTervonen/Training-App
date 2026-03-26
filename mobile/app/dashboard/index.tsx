@@ -23,6 +23,7 @@ export default function FeedScreen() {
       onSwipeLeft: () => router.push("/sessions"),
       onSwipeRight: () => router.push("/menu"),
     });
+    return () => setModalPageConfig(null);
   }, [router, setModalPageConfig, t]);
 
   return (

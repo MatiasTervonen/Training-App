@@ -1,6 +1,6 @@
 import AppText from "@/components/AppText";
 import { View, FlatList, RefreshControl } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { FeedSkeleton } from "@/components/skeletetons";
@@ -29,13 +29,23 @@ import { SESSION_COLORS } from "@/lib/sessionColors";
 import type { ReminderFilter } from "@/database/reminders/get-reminders-feed";
 import BodyTextNC from "@/components/BodyTextNC";
 import AppTextNC from "@/components/AppTextNC";
+import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 
 const FILTERS: ReminderFilter[] = ["upcoming", "delivered"];
 
 export default function RemindersScreen() {
-  const { t } = useTranslation("reminders");
+  const { t } = useTranslation(["reminders", "common"]);
   const colors = SESSION_COLORS.reminders;
   const router = useRouter();
+  const setModalPageConfig = useModalPageConfig((s) => s.setModalPageConfig);
+
+  useEffect(() => {
+    setModalPageConfig({
+      rightLabel: t("common:navigation.new"),
+      onSwipeLeft: () => router.push("/reminders/create-reminder"),
+    });
+    return () => setModalPageConfig(null);
+  }, [router, setModalPageConfig, t]);
   const queryClient = useQueryClient();
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);

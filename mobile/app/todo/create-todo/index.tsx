@@ -6,7 +6,7 @@ import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
-import { saveTodoToDB } from "@/database/todo/save-todo";
+import { saveTodoWithoutMedia } from "@/database/todo/save-todo";
 import AppInput from "@/components/AppInput";
 import { useQueryClient } from "@tanstack/react-query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -27,7 +27,6 @@ export default function CreateTodo() {
   const now = formatDateShort(new Date());
 
   const [loading, setLoading] = useState(false);
-  const [savingProgress, setSavingProgress] = useState<number | undefined>(undefined);
   const [title, setTitle] = useState(`${t("todo.title")} - ${now}`);
   const [todoList, setTodoList] = useState<TodoItem[]>([]);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -92,9 +91,8 @@ export default function CreateTodo() {
       return;
     }
     setLoading(true);
-    setSavingProgress(undefined);
     try {
-      await saveTodoToDB({ title, todoList, onProgress: setSavingProgress });
+      const { hasMedia } = await saveTodoWithoutMedia({ title, todoList });
       await queryClient.invalidateQueries({ queryKey: ["feed"], exact: true });
       await queryClient.invalidateQueries({ queryKey: ["myTodoLists"] });
       router.push("/dashboard");
@@ -104,6 +102,12 @@ export default function CreateTodo() {
         text1: t("common:common.success"),
         text2: t("todo.saveSuccess"),
       });
+      if (hasMedia) {
+        Toast.show({
+          type: "info",
+          text1: t("common:common.media.uploadingBackground"),
+        });
+      }
     } catch {
       Toast.show({
         type: "error",
@@ -258,8 +262,7 @@ export default function CreateTodo() {
 
             <FullScreenLoader
               visible={loading}
-              message={savingProgress !== undefined ? t("common:common.media.uploading") : t("todo.savingTodoList")}
-              progress={savingProgress}
+              message={t("todo.savingTodoList")}
             />
           </PageContainer>
         </Pressable>

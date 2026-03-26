@@ -1,17 +1,30 @@
 "use client";
 
-import { formatDate, formatMeters } from "@/lib/formatDate";
+import {
+  formatDate,
+  formatMeters,
+  formatDurationLong,
+  formatAveragePace,
+  formatSpeed,
+  formatDateShort,
+  getDistanceUnitLabels,
+} from "@/lib/formatDate";
 import { templateSummary } from "@/types/models";
 import { useTranslation } from "react-i18next";
 import { useCallback } from "react";
+import { History } from "lucide-react";
 import TemplateMap from "@/features/activities/templates/TemplateMap";
+import { StatCard } from "@/components/StatCard";
+import { ModalSwipeBlocker } from "@/components/modal";
 
 type Props = {
   item: templateSummary;
+  onHistory: () => void;
 };
 
-export default function ActivityTemplateExpanded({ item }: Props) {
+export default function ActivityTemplateExpanded({ item, onHistory }: Props) {
   const { t } = useTranslation("activities");
+  const labels = getDistanceUnitLabels();
 
   const getActivityName = useCallback(
     (activity: templateSummary["activity"]) => {
@@ -31,6 +44,8 @@ export default function ActivityTemplateExpanded({ item }: Props) {
     [t]
   );
 
+  const hasStats = item.template.times_completed > 0;
+
   return (
     <div className="p-5 overflow-y-auto max-w-md mx-auto">
       <div className="text-sm text-gray-300 text-center">
@@ -45,9 +60,18 @@ export default function ActivityTemplateExpanded({ item }: Props) {
       )}
 
       <div className="bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 rounded-lg overflow-hidden shadow-md mt-5">
-        <h2 className="text-xl text-center mb-5 border-b border-gray-700  my-5 w-fit mx-auto">
-          {item.template.name}
-        </h2>
+        <div className="flex items-center justify-center border-b border-gray-700 my-5 mx-4 pb-2">
+          <h2 className="text-xl flex-1 text-center">
+            {item.template.name}
+          </h2>
+          <button
+            onClick={onHistory}
+            className="cursor-pointer text-gray-400 hover:text-gray-200 transition-colors"
+            aria-label="View history"
+          >
+            <History size={20} />
+          </button>
+        </div>
         <p className="text-lg text-center mb-5">{getActivityName(item.activity)}</p>
         {item.template.distance_meters && (
           <p className="text-xl text-center mb-5">
@@ -64,7 +88,53 @@ export default function ActivityTemplateExpanded({ item }: Props) {
 
       {item.route && item.route.coordinates.length > 0 && (
         <div className="mt-10">
-          <TemplateMap template={item} />
+          <ModalSwipeBlocker>
+            <TemplateMap template={item} />
+          </ModalSwipeBlocker>
+        </div>
+      )}
+
+      {hasStats && (
+        <div className="bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 p-4 rounded-lg overflow-hidden shadow-md mt-5">
+          <p className="text-base text-gray-200 text-center mb-1">
+            {t("activities.templatesScreen.timesCompleted", {
+              count: item.template.times_completed,
+            })}
+          </p>
+          {item.template.last_completed_at && (
+            <p className="text-sm text-gray-400 text-center mb-3 font-body">
+              {t("activities.templatesScreen.lastCompleted")}:{" "}
+              {formatDateShort(item.template.last_completed_at)}
+            </p>
+          )}
+          <div className="flex gap-2 mb-2">
+            {item.template.avg_duration != null && (
+              <StatCard
+                label={t("activities.templatesScreen.avgDuration")}
+                value={formatDurationLong(Math.round(item.template.avg_duration))}
+              />
+            )}
+            {item.template.avg_pace != null && (
+              <StatCard
+                label={t("activities.templatesScreen.avgPace")}
+                value={`${formatAveragePace(item.template.avg_pace)} ${labels.pace}`}
+              />
+            )}
+          </div>
+          <div className="flex gap-2">
+            {item.template.avg_distance != null && (
+              <StatCard
+                label={t("activities.templatesScreen.avgDistance")}
+                value={formatMeters(item.template.avg_distance)}
+              />
+            )}
+            {item.template.avg_speed != null && (
+              <StatCard
+                label={t("activities.templatesScreen.avgSpeed")}
+                value={formatSpeed(item.template.avg_speed)}
+              />
+            )}
+          </div>
         </div>
       )}
 

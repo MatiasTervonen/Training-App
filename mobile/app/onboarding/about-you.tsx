@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { supabase } from "@/lib/supabase";
+import DatePicker from "react-native-date-picker";
 
 export default function AboutYouScreen() {
   const router = useRouter();
@@ -33,6 +34,9 @@ export default function AboutYouScreen() {
   const [heightUnit, setHeightUnit] = useState<"cm" | "ft">(
     i18n.language === "fi" ? "cm" : "ft",
   );
+  const [gender, setGender] = useState<"male" | "female" | null>(null);
+  const [birthDate, setBirthDate] = useState<Date | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleContinue = async () => {
     const profileUpdates: Record<string, string | number | null> = {
@@ -74,6 +78,13 @@ export default function AboutYouScreen() {
           console.error("Failed to save starting weight:", error);
         }
       }
+    }
+
+    if (gender) {
+      profileUpdates.gender = gender;
+    }
+    if (birthDate) {
+      profileUpdates.birth_date = birthDate.toISOString().split("T")[0];
     }
 
     useUserStore.getState().setUserProfile(profileUpdates);
@@ -263,6 +274,80 @@ export default function AboutYouScreen() {
                 <AppText className="text-xl ml-3 text-slate-400">cm</AppText>
               </View>
             )}
+
+            {/* Gender section */}
+            <AppText className="text-lg text-center mb-3">
+              {t("aboutYou.genderTitle")}
+            </AppText>
+            <View className="flex-row justify-center mb-6 gap-3">
+              <AnimatedButton
+                onPress={() => setGender("male")}
+                className={`w-24 py-2 rounded-lg border-[1.5px] items-center ${
+                  gender === "male"
+                    ? "bg-blue-900/40 border-blue-500"
+                    : "bg-slate-800 border-slate-700"
+                }`}
+              >
+                <AppText
+                  className={gender === "male" ? "text-blue-400" : "text-slate-400"}
+                >
+                  {t("aboutYou.genderMale")}
+                </AppText>
+              </AnimatedButton>
+              <AnimatedButton
+                onPress={() => setGender("female")}
+                className={`w-24 py-2 rounded-lg border-[1.5px] items-center ${
+                  gender === "female"
+                    ? "bg-blue-900/40 border-blue-500"
+                    : "bg-slate-800 border-slate-700"
+                }`}
+              >
+                <AppText
+                  className={gender === "female" ? "text-blue-400" : "text-slate-400"}
+                >
+                  {t("aboutYou.genderFemale")}
+                </AppText>
+              </AnimatedButton>
+            </View>
+
+            {/* Birth date section */}
+            <AppText className="text-lg text-center mb-3">
+              {t("aboutYou.birthDateTitle")}
+            </AppText>
+            <View className="items-center mb-6">
+              <AnimatedButton
+                onPress={() => setShowDatePicker(true)}
+                className="bg-slate-800 border-[1.5px] border-slate-700 rounded-lg py-2 px-6"
+              >
+                <AppText className="text-xl text-center">
+                  {birthDate
+                    ? birthDate.toLocaleDateString(i18n.language, {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })
+                    : t("aboutYou.birthDatePlaceholder")}
+                </AppText>
+              </AnimatedButton>
+              <DatePicker
+                modal
+                mode="date"
+                open={showDatePicker}
+                date={birthDate ?? new Date(1995, 0, 1)}
+                maximumDate={new Date()}
+                minimumDate={new Date(1920, 0, 1)}
+                onConfirm={(date) => {
+                  setShowDatePicker(false);
+                  setBirthDate(date);
+                }}
+                onCancel={() => setShowDatePicker(false)}
+                theme="dark"
+                locale={i18n.language}
+                title={t("common:datePicker.selectDate")}
+                confirmText={t("common:datePicker.confirm")}
+                cancelText={t("common:datePicker.cancel")}
+              />
+            </View>
           </View>
         </KeyboardAwareScrollView>
 

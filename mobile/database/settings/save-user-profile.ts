@@ -7,6 +7,8 @@ export async function saveUserProfile(updates: {
   distance_unit: string;
   profile_picture: string | null;
   height_cm?: number | null;
+  birth_date?: string | null;
+  gender?: string | null;
 }) {
   const {
     data: { session },

@@ -55,24 +55,27 @@ export default function DailySummary(props: DailySummaryProps) {
       />
 
       {/* Macro rings row */}
-      <div className="flex justify-center gap-4 mt-2">
+      <div className="flex justify-evenly w-full mt-2">
         <MacroRing
           label={t("daily.protein")}
           current={props.protein}
           goal={props.proteinGoal}
-          color="#3b82f6"
+          color="#38bdf8"
+          totalMacros={props.protein + props.carbs + props.fat}
         />
         <MacroRing
           label={t("daily.carbs")}
           current={props.carbs}
           goal={props.carbsGoal}
           color="#f59e0b"
+          totalMacros={props.protein + props.carbs + props.fat}
         />
         <MacroRing
           label={t("daily.fat")}
           current={props.fat}
           goal={props.fatGoal}
           color="#f43f5e"
+          totalMacros={props.protein + props.carbs + props.fat}
         />
       </div>
 

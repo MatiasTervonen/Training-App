@@ -62,8 +62,13 @@ export default function FullScreenMapModal({
   const lats = allCoordinates.map((c) => c[1]);
 
   const ne: [number, number] = [Math.max(...lons), Math.max(...lats)];
-
   const sw: [number, number] = [Math.min(...lons), Math.min(...lats)];
+
+  const mapSpan = Math.sqrt((ne[0] - sw[0]) ** 2 + (ne[1] - sw[1]) ** 2);
+  const startEndDist = Math.sqrt(
+    (start[0] - end[0]) ** 2 + (start[1] - end[1]) ** 2,
+  );
+  const markersClose = mapSpan === 0 || startEndDist / mapSpan < 0.05;
 
   const startEndGeoJSON = {
     type: "FeatureCollection",
@@ -189,6 +194,17 @@ export default function FullScreenMapModal({
                   iconAnchor: "bottom",
                   iconAllowOverlap: true,
                   iconIgnorePlacement: true,
+                  ...(markersClose && {
+                    iconOffset: [
+                      "match",
+                      ["get", "type"],
+                      "start",
+                      ["literal", [-83, 0]],
+                      "end",
+                      ["literal", [83, 0]],
+                      ["literal", [0, 0]],
+                    ],
+                  }),
                 }}
               />
             </Mapbox.ShapeSource>

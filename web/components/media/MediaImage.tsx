@@ -29,6 +29,7 @@ export default function MediaImage({ image }: MediaImageProps) {
 
       {fullscreen && (
         <div
+          data-swipe-block
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center cursor-pointer"
           onClick={() => setFullscreen(false)}
         >

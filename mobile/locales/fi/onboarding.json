@@ -58,6 +58,11 @@
     "heightFtPlaceholder": "5",
     "heightInPlaceholder": "9",
     "startingWeight": "Aloituspaino",
+    "genderTitle": "Sukupuoli",
+    "genderMale": "Mies",
+    "genderFemale": "Nainen",
+    "birthDateTitle": "Syntymäpäivä",
+    "birthDatePlaceholder": "Valitse päivämäärä",
     "continue": "Jatka"
   },
   "preferences": {

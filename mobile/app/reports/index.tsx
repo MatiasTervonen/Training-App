@@ -1,4 +1,5 @@
 import { View, ScrollView } from "react-native";
+import { useEffect } from "react";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -10,10 +11,20 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Toast from "react-native-toast-message";
 import { Plus, FileText } from "lucide-react-native";
+import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 
 export default function ReportsScreen() {
-  const { t } = useTranslation("reports");
+  const { t } = useTranslation(["reports", "common"]);
   const router = useRouter();
+  const setModalPageConfig = useModalPageConfig((s) => s.setModalPageConfig);
+
+  useEffect(() => {
+    setModalPageConfig({
+      rightLabel: t("common:navigation.new"),
+      onSwipeLeft: () => router.push("/reports/create"),
+    });
+    return () => setModalPageConfig(null);
+  }, [router, setModalPageConfig, t]);
   const { data: schedules = [] } = useReportSchedules();
   const deleteMutation = useDeleteReportSchedule();
 

@@ -43,7 +43,12 @@
     "noFavorites": "Ei suosikkeja",
     "noFavoritesDesc": "Lisää ruokia suosikkeihin kirjatessasi",
     "noRecent": "Ei viimeaikaisia ruokia",
-    "noRecentDesc": "Kirjaamasi ruoat näkyvät täällä"
+    "noRecentDesc": "Kirjaamasi ruoat näkyvät täällä",
+    "pendingDraftTitle": "Sinulla on keskeneräinen tuote",
+    "continueDraft": "Jatka lisäämistä",
+    "draftConflictTitle": "Keskeneräinen tuote",
+    "draftConflictDesc": "Sinulla on keskeneräinen tuote \"{{name}}\". Hylätäänkö se ja aloitetaan uusi?",
+    "draftConflictDiscard": "Hylkää ja aloita uusi"
   },
   "detail": {
     "servingSize": "Annoskoko (g)",
@@ -105,7 +110,10 @@
     "addImage": "Kuva",
     "addImages": "Lisää kuvat",
     "frontImage": "Etupuoli",
-    "nutritionLabel": "Ravintoarvot"
+    "nutritionLabel": "Ravintoarvot",
+    "alreadyAddedTitle": "Joku lisäsi juuri tämän tuotteen!",
+    "alreadyAddedDesc": "Toinen käyttäjä lisäsi tämän tuotteen kun täytit tietoja. Voit käyttää olemassa olevaa merkintää.",
+    "useExisting": "Käytä olemassa olevaa"
   },
   "savedMeals": {
     "title": "Tallennetut ateriat",
@@ -151,6 +159,18 @@
     "saveSuccess": "Kortti tallennettu galleriaan",
     "saveError": "Kortin tallennus epäonnistui",
     "shareError": "Kortin jakaminen epäonnistui"
+  },
+  "energyBalance": {
+    "title": "Energiatasapaino",
+    "deficit": "alijäämä",
+    "surplus": "ylijäämä",
+    "caloriesIn": "Kalorit sisään",
+    "bmr": "BMR (Lepo)",
+    "exercise": "Liikunta",
+    "steps": "Askeleet",
+    "tef": "Ruoansulatus (TEF)",
+    "totalBurn": "Kokonaiskulutus",
+    "completeProfile": "Lisää syntymäpäivä ja sukupuoli profiilissa tarkempaa laskentaa varten"
   },
   "toast": {
     "logged": "Ruoka kirjattu",

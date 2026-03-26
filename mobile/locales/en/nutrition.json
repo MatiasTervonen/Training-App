@@ -43,7 +43,12 @@
     "noFavorites": "No favorites yet",
     "noFavoritesDesc": "Heart foods when logging to add them here",
     "noRecent": "No recent foods",
-    "noRecentDesc": "Foods you log will appear here"
+    "noRecentDesc": "Foods you log will appear here",
+    "pendingDraftTitle": "You have an unfinished product",
+    "continueDraft": "Continue adding",
+    "draftConflictTitle": "Unfinished product",
+    "draftConflictDesc": "You have an unfinished product \"{{name}}\". Discard it and start a new one?",
+    "draftConflictDiscard": "Discard and start new"
   },
   "detail": {
     "servingSize": "Serving size (g)",
@@ -105,7 +110,10 @@
     "addImage": "Photo",
     "addImages": "Add images",
     "frontImage": "Front",
-    "nutritionLabel": "Nutrition label"
+    "nutritionLabel": "Nutrition label",
+    "alreadyAddedTitle": "Someone just added this product!",
+    "alreadyAddedDesc": "Another user added this product while you were filling in the details. You can use the existing entry instead.",
+    "useExisting": "Use existing product"
   },
   "savedMeals": {
     "title": "Saved Meals",
@@ -151,6 +159,18 @@
     "saveSuccess": "Card saved to gallery",
     "saveError": "Failed to save card",
     "shareError": "Failed to share card"
+  },
+  "energyBalance": {
+    "title": "Energy Balance",
+    "deficit": "deficit",
+    "surplus": "surplus",
+    "caloriesIn": "Calories In",
+    "bmr": "BMR (Resting)",
+    "exercise": "Exercise",
+    "steps": "Steps",
+    "tef": "Digestion (TEF)",
+    "totalBurn": "Total Burn",
+    "completeProfile": "Add birth date & gender in profile for better accuracy"
   },
   "toast": {
     "logged": "Food logged",

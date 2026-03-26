@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { full_todo_session_optional_id, FeedItemUI } from "@/types/session";
-import { editTodo } from "@/database/todo/edit-todo";
+import { editTodoWithoutMedia } from "@/database/todo/edit-todo";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { View, Pressable, Keyboard, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
@@ -216,7 +216,7 @@ export default function EditTodo({
       .map((task, index) => ({ task, position: index }))
       .filter(({ task }) => task.task.trim().length > 0);
 
-    const updatedFeedItem = await editTodo({
+    const { feedItem, newTaskIds } = await editTodoWithoutMedia({
       id: current.id,
       title: current.title,
       tasks: nonEmptyTasks.map(({ task, position }) => ({
@@ -240,10 +240,9 @@ export default function EditTodo({
       deletedVideoPaths,
     });
 
-    // After save: assign tempId as id for new tasks so the next auto-save
+    // After save: assign real DB IDs for new tasks so the next auto-save
     // uses the UPDATE path instead of INSERT (prevents duplicate tasks).
-    // Clear draft media for new tasks to prevent re-upload on the next save
-    // triggered by the id change. Only for tasks that were actually saved.
+    // Clear draft media for new tasks to prevent re-enqueue on the next save.
     const savedTempIds = new Set(
       nonEmptyTasks.map(({ task }) => task.tempId),
     );
@@ -256,7 +255,7 @@ export default function EditTodo({
           ? task
           : {
               ...task,
-              id: task.tempId,
+              id: newTaskIds[task.tempId] ?? task.tempId,
               draftRecordings: [],
               draftImages: [],
               draftVideos: [],
@@ -280,7 +279,7 @@ export default function EditTodo({
     // and clearing would change autoSaveData, triggering a second save cycle.
     // Re-sending already-deleted IDs is a no-op in the RPC.
 
-    onSave({ ...updatedFeedItem, feed_context: todo_session.feed_context });
+    onSave({ ...feedItem as FeedItemUI, feed_context: todo_session.feed_context });
   }, [
     deletedIds,
     deletedVoiceIds,

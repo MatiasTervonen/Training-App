@@ -1,10 +1,10 @@
-import { View, Pressable, Alert } from "react-native";
-import AppText from "@/components/AppText";
+import { View, Alert } from "react-native";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
-import AppInput from "@/components/AppInput";
 import { useTranslation } from "react-i18next";
+import AnimatedButton from "@/components/buttons/animatedButton";
+import { Camera } from "lucide-react-native";
 
 type UploadFile = {
   uri: string;
@@ -15,15 +15,19 @@ type UploadFile = {
 type Props = {
   data?: string | null;
   onFileSelected?: (file: UploadFile | null) => void;
+  size?: number;
 };
 
-export default function ProfilePicture({ data, onFileSelected }: Props) {
+export default function ProfilePicture({
+  data,
+  onFileSelected,
+  size = 100,
+}: Props) {
   const { t } = useTranslation("menu");
   const [imageUri, setImageUri] = useState<string>(data || "");
   const [fileName, setFileName] = useState<string>(
     data ? data.split("/").pop() || "image.jpg" : "",
   );
-  const [userPickedImage, setUserPickedImage] = useState(false);
 
   const [prevData, setPrevData] = useState(data);
   if (data !== prevData) {
@@ -48,7 +52,7 @@ export default function ProfilePicture({ data, onFileSelected }: Props) {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
       quality: 1,
     });
 
@@ -65,24 +69,21 @@ export default function ProfilePicture({ data, onFileSelected }: Props) {
             ? "image/jpeg"
             : "application/octet-stream");
 
-      setUserPickedImage(true);
       setImageUri(uri);
       setFileName(name);
 
       if (onFileSelected) {
-        onFileSelected({
-          uri,
-          name,
-          type,
-        });
+        onFileSelected({ uri, name, type });
       }
     }
   };
 
   return (
-    <>
-      <AppText>{t("profile.profilePictureLabel")}</AppText>
-      <View className="w-[80px] h-[80px] rounded-full items-center justify-center my-4">
+    <AnimatedButton onPress={pickImage} className="items-center justify-center">
+      <View
+        style={{ width: size, height: size }}
+        className="rounded-full items-center justify-center"
+      >
         <Image
           source={
             fileName
@@ -93,17 +94,11 @@ export default function ProfilePicture({ data, onFileSelected }: Props) {
           contentFit="cover"
           alt="Profile Picture"
         />
-      </View>
-      <Pressable onPress={pickImage}>
-        <View pointerEvents="none">
-          <AppInput
-            placeholderTextColor={"#f3f4f6"}
-            editable={false}
-            placeholder={t("profile.profilePicturePlaceholder")}
-            value={userPickedImage ? fileName : ""}
-          />
+        {/* Camera overlay */}
+        <View className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-blue-500 items-center justify-center border-2 border-slate-900">
+          <Camera size={14} color="#fff" />
         </View>
-      </Pressable>
-    </>
+      </View>
+    </AnimatedButton>
   );
 }

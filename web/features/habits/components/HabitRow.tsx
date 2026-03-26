@@ -71,7 +71,8 @@ export default function HabitRow({
       displayAccumulated = accumulated + elapsedTime;
     }
 
-    const progress = targetSeconds > 0 ? Math.min(displayAccumulated / targetSeconds, 1) : 0;
+    const remaining = Math.max(0, targetSeconds - displayAccumulated);
+    const remainingRatio = targetSeconds > 0 ? remaining / targetSeconds : 0;
 
     return (
       <div className="flex flex-col gap-2 py-3 px-4 rounded-lg bg-slate-800/50 border border-slate-700">
@@ -113,16 +114,18 @@ export default function HabitRow({
           {completed && <Check size={22} className="text-green-500" />}
         </div>
 
-        {/* Progress bar */}
+        {/* Countdown progress bar */}
         <div className="flex items-center gap-3">
           <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
             <div
-              className="h-full bg-green-500 rounded-full transition-all"
-              style={{ width: `${progress * 100}%` }}
+              className={`h-full rounded-full transition-all ${completed ? "bg-green-500" : "bg-blue-500"}`}
+              style={{ width: `${(completed ? 1 : remainingRatio) * 100}%` }}
             />
           </div>
           <span className="text-xs font-body text-slate-400 whitespace-nowrap">
-            {formatSeconds(Math.round(displayAccumulated))} / {formatSeconds(targetSeconds)}
+            {completed
+              ? formatSeconds(targetSeconds)
+              : `${formatSeconds(Math.round(remaining))} / ${formatSeconds(targetSeconds)}`}
           </span>
         </div>
       </div>

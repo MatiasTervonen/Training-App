@@ -129,6 +129,17 @@ export const formatAveragePace = (paceSeconds: number) => {
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
 
+export const formatSpeed = (kmh: number) => {
+  return `${kmh.toFixed(1)} km/h`;
+};
+
+export const getDistanceUnitLabels = () => {
+  return {
+    speed: "km/h",
+    pace: "min/km",
+  };
+};
+
 export function formatDurationNotesVoice(ms?: number) {
   if (!ms) return "0:00";
   const s = Math.floor(ms / 1000);

@@ -1,7 +1,9 @@
 import { useState, useCallback, useMemo } from "react";
-import { View, TextInput, Keyboard, Pressable } from "react-native";
+import { View, TextInput, Keyboard, Pressable, Alert } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
+import BodyTextNC from "@/components/BodyTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import PageContainer from "@/components/PageContainer";
 import FoodSearchList from "@/features/nutrition/components/FoodSearchList";
@@ -22,10 +24,12 @@ import { useNutritionGoals } from "@/features/nutrition/hooks/useNutritionGoals"
 import { useSaveMeal } from "@/features/nutrition/hooks/useSaveMeal";
 import { useDeleteSavedMeal } from "@/features/nutrition/hooks/useDeleteSavedMeal";
 import { useLogSavedMeal } from "@/features/nutrition/hooks/useLogSavedMeal";
+import { getPendingDraft, clearPendingDraft } from "@/features/nutrition/hooks/useBarcodeDraft";
+import type { BarcodeDraft } from "@/features/nutrition/hooks/useBarcodeDraft";
 import { saveSharedFood } from "@/database/nutrition/save-shared-food";
 import { useTranslation } from "react-i18next";
-import { useLocalSearchParams } from "expo-router";
-import { Search, ScanLine, Heart, Clock, PenLine, UtensilsCrossed } from "lucide-react-native";
+import { useLocalSearchParams, useFocusEffect } from "expo-router";
+import { Search, ScanLine, Heart, Clock, PenLine, UtensilsCrossed, X } from "lucide-react-native";
 import type { NutritionSearchResult } from "@/features/nutrition/hooks/useFoodSearch";
 import { getTrackingDate } from "@/lib/formatDate";
 import type { SavedMeal } from "@/database/nutrition/get-saved-meals";
@@ -34,6 +38,7 @@ type Tab = "search" | "scan" | "favorites" | "recent" | "custom" | "meals";
 
 export default function LogFoodScreen() {
   const { t } = useTranslation("nutrition");
+  const { t: tCommon } = useTranslation();
   const { date } = useLocalSearchParams<{ date: string }>();
   const loggedAt = date || getTrackingDate();
 
@@ -46,6 +51,14 @@ export default function LogFoodScreen() {
   const [showCreateMeal, setShowCreateMeal] = useState(false);
   const [editingMeal, setEditingMeal] = useState<SavedMeal | null>(null);
   const [loggingMeal, setLoggingMeal] = useState<SavedMeal | null>(null);
+  const [pendingDraft, setPendingDraft] = useState<BarcodeDraft | null>(null);
+
+  // Check for unfinished product draft on focus (not just mount)
+  useFocusEffect(
+    useCallback(() => {
+      getPendingDraft().then((draft) => setPendingDraft(draft));
+    }, []),
+  );
 
   const { results, isSearching } = useFoodSearch(query);
   const { lookup, isLooking } = useBarcodeLookup();
@@ -75,6 +88,12 @@ export default function LogFoodScreen() {
     setShowDetail(true);
   };
 
+  const startAddingProduct = (barcode: string) => {
+    setNotFoundBarcode(barcode);
+    setPendingDraft(null);
+    setActiveTab("custom");
+  };
+
   const handleBarcodeScan = async (barcode: string) => {
     setShowScanner(false);
     setNotFoundBarcode(null);
@@ -82,9 +101,28 @@ export default function LogFoodScreen() {
     if (result) {
       setSelectedFood(result);
       setShowDetail(true);
+    } else if (pendingDraft && pendingDraft.barcode !== barcode && pendingDraft.name) {
+      // There's an existing draft for a different barcode — ask before overwriting
+      Alert.alert(
+        t("log.draftConflictTitle"),
+        t("log.draftConflictDesc", { name: pendingDraft.name }),
+        [
+          {
+            text: t("log.draftConflictDiscard"),
+            style: "destructive",
+            onPress: () => {
+              clearPendingDraft();
+              startAddingProduct(barcode);
+            },
+          },
+          {
+            text: tCommon("common.cancel"),
+            style: "cancel",
+          },
+        ],
+      );
     } else {
-      setNotFoundBarcode(barcode);
-      setActiveTab("custom");
+      startAddingProduct(barcode);
     }
   };
 
@@ -217,6 +255,41 @@ export default function LogFoodScreen() {
     </View>
   );
 
+  const handleContinueDraft = () => {
+    if (!pendingDraft) return;
+    setNotFoundBarcode(pendingDraft.barcode);
+    setActiveTab("custom");
+    setPendingDraft(null);
+  };
+
+  const handleDiscardDraft = () => {
+    clearPendingDraft();
+    setPendingDraft(null);
+  };
+
+  const renderPendingDraftBanner = () => {
+    if (!pendingDraft || activeTab === "custom") return null;
+    const label = pendingDraft.name || pendingDraft.barcode;
+    return (
+      <View className="mx-5 mb-4 bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+        <View className="flex-row items-start justify-between">
+          <View className="flex-1 mr-2">
+            <AppText className="text-sm">{t("log.pendingDraftTitle")}</AppText>
+            <BodyTextNC className="text-xs text-slate-400 mt-1" numberOfLines={1}>
+              {label}
+            </BodyTextNC>
+          </View>
+          <AnimatedButton onPress={handleDiscardDraft} className="p-1">
+            <X size={16} color="#94a3b8" />
+          </AnimatedButton>
+        </View>
+        <AnimatedButton onPress={handleContinueDraft} className="btn-base py-2 mt-2">
+          <AppText className="text-xs" numberOfLines={1}>{t("log.continueDraft")}</AppText>
+        </AnimatedButton>
+      </View>
+    );
+  };
+
   // Custom tab uses KeyboardAwareScrollView wrapping PageContainer (same pattern as notes)
   if (activeTab === "custom") {
     return (
@@ -229,7 +302,17 @@ export default function LogFoodScreen() {
           <PageContainer>
             <AppText className="text-xl text-center mb-4">{t("log.title")}</AppText>
             {renderTabs()}
-            <CustomFoodForm barcode={notFoundBarcode} onSaved={() => { setNotFoundBarcode(null); setActiveTab("search"); }} />
+            <CustomFoodForm
+              barcode={notFoundBarcode}
+              onSaved={() => { setNotFoundBarcode(null); setPendingDraft(null); setActiveTab("search"); }}
+              onExistingFound={(food) => {
+                setNotFoundBarcode(null);
+                setPendingDraft(null);
+                setSelectedFood(food);
+                setShowDetail(true);
+                setActiveTab("search");
+              }}
+            />
           </PageContainer>
         </KeyboardAwareScrollView>
       </View>
@@ -243,6 +326,8 @@ export default function LogFoodScreen() {
         <AppText className="text-xl text-center mb-4">{t("log.title")}</AppText>
         {renderTabs()}
       </Pressable>
+
+      {renderPendingDraftBanner()}
 
       <View className="flex-1 px-5">
         {activeTab === "search" && (

@@ -137,6 +137,7 @@ export default function ActivityShareModal({
     routeFeature,
     bounds,
     startEndGeoJSON,
+    markersClose,
     onMapDidFinishLoading,
     onMapIdle,
     noLabelsStyleJSON,
@@ -424,6 +425,17 @@ export default function ActivityShareModal({
                       iconAnchor: "bottom",
                       iconAllowOverlap: true,
                       iconIgnorePlacement: true,
+                      ...(markersClose && {
+                        iconOffset: [
+                          "match",
+                          ["get", "type"],
+                          "start",
+                          ["literal", [-83, 0]],
+                          "end",
+                          ["literal", [83, 0]],
+                          ["literal", [0, 0]],
+                        ],
+                      }),
                     }}
                   />
                 </Mapbox.ShapeSource>

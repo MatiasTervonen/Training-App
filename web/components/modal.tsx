@@ -1,15 +1,14 @@
 "use client";
 
-import { ReactNode, useRef, useEffect, useState } from "react";
+import { ReactNode, useRef, useEffect, useState, useCallback } from "react";
 import { X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, useMotionValue, animate, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 /**
  * Wrap any interactive element (maps, sliders, carousels…) with this
- * to prevent pointer events from bubbling up to the Modal's drag handler.
- * Uses native listeners so it also blocks Framer Motion's native handlers.
+ * to prevent the swipe-down dismiss gesture from activating on that element.
  */
 export function ModalSwipeBlocker({
   children,
@@ -18,18 +17,8 @@ export function ModalSwipeBlocker({
   children: ReactNode;
   className?: string;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const stop = (e: PointerEvent) => e.stopPropagation();
-    el.addEventListener("pointerdown", stop);
-    return () => el.removeEventListener("pointerdown", stop);
-  }, []);
-
   return (
-    <div ref={ref} className={className}>
+    <div data-swipe-block className={className}>
       {children}
     </div>
   );
@@ -48,14 +37,159 @@ export default function Modal({
 }) {
   const { t } = useTranslation("common");
   const [showConfirm, setShowConfirm] = useState(false);
+  const translateY = useMotionValue(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const handleClose = () => {
-    if (confirmBeforeClose) {
+  // Refs so native event handlers always see fresh values
+  const showConfirmRef = useRef(false);
+  showConfirmRef.current = showConfirm;
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  const confirmBeforeCloseRef = useRef(confirmBeforeClose);
+  confirmBeforeCloseRef.current = confirmBeforeClose;
+
+  const handleClose = useCallback(() => {
+    if (confirmBeforeCloseRef.current) {
       setShowConfirm(true);
     } else {
-      onClose();
+      onCloseRef.current();
     }
-  };
+  }, []);
+
+  // Reset state when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      translateY.set(0);
+      setShowConfirm(false);
+    }
+  }, [isOpen, translateY]);
+
+  // Touch-based swipe-down dismiss (like mobile FullScreenModal)
+  useEffect(() => {
+    if (!isOpen) return;
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const FRICTION = 0.7;
+    const HANDLE_HEIGHT = 44;
+    let startY = 0;
+    let dragging = false;
+    let startedInHandle = false;
+    let blocked = false;
+
+    // --- shared helpers ---
+    function begin(clientY: number, target: HTMLElement) {
+      if (showConfirmRef.current) return false;
+      if (target.closest("[data-swipe-block]")) {
+        blocked = true;
+        return false;
+      }
+      startY = clientY;
+      dragging = false;
+      blocked = false;
+      const rect = el!.getBoundingClientRect();
+      startedInHandle = clientY <= rect.top + HANDLE_HEIGHT;
+      return true;
+    }
+
+    function move(clientY: number) {
+      if (showConfirmRef.current || blocked) return;
+      const dy = clientY - startY;
+
+      if (!dragging) {
+        if (dy > 10 && (el!.scrollTop <= 1 || startedInHandle)) {
+          dragging = true;
+        } else if (Math.abs(dy) > 10) {
+          blocked = true;
+          return;
+        } else {
+          return;
+        }
+      }
+
+      if (dragging) {
+        translateY.set(Math.max(0, dy * FRICTION));
+      }
+    }
+
+    function end() {
+      if (!dragging) return;
+      const threshold = window.innerHeight * 0.15;
+
+      if (translateY.get() > threshold) {
+        if (confirmBeforeCloseRef.current) {
+          animate(translateY, 0, {
+            type: "spring",
+            stiffness: 220,
+            damping: 15,
+          });
+          setShowConfirm(true);
+        } else {
+          animate(translateY, window.innerHeight, {
+            duration: 0.3,
+            onComplete: () => onCloseRef.current(),
+          });
+        }
+      } else {
+        animate(translateY, 0, {
+          type: "spring",
+          stiffness: 220,
+          damping: 15,
+        });
+      }
+      dragging = false;
+    }
+
+    // --- touch (mobile) ---
+    const onTouchStart = (e: TouchEvent) => {
+      begin(e.touches[0].clientY, e.target as HTMLElement);
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      move(e.touches[0].clientY);
+      if (dragging) e.preventDefault();
+    };
+    const onTouchEnd = () => end();
+
+    // --- mouse (desktop) ---
+    let mouseDown = false;
+    const onMouseDown = (e: MouseEvent) => {
+      if (e.button !== 0) return; // left-click only
+      if (begin(e.clientY, e.target as HTMLElement)) {
+        mouseDown = true;
+      }
+    };
+    const onMouseMove = (e: MouseEvent) => {
+      if (!mouseDown) return;
+      move(e.clientY);
+      if (dragging) {
+        e.preventDefault();
+        // Prevent text selection while dragging
+        window.getSelection()?.removeAllRanges();
+      }
+    };
+    const onMouseUp = () => {
+      if (!mouseDown) return;
+      mouseDown = false;
+      end();
+    };
+
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd, { passive: true });
+    el.addEventListener("mousedown", onMouseDown);
+    // mouse move/up on window so drag works even when cursor leaves the modal
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+      el.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+  }, [isOpen, translateY, handleClose]);
 
   if (!isOpen) return null;
 
@@ -63,20 +197,22 @@ export default function Modal({
     <AnimatePresence>
       <div className="fixed inset-0 z-999 bg-black/50">
         <motion.div
-          className={`fixed top-0 left-0 right-0 bottom-0`}
+          className="fixed top-0 left-0 right-0 bottom-0"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          onDragEnd={(_, info) => {
-            if (Math.abs(info.offset.x) > 200) {
-              handleClose();
-            }
-          }}
+          style={{ y: translateY }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
-          <div className="bg-[#131c2b] relative md:max-w-3xl mx-auto rounded-xl w-[98%] h-[calc(98dvh)] top-[1dvh] grow overflow-y-auto touch-pan-y shadow-[0_0_20px_rgba(59,130,246,0.4)]">
+          <div
+            ref={scrollRef}
+            className="bg-[#131c2b] relative md:max-w-3xl mx-auto rounded-xl w-[98%] h-[calc(98dvh)] top-[1dvh] grow overflow-y-auto overscroll-y-contain shadow-[0_0_20px_rgba(59,130,246,0.4)]"
+          >
+            {/* Drag handle indicator */}
+            <div className="sticky top-0 z-10 flex justify-center pt-3 pb-2">
+              <div className="w-12 h-1.5 rounded-full bg-slate-400" />
+            </div>
+
             <button
               className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-slate-800/80 border border-slate-600 text-slate-400 hover:text-slate-200 hover:bg-slate-700 hover:cursor-pointer hover:scale-105 transition-all"
               onClick={handleClose}

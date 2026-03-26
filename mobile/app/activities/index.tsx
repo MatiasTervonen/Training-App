@@ -6,12 +6,35 @@ import Toast from "react-native-toast-message";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { ChartNoAxesCombined, List, Settings } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "expo-router";
+import { useEffect } from "react";
 import { SESSION_COLORS } from "@/lib/sessionColors";
+import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 
 export default function SessionsScreen() {
-  const { t } = useTranslation("activities");
+  const { t } = useTranslation(["activities", "common"]);
+  const router = useRouter();
   const activeSession = useTimerStore((state) => state.activeSession);
+  const setModalPageConfig = useModalPageConfig((s) => s.setModalPageConfig);
   const colors = SESSION_COLORS.activities;
+
+  useEffect(() => {
+    setModalPageConfig({
+      rightLabel: t("common:navigation.start"),
+      onSwipeLeft: () => {
+        if (activeSession && activeSession?.type !== "activity") {
+          Toast.show({
+            type: "error",
+            text1: t("activities:activities.activeSessionError"),
+            text2: t("activities:activities.activeSessionErrorSub"),
+          });
+          return;
+        }
+        router.push("/activities/start-activity");
+      },
+    });
+    return () => setModalPageConfig(null);
+  }, [router, setModalPageConfig, t, activeSession]);
 
   const handleClick = () => {
     if (activeSession && activeSession?.type !== "activity") {

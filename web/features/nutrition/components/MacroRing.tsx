@@ -4,8 +4,8 @@ type MacroRingProps = {
   label: string;
   current: number;
   goal: number | null;
-  color: string; // stroke color hex, e.g. "#3b82f6"
-  unit?: string;
+  color: string; // stroke color hex, e.g. "#38bdf8"
+  totalMacros?: number;
   size?: number;
 };
 
@@ -14,13 +14,18 @@ export default function MacroRing({
   current,
   goal,
   color,
-  unit = "g",
-  size = 90,
+  totalMacros,
+  size = 72,
 }: MacroRingProps) {
-  const strokeWidth = 6;
+  const strokeWidth = 5;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const progress = goal ? Math.min(current / goal, 1) : 0;
+  const hasGoal = goal != null && goal > 0;
+  const progress = hasGoal
+    ? Math.min(current / goal, 1)
+    : totalMacros && totalMacros > 0
+      ? current / totalMacros
+      : 0;
   const strokeDashoffset = circumference * (1 - progress);
 
   return (
@@ -35,7 +40,7 @@ export default function MacroRing({
             strokeWidth={strokeWidth}
             fill="none"
           />
-          {goal && (
+          {progress > 0 && (
             <circle
               cx={size / 2}
               cy={size / 2}
@@ -49,14 +54,9 @@ export default function MacroRing({
             />
           )}
         </svg>
-        <div className="absolute flex flex-col items-center">
-          <span className="text-sm">{Math.round(current)}</span>
-          {goal ? (
-            <span className="font-body text-[10px] text-slate-400">/ {Math.round(goal)}</span>
-          ) : null}
-        </div>
+        <span className="absolute text-sm">{Math.round(current)}</span>
       </div>
-      <span className="font-body text-xs text-slate-400">{label} ({unit})</span>
+      <span className="font-body text-xs text-slate-400">{label}</span>
     </div>
   );
 }

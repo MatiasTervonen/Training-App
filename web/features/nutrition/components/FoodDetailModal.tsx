@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Image from "next/image";
 import { Heart } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Modal from "@/components/modal";
@@ -148,18 +149,24 @@ export default function FoodDetailModal({
           <div className="flex gap-3 overflow-x-auto">
             {food.image_url && (
               <button onClick={() => setViewingImage(food.image_url)} className="shrink-0 cursor-pointer">
-                <img
+                <Image
                   src={food.image_url}
                   alt={food.name}
+                  width={96}
+                  height={96}
+                  unoptimized
                   className="w-24 h-24 object-cover rounded-lg"
                 />
               </button>
             )}
             {food.image_nutrition_url && (
               <button onClick={() => setViewingImage(food.image_nutrition_url)} className="shrink-0 cursor-pointer">
-                <img
+                <Image
                   src={food.image_nutrition_url}
                   alt={t("detail.nutritionLabel")}
+                  width={96}
+                  height={96}
+                  unoptimized
                   className="w-24 h-24 object-cover rounded-lg"
                 />
               </button>
@@ -170,12 +177,16 @@ export default function FoodDetailModal({
         {/* Image viewer overlay */}
         {viewingImage && (
           <div
-            className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center cursor-pointer"
+            data-swipe-block
+            className="fixed inset-0 z-9999 bg-black/90 flex items-center justify-center cursor-pointer"
             onClick={() => setViewingImage(null)}
           >
-            <img
+            <Image
               src={viewingImage}
               alt=""
+              width={800}
+              height={800}
+              unoptimized
               className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg"
             />
           </div>

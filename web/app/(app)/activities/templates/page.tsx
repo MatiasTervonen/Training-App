@@ -8,10 +8,12 @@ import toast from "react-hot-toast";
 import Modal from "@/components/modal";
 import Spinner from "@/components/spinner";
 import { getActivityTemplates } from "@/database/activities/get-templates";
+import { getTemplateHistory } from "@/database/activities/get-template-history";
 import { deleteActivityTemplate } from "@/database/activities/delete-template";
 import { templateSummary } from "@/types/models";
 import ActivityTemplateCard from "@/features/activities/templates/ActivityTemplateCard";
 import ActivityTemplateExpanded from "@/features/activities/templates/ActivityTemplateExpanded";
+import TemplateHistoryModal from "@/features/activities/templates/TemplateHistoryModal";
 import EmptyState from "@/components/EmptyState";
 import { MapPin } from "lucide-react";
 
@@ -20,6 +22,9 @@ export default function TemplatesPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [expandedItem, setExpandedItem] = useState<templateSummary | null>(null);
+  const [historyTemplateId, setHistoryTemplateId] = useState("");
+  const [historyTemplateName, setHistoryTemplateName] = useState("");
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   const {
     data: templates = [],
@@ -29,6 +34,23 @@ export default function TemplatesPage() {
     queryKey: ["get-activity-templates"],
     queryFn: getActivityTemplates,
   });
+
+  const {
+    data: history = [],
+    error: historyError,
+    isLoading: isLoadingHistory,
+  } = useQuery({
+    queryKey: ["template-history", historyTemplateId],
+    queryFn: () => getTemplateHistory(historyTemplateId),
+    enabled: isHistoryOpen && !!historyTemplateId,
+  });
+
+  const openHistory = (templateId: string, templateName: string) => {
+    setExpandedItem(null);
+    setHistoryTemplateId(templateId);
+    setHistoryTemplateName(templateName);
+    setIsHistoryOpen(true);
+  };
 
   const handleDeleteTemplate = async (templateId: string) => {
     try {
@@ -82,8 +104,27 @@ export default function TemplatesPage() {
       ))}
 
       <Modal isOpen={!!expandedItem} onClose={() => setExpandedItem(null)}>
-        {expandedItem && <ActivityTemplateExpanded item={expandedItem} />}
+        {expandedItem && (
+          <ActivityTemplateExpanded
+            item={expandedItem}
+            onHistory={() =>
+              openHistory(
+                expandedItem.template.id,
+                expandedItem.template.name
+              )
+            }
+          />
+        )}
       </Modal>
+
+      <TemplateHistoryModal
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        isLoading={isLoadingHistory}
+        history={history}
+        templateName={historyTemplateName}
+        error={historyError ? String(historyError) : null}
+      />
     </div>
   );
 }

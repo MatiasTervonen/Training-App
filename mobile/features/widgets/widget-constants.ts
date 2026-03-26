@@ -21,6 +21,7 @@ const ICONS = {
   listChecks: `<path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/>`,
   repeat2: `<path d="m2 9 3-3 3 3"/><path d="M13 18H7a2 2 0 0 1-2-2V6"/><path d="m22 15-3 3-3-3"/><path d="M11 6h6a2 2 0 0 1 2 2v10"/>`,
   messageCircle: `<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>`,
+  utensils: `<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>`,
 } as const;
 
 export const LINK_TARGETS: LinkTarget[] = [
@@ -79,6 +80,13 @@ export const LINK_TARGETS: LinkTarget[] = [
     labelFi: "Tavat",
     route: "habits",
     iconSvg: lucideSvg(ICONS.repeat2),
+  },
+  {
+    key: "nutrition",
+    labelEn: "Nutrition",
+    labelFi: "Ravinto",
+    route: "nutrition",
+    iconSvg: lucideSvg(ICONS.utensils),
   },
   {
     key: "chat",

@@ -106,6 +106,7 @@ async function onAppStateChange(status: AppStateStatus) {
     } catch {
       // Step data unavailable, ignore
     }
+
   }
 }
 

@@ -66,7 +66,7 @@ export default function LayoutWrapper({
   const loginUser = useUserStore((state) => state.loginUser);
   const hasHydrated = useUserStore((state) => state._hasHydrated);
 
-  const { modalPageConfig, setModalPageConfig } = useModalPageConfig();
+  const modalPageConfig = useModalPageConfig((s) => s.modalPageConfig);
 
   // Subscribe to realtime notifications for badge updates
   useNotificationSubscription();
@@ -247,11 +247,8 @@ export default function LayoutWrapper({
     handleSessionChange(session, skipRedirect);
   }, [pendingSession, pendingSignOut, handleSessionChange]);
 
-  useEffect(() => {
-    if (pathname !== "/dashboard") {
-      setModalPageConfig(null);
-    }
-  }, [pathname, setModalPageConfig]);
+  // Config is now managed per-page: each page that needs custom swipe
+  // behavior sets its own config and clears it on unmount.
 
   if (!sessionChecked) {
     return <BootScreen />;

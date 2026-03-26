@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Map, { Source, Layer, Marker } from "react-map-gl/mapbox";
 import { templateSummary } from "@/types/models";
@@ -11,6 +12,7 @@ type TemplateMapProps = {
 };
 
 export default function TemplateMap({ template }: TemplateMapProps) {
+  const [mapLoaded, setMapLoaded] = useState(false);
   const route = template.route;
 
   if (!route || route.coordinates.length === 0) {
@@ -40,8 +42,19 @@ export default function TemplateMap({ template }: TemplateMapProps) {
     [Math.max(...lons), Math.max(...lats)],
   ];
 
+  const mapSpan = Math.sqrt(
+    (bounds[1][0] - bounds[0][0]) ** 2 + (bounds[1][1] - bounds[0][1]) ** 2,
+  );
+  const startEndDist = Math.sqrt(
+    (start[0] - end[0]) ** 2 + (start[1] - end[1]) ** 2,
+  );
+  const markersClose = mapSpan === 0 || startEndDist / mapSpan < 0.05;
+
   return (
-    <div className="h-[400px] w-full rounded-lg overflow-hidden">
+    <div className="h-[400px] w-full rounded-lg overflow-hidden relative">
+      {!mapLoaded && (
+        <div className="absolute inset-0 bg-slate-800 animate-pulse rounded-lg" />
+      )}
       <Map
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
         initialViewState={{
@@ -53,6 +66,7 @@ export default function TemplateMap({ template }: TemplateMapProps) {
         style={{ width: "100%", height: "100%" }}
         mapStyle="mapbox://styles/mapbox/dark-v11"
         attributionControl={false}
+        onLoad={() => setMapLoaded(true)}
       >
         <Source id="route" type="geojson" data={routeFeature}>
           <Layer
@@ -83,11 +97,15 @@ export default function TemplateMap({ template }: TemplateMapProps) {
         </Source>
 
         <Marker longitude={start[0]} latitude={start[1]} anchor="bottom">
-          <Image src="/start-image.png" alt="Start" width={40} height={40} />
+          <div style={markersClose ? { transform: "translateX(-10px)" } : undefined}>
+            <Image src="/start-image.png" alt="Start" width={28} height={28} />
+          </div>
         </Marker>
 
         <Marker longitude={end[0]} latitude={end[1]} anchor="bottom">
-          <Image src="/finnish-image.png" alt="Finish" width={40} height={40} />
+          <div style={markersClose ? { transform: "translateX(10px)" } : undefined}>
+            <Image src="/finnish-image.png" alt="Finish" width={28} height={28} />
+          </div>
         </Marker>
       </Map>
     </div>

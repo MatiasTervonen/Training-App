@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 import { DraftRecording, DraftImage, DraftVideo } from "@/types/session";
+import { prepareAndEnqueueMedia } from "@/lib/upload-queue-helpers";
 import * as Crypto from "expo-crypto";
 import { File } from "expo-file-system/next";
 
@@ -199,4 +200,111 @@ export async function editTodo({
     });
     throw new Error("Error editing todo list");
   }
+}
+
+type EditTodoWithoutMediaResult = {
+  feedItem: Record<string, unknown>;
+  newTaskIds: Record<string, string>;
+};
+
+/**
+ * Saves the todo edit to the database immediately (no media uploads),
+ * then enqueues new media for background upload via the upload queue.
+ * Returns the feed_item and a mapping of temp_id → real DB task_id for new tasks.
+ */
+export async function editTodoWithoutMedia({
+  id,
+  title,
+  tasks,
+  deletedIds,
+  updated_at,
+  deletedVoiceIds = [],
+  deletedVoicePaths = [],
+  deletedImageIds = [],
+  deletedImagePaths = [],
+  deletedVideoIds = [],
+  deletedVideoPaths = [],
+}: TodoListEdit): Promise<EditTodoWithoutMediaResult> {
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  if (sessionError || !session || !session.user) {
+    throw new Error("Unauthorized");
+  }
+
+  // Build task jsonb WITHOUT media
+  const tasksForRpc = tasks.map((task) => ({
+    id: task.id,
+    temp_id: task.tempId ?? undefined,
+    task: task.task,
+    notes: task.notes,
+    position: task.position,
+    updated_at: task.updated_at,
+  }));
+
+  const { data, error } = await supabase.rpc("todo_edit_todo", {
+    p_id: id,
+    p_title: title,
+    p_tasks: tasksForRpc,
+    p_deleted_ids: deletedIds,
+    p_updated_at: updated_at,
+    p_deleted_voice_ids: deletedVoiceIds,
+    p_deleted_image_ids: deletedImageIds,
+    p_deleted_video_ids: deletedVideoIds,
+  });
+
+  if (error) {
+    handleError(error, {
+      message: "Error editing todo list",
+      route: "/database/todo/edit-todo",
+      method: "RPC",
+    });
+    throw new Error("Error editing todo list");
+  }
+
+  const result = data as {
+    feed_item: Record<string, unknown>;
+    new_task_ids: Record<string, string>;
+  };
+
+  // Clean up storage files for deleted media (fire-and-forget)
+  if (deletedVoicePaths.length > 0) {
+    supabase.storage.from("notes-voice").remove(deletedVoicePaths);
+  }
+  if (deletedImagePaths.length > 0) {
+    supabase.storage.from("notes-images").remove(deletedImagePaths);
+  }
+  if (deletedVideoPaths.length > 0) {
+    supabase.storage.from("media-videos").remove(deletedVideoPaths);
+  }
+
+  // Enqueue media for background upload
+  for (const task of tasks) {
+    const hasNewMedia =
+      (task.newRecordings?.length ?? 0) > 0 ||
+      (task.newImages?.length ?? 0) > 0 ||
+      (task.newVideos?.length ?? 0) > 0;
+
+    if (!hasNewMedia) continue;
+
+    // Resolve the task ID: existing tasks have id, new tasks use the mapping
+    const taskId = task.id ?? (task.tempId ? result.new_task_ids[task.tempId] : null);
+    if (!taskId) continue;
+
+    await prepareAndEnqueueMedia({
+      targetId: taskId,
+      targetType: "todo_task",
+      draftImages: task.newImages,
+      draftRecordings: task.newRecordings,
+      draftVideos: task.newVideos,
+      userId: session.user.id,
+    });
+  }
+
+  return {
+    feedItem: result.feed_item,
+    newTaskIds: result.new_task_ids,
+  };
 }

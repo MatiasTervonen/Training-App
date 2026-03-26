@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 import { uploadFileToStorage, getAccessToken } from "@/lib/upload-with-progress";
 import { DraftRecording, DraftImage, DraftVideo } from "@/types/session";
+import { prepareAndEnqueueMedia } from "@/lib/upload-queue-helpers";
 import * as Crypto from "expo-crypto";
 import * as FileSystem from "expo-file-system/legacy";
 
@@ -174,4 +175,84 @@ export async function saveTodoToDB({
     });
     throw new Error("Error saving todo");
   }
+}
+
+type SaveTodoWithoutMediaProps = {
+  title: string;
+  todoList: TodoTask[];
+};
+
+/**
+ * Saves the todo list to the database immediately (no media uploads),
+ * then enqueues media for background upload via the upload queue.
+ */
+export async function saveTodoWithoutMedia({
+  title,
+  todoList,
+}: SaveTodoWithoutMediaProps) {
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  if (sessionError || !session || !session.user) {
+    throw new Error("Unauthorized");
+  }
+
+  // Save todo without media
+  const tasksWithoutMedia = todoList.map((t) => ({
+    task: t.task,
+    notes: t.notes,
+  }));
+
+  const { data, error } = await supabase.rpc("todo_save_todo", {
+    p_title: title,
+    p_todo_list: tasksWithoutMedia,
+  });
+
+  if (error) {
+    handleError(error, {
+      message: "Error saving todo",
+      route: "/database/todo/save-todo",
+      method: "POST",
+    });
+    throw new Error("Error saving todo");
+  }
+
+  const result = data as { todo_id: string; task_ids: string[] };
+
+  // Check if any tasks have media
+  const hasMedia = todoList.some(
+    (t) =>
+      (t.draftImages?.length ?? 0) > 0 ||
+      (t.draftRecordings?.length ?? 0) > 0 ||
+      (t.draftVideos?.length ?? 0) > 0,
+  );
+
+  if (hasMedia) {
+    // task_ids are returned in position order from the RPC
+    for (let i = 0; i < todoList.length; i++) {
+      const task = todoList[i];
+      const taskId = result.task_ids[i];
+      if (!taskId) continue;
+
+      const taskHasMedia =
+        (task.draftImages?.length ?? 0) > 0 ||
+        (task.draftRecordings?.length ?? 0) > 0 ||
+        (task.draftVideos?.length ?? 0) > 0;
+
+      if (taskHasMedia) {
+        await prepareAndEnqueueMedia({
+          targetId: taskId,
+          targetType: "todo_task",
+          draftImages: task.draftImages,
+          draftRecordings: task.draftRecordings,
+          draftVideos: task.draftVideos,
+          userId: session.user.id,
+        });
+      }
+    }
+  }
+
+  return { success: true, hasMedia };
 }

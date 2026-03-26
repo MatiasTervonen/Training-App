@@ -86,7 +86,10 @@
   },
   "navigation": {
     "back": "takaisin",
-    "home": "koti"
+    "home": "koti",
+    "start": "aloita",
+    "log": "kirjaa",
+    "new": "uusi"
   },
   "share": {
     "sizeLabel": "Koko",

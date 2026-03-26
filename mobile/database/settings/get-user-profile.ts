@@ -4,7 +4,7 @@ import { handleError } from "@/utils/handleError";
 export async function fetchUserProfile(userId: string) {
   const { data, error } = await supabase
     .from("users")
-    .select("id, display_name, weight_unit, distance_unit, profile_picture, role, height_cm")
+    .select("id, display_name, weight_unit, distance_unit, profile_picture, role, height_cm, birth_date, gender")
     .eq("id", userId)
     .single();
 

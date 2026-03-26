@@ -1,7 +1,7 @@
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
 import { View, FlatList, RefreshControl } from "react-native";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { FeedSkeleton } from "@/components/skeletetons";
 import FullScreenModal from "@/components/FullScreenModal";
@@ -27,10 +27,20 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import FloatingActionButton from "@/components/buttons/FloatingActionButton";
 import { Plus, FolderCog, StickyNote } from "lucide-react-native";
 import BodyTextNC from "@/components/BodyTextNC";
+import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 
 export default function NotesScreen() {
-  const { t } = useTranslation("notes");
+  const { t } = useTranslation(["notes", "common"]);
   const router = useRouter();
+  const setModalPageConfig = useModalPageConfig((s) => s.setModalPageConfig);
+
+  useEffect(() => {
+    setModalPageConfig({
+      rightLabel: t("common:navigation.new"),
+      onSwipeLeft: () => router.push("/notes/quick-notes"),
+    });
+    return () => setModalPageConfig(null);
+  }, [router, setModalPageConfig, t]);
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);

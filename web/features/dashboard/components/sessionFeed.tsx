@@ -201,6 +201,8 @@ export default function SessionFeed() {
                             onExpand={() => {
                               if (feedItem.type === "habits") {
                                 router.push("/habits");
+                              } else if (feedItem.type === "nutrition") {
+                                router.push("/nutrition");
                               } else {
                                 setExpandedItem(feedItem);
                               }

@@ -96,3 +96,4 @@ export async function saveGlobalStepsConfig(
 ): Promise<void> {
   await AsyncStorage.setItem(GLOBAL_STEPS_KEY, JSON.stringify(config));
 }
+

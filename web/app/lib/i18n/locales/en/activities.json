@@ -222,7 +222,32 @@
       "created": "Created:",
       "distance": "Distance:",
       "startActivity": "Start Activity",
-      "mobileOnly": "Templates can only be started from the mobile app"
+      "mobileOnly": "Templates can only be started from the mobile app",
+      "timesCompleted": "Completed {{count}} times",
+      "lastCompleted": "Last",
+      "avgDuration": "Avg Duration",
+      "avgPace": "Avg Pace",
+      "avgSpeed": "Avg Speed",
+      "avgDistance": "Avg Distance"
+    },
+    "templateHistory": {
+      "loading": "Loading history...",
+      "loadError": "Failed to load template history. Please try again later.",
+      "noHistory": "No sessions recorded for this template yet.",
+      "personalBests": "Personal Bests",
+      "personalBest": "Personal Best",
+      "fastestPace": "Fastest Pace",
+      "shortestDuration": "Shortest Duration",
+      "metricPace": "Pace",
+      "metricDuration": "Duration",
+      "metricSpeed": "Speed",
+      "metricCalories": "Calories",
+      "metricSteps": "Steps",
+      "range1m": "1M",
+      "range3m": "3M",
+      "range6m": "6M",
+      "range1y": "1Y",
+      "noChartData": "Not enough data points to show chart"
     },
     "editTemplateScreen": {
       "title": "Edit Template",

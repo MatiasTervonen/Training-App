@@ -193,6 +193,34 @@
         "general": "Yleinen"
       }
     },
+    "foodReports": {
+      "link": "Ruokaraportit",
+      "title": "Ruokatietojen raportit",
+      "empty": "Ei ruokaraportteja vielä.",
+      "details": "Tiedot",
+      "currentValues": "Nykyiset arvot",
+      "reportedValues": "Raportoidut arvot",
+      "accept": "Hyväksy",
+      "reject": "Hylkää",
+      "accepted": "Hyväksytty",
+      "rejected": "Hylätty",
+      "pending": "Odottaa",
+      "resolved": "Raportti käsitelty",
+      "filters": {
+        "all": "Kaikki",
+        "pending": "Odottavat",
+        "accepted": "Hyväksytyt",
+        "rejected": "Hylätyt"
+      },
+      "calories": "Kalorit/100g",
+      "protein": "Proteiini/100g",
+      "carbs": "Hiilihydraatit/100g",
+      "fat": "Rasva/100g",
+      "saturatedFat": "Tyydyttynyt rasva/100g",
+      "sugar": "Sokeri/100g",
+      "fiber": "Kuitu/100g",
+      "sodium": "Natrium/100g"
+    },
     "dashboard": {
       "link": "Kojelauta",
       "title": "Ylläpidon kojelauta",

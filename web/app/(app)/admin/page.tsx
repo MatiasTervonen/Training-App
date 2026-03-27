@@ -25,6 +25,9 @@ export default function AdminPage() {
         <LinkButton href={"/admin/feedback"}>
           {t("admin.feedback.link")}
         </LinkButton>
+        <LinkButton href={"/admin/food-reports"}>
+          {t("admin.foodReports.link")}
+        </LinkButton>
         <LinkButton href={"/admin/docs"}>
           {t("admin.devDocs")}
         </LinkButton>

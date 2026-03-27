@@ -193,6 +193,34 @@
         "general": "General"
       }
     },
+    "foodReports": {
+      "link": "Food Reports",
+      "title": "Food Data Reports",
+      "empty": "No food reports yet.",
+      "details": "Details",
+      "currentValues": "Current Values",
+      "reportedValues": "Reported Values",
+      "accept": "Accept",
+      "reject": "Reject",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "pending": "Pending",
+      "resolved": "Report resolved",
+      "filters": {
+        "all": "All",
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "rejected": "Rejected"
+      },
+      "calories": "Calories/100g",
+      "protein": "Protein/100g",
+      "carbs": "Carbs/100g",
+      "fat": "Fat/100g",
+      "saturatedFat": "Sat. fat/100g",
+      "sugar": "Sugar/100g",
+      "fiber": "Fiber/100g",
+      "sodium": "Sodium/100g"
+    },
     "dashboard": {
       "link": "Dashboard",
       "title": "Admin Dashboard",

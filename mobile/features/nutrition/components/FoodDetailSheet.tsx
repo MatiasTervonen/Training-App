@@ -3,13 +3,15 @@ import { View, Keyboard, Pressable } from "react-native";
 import FullScreenModal from "@/components/FullScreenModal";
 import PageContainer from "@/components/PageContainer";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import AppInput from "@/components/AppInput";
 import BodyTextNC from "@/components/BodyTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import Toggle from "@/components/toggle";
 import NutritionInfo from "@/features/nutrition/components/NutritionInfo";
 import DetailedNutrients from "@/features/nutrition/components/DetailedNutrients";
 import MealTypePicker from "@/features/nutrition/components/MealTypePicker";
-import { Heart } from "lucide-react-native";
+import { Heart, ChevronDown, ChevronUp } from "lucide-react-native";
 import { Image } from "expo-image";
 import { useTranslation } from "react-i18next";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
@@ -36,6 +38,18 @@ type FoodForDetail = {
   apiSource?: "openfoodfacts" | "usda" | "manual";
 };
 
+type ReportData = {
+  foodId: string;
+  caloriesPer100g: number;
+  proteinPer100g: number;
+  carbsPer100g: number;
+  fatPer100g: number;
+  saturatedFatPer100g: number | null;
+  sugarPer100g: number | null;
+  fiberPer100g: number | null;
+  sodiumPer100g: number | null;
+};
+
 type FoodDetailSheetProps = {
   food: FoodForDetail | null;
   visible: boolean;
@@ -49,6 +63,7 @@ type FoodDetailSheetProps = {
     protein: number;
     carbs: number;
     fat: number;
+    reportData?: ReportData;
   }) => void;
   isFavorite: boolean;
   onToggleFavorite: () => void;
@@ -72,29 +87,89 @@ export default function FoodDetailSheet({
   const [quantity, setQuantity] = useState("1");
   const [mealType, setMealType] = useState(defaultMealType);
   const [viewerIndex, setViewerIndex] = useState(-1);
+
+  const [editedCalories, setEditedCalories] = useState("");
+  const [editedProtein, setEditedProtein] = useState("");
+  const [editedCarbs, setEditedCarbs] = useState("");
+  const [editedFat, setEditedFat] = useState("");
+  const [editedSaturatedFat, setEditedSaturatedFat] = useState("");
+  const [editedSugar, setEditedSugar] = useState("");
+  const [editedFiber, setEditedFiber] = useState("");
+  const [editedSodium, setEditedSodium] = useState("");
+  const [reportToggle, setReportToggle] = useState(false);
+  const [per100gExpanded, setPer100gExpanded] = useState(false);
+
   useEffect(() => {
     if (food) {
       setServingSizeG(String(food.serving_size_g));
       setQuantity("1");
       setMealType(defaultMealType);
+      setEditedCalories(String(food.calories_per_100g));
+      setEditedProtein(String(food.protein_per_100g));
+      setEditedCarbs(String(food.carbs_per_100g));
+      setEditedFat(String(food.fat_per_100g));
+      setEditedSaturatedFat(food.saturated_fat_per_100g != null ? String(food.saturated_fat_per_100g) : "");
+      setEditedSugar(food.sugar_per_100g != null ? String(food.sugar_per_100g) : "");
+      setEditedFiber(food.fiber_per_100g != null ? String(food.fiber_per_100g) : "");
+      setEditedSodium(food.sodium_per_100g != null ? String(food.sodium_per_100g) : "");
+      setReportToggle(false);
+      setPer100gExpanded(false);
     }
   }, [food, defaultMealType]);
 
   const servingG = parseFloat(servingSizeG) || 0;
   const qty = parseFloat(quantity) || 0;
 
+  const effectiveCalsPer100g = parseFloat(editedCalories) || 0;
+  const effectiveProteinPer100g = parseFloat(editedProtein) || 0;
+  const effectiveCarbsPer100g = parseFloat(editedCarbs) || 0;
+  const effectiveFatPer100g = parseFloat(editedFat) || 0;
+  const effectiveSatFatPer100g = editedSaturatedFat ? parseFloat(editedSaturatedFat) || 0 : null;
+  const effectiveSugarPer100g = editedSugar ? parseFloat(editedSugar) || 0 : null;
+  const effectiveFiberPer100g = editedFiber ? parseFloat(editedFiber) || 0 : null;
+  const effectiveSodiumPer100g = editedSodium ? parseFloat(editedSodium) || 0 : null;
+
   const scale = food ? (servingG * qty) / 100 : 0;
-  const calculatedCalories = food ? food.calories_per_100g * scale : 0;
-  const calculatedProtein = food ? food.protein_per_100g * scale : 0;
-  const calculatedCarbs = food ? food.carbs_per_100g * scale : 0;
-  const calculatedFat = food ? food.fat_per_100g * scale : 0;
-  const calculatedSaturatedFat = food?.saturated_fat_per_100g != null ? food.saturated_fat_per_100g * scale : null;
-  const calculatedSugar = food?.sugar_per_100g != null ? food.sugar_per_100g * scale : null;
-  const calculatedFiber = food?.fiber_per_100g != null ? food.fiber_per_100g * scale : null;
-  const calculatedSodium = food?.sodium_per_100g != null ? food.sodium_per_100g * scale : null;
+  const calculatedCalories = effectiveCalsPer100g * scale;
+  const calculatedProtein = effectiveProteinPer100g * scale;
+  const calculatedCarbs = effectiveCarbsPer100g * scale;
+  const calculatedFat = effectiveFatPer100g * scale;
+  const calculatedSaturatedFat = effectiveSatFatPer100g != null ? effectiveSatFatPer100g * scale : null;
+  const calculatedSugar = effectiveSugarPer100g != null ? effectiveSugarPer100g * scale : null;
+  const calculatedFiber = effectiveFiberPer100g != null ? effectiveFiberPer100g * scale : null;
+  const calculatedSodium = effectiveSodiumPer100g != null ? effectiveSodiumPer100g * scale : null;
+
+  const hasModifiedPer100g = useMemo(() => {
+    if (!food) return false;
+    return (
+      effectiveCalsPer100g !== food.calories_per_100g ||
+      effectiveProteinPer100g !== food.protein_per_100g ||
+      effectiveCarbsPer100g !== food.carbs_per_100g ||
+      effectiveFatPer100g !== food.fat_per_100g ||
+      (food.saturated_fat_per_100g != null && effectiveSatFatPer100g !== food.saturated_fat_per_100g) ||
+      (food.sugar_per_100g != null && effectiveSugarPer100g !== food.sugar_per_100g) ||
+      (food.fiber_per_100g != null && effectiveFiberPer100g !== food.fiber_per_100g) ||
+      (food.sodium_per_100g != null && effectiveSodiumPer100g !== food.sodium_per_100g)
+    );
+  }, [food, effectiveCalsPer100g, effectiveProteinPer100g, effectiveCarbsPer100g, effectiveFatPer100g, effectiveSatFatPer100g, effectiveSugarPer100g, effectiveFiberPer100g, effectiveSodiumPer100g]);
 
   const handleLog = () => {
     if (!food) return;
+
+    const reportData =
+      reportToggle && hasModifiedPer100g && food.id && !food.is_custom
+        ? {
+            foodId: food.id,
+            caloriesPer100g: effectiveCalsPer100g,
+            proteinPer100g: effectiveProteinPer100g,
+            carbsPer100g: effectiveCarbsPer100g,
+            fatPer100g: effectiveFatPer100g,
+            saturatedFatPer100g: effectiveSatFatPer100g,
+            sugarPer100g: effectiveSugarPer100g,
+            fiberPer100g: effectiveFiberPer100g,
+            sodiumPer100g: effectiveSodiumPer100g,
+          }
+        : undefined;
 
     onLog({
       food,
@@ -105,6 +180,7 @@ export default function FoodDetailSheet({
       protein: calculatedProtein,
       carbs: calculatedCarbs,
       fat: calculatedFat,
+      reportData,
     });
   };
 
@@ -202,6 +278,89 @@ export default function FoodDetailSheet({
               placeholder="1"
             />
           </View>
+
+          {/* Collapsible per-100g editing section */}
+          <View className="mb-4">
+            <AnimatedButton
+              onPress={() => setPer100gExpanded((v) => !v)}
+              className="flex-row items-center justify-between bg-slate-800/50 border border-slate-700/50 rounded-lg px-4 py-3"
+            >
+              <AppText className="text-sm">{t("detail.editPer100g")}</AppText>
+              {per100gExpanded ? (
+                <ChevronUp size={18} color="#94a3b8" />
+              ) : (
+                <ChevronDown size={18} color="#94a3b8" />
+              )}
+            </AnimatedButton>
+            {per100gExpanded && (
+              <View className="mt-3 gap-3">
+                <AppInput
+                  value={editedCalories}
+                  setValue={setEditedCalories}
+                  label={`${t("daily.calories")} / 100g`}
+                  keyboardType="decimal-pad"
+                />
+                <AppInput
+                  value={editedProtein}
+                  setValue={setEditedProtein}
+                  label={`${t("daily.protein")} / 100g`}
+                  keyboardType="decimal-pad"
+                />
+                <AppInput
+                  value={editedCarbs}
+                  setValue={setEditedCarbs}
+                  label={`${t("daily.carbs")} / 100g`}
+                  keyboardType="decimal-pad"
+                />
+                <AppInput
+                  value={editedFat}
+                  setValue={setEditedFat}
+                  label={`${t("daily.fat")} / 100g`}
+                  keyboardType="decimal-pad"
+                />
+                {food.saturated_fat_per_100g != null && (
+                  <AppInput
+                    value={editedSaturatedFat}
+                    setValue={setEditedSaturatedFat}
+                    label={`${t("daily.saturatedFat")} / 100g`}
+                    keyboardType="decimal-pad"
+                  />
+                )}
+                {food.sugar_per_100g != null && (
+                  <AppInput
+                    value={editedSugar}
+                    setValue={setEditedSugar}
+                    label={`${t("daily.sugar")} / 100g`}
+                    keyboardType="decimal-pad"
+                  />
+                )}
+                {food.fiber_per_100g != null && (
+                  <AppInput
+                    value={editedFiber}
+                    setValue={setEditedFiber}
+                    label={`${t("daily.fiber")} / 100g`}
+                    keyboardType="decimal-pad"
+                  />
+                )}
+                {food.sodium_per_100g != null && (
+                  <AppInput
+                    value={editedSodium}
+                    setValue={setEditedSodium}
+                    label={`${t("daily.sodium")} / 100g`}
+                    keyboardType="decimal-pad"
+                  />
+                )}
+              </View>
+            )}
+          </View>
+
+          {/* Report toggle */}
+          {hasModifiedPer100g && !food.is_custom && (
+            <View className="flex-row items-center justify-between mb-4 px-1">
+              <BodyText className="text-sm">{t("detail.reportIncorrectData")}</BodyText>
+              <Toggle isOn={reportToggle} onToggle={() => setReportToggle((v) => !v)} />
+            </View>
+          )}
 
           {/* Nutrition */}
           <View className="mb-4">

@@ -27,6 +27,7 @@
     "confirmPassword": "Vahvista salasana",
     "confirmPasswordPlaceholder": "Vahvista salasana...",
     "or": "tai",
+    "agreeToTerms": "Rekisteröitymällä hyväksyt <terms>ehdot</terms> ja <privacy>tietosuojakäytännön</privacy>.",
     "signInWithGoogle": "Kirjaudu Googlella",
     "logIn": "Kirjaudu sisään",
     "signUp": "Rekisteröidy",

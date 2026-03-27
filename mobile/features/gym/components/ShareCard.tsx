@@ -46,102 +46,95 @@ const ShareCard = forwardRef<View, ShareCardProps>(
     if (size === "wide") {
       return (
         <ThemedCardWrapper ref={ref} theme={theme} size={size}>
-          {/* Header - App branding */}
-          <View className="flex-row items-center gap-4">
+          {/* Logo fixed at top */}
+          <View className="flex-row items-center gap-4" style={{ position: "absolute", top: 60, left: 60 }}>
             <Image
               source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
-              className="w-[64px] h-[64px] rounded-lg"
+              style={{ width: 64, height: 64, borderRadius: 8 }}
             />
-            <AppText
-              className="text-[36px]"
-              style={{ color: colors.accent }}
-            >
+            <AppText style={{ fontSize: 36, color: colors.accent }}>
               {APP_NAME}
             </AppText>
           </View>
 
-          {/* Title + Date centered */}
-          <View className="items-center gap-3">
+          {/* Title fixed at top center */}
+          <View style={{ position: "absolute", top: 60, left: 0, right: 0, alignItems: "center", gap: 8 }}>
             <AppText
-              className="text-[56px] text-center"
-              style={{ color: colors.textPrimary }}
+              style={{ fontSize: 56, color: colors.textPrimary, textAlign: "center" }}
               numberOfLines={2}
             >
               {title}
             </AppText>
-            <AppText
-              className="text-[32px]"
-              style={{ color: colors.textMuted }}
-            >
+            <AppText style={{ fontSize: 32, color: colors.textMuted }}>
               {formatDateShort(date)}
             </AppText>
           </View>
 
-          {/* Stats + Exercises side by side */}
-          <View className="flex-row gap-[40px]">
-            {/* Left: 2x2 Stat Grid */}
-            <View className="flex-1 gap-4">
-              <View className="flex-row gap-4">
-                <View className="flex-1">
-                  <ThemedStatBox
-                    label={t("gym.share.duration")}
-                    value={formatDurationLong(duration)}
-                    theme={theme}
-                  />
+          {/* All content centered */}
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <View className="flex-row" style={{ gap: 80, alignItems: "center" }}>
+              {/* Left: 2x2 Stat Grid */}
+              <View className="flex-1" style={{ gap: 16 }}>
+                <View className="flex-row" style={{ gap: 16 }}>
+                  <View className="flex-1">
+                    <ThemedStatBox
+                      label={t("gym.share.duration")}
+                      value={formatDurationLong(duration)}
+                      theme={theme}
+                    />
+                  </View>
+                  <View className="flex-1">
+                    <ThemedStatBox
+                      label={t("gym.share.volume")}
+                      value={formatVolume(stats.totalVolume)}
+                      theme={theme}
+                    />
+                  </View>
                 </View>
-                <View className="flex-1">
-                  <ThemedStatBox
-                    label={t("gym.share.volume")}
-                    value={formatVolume(stats.totalVolume)}
-                    theme={theme}
-                  />
+                <View className="flex-row" style={{ gap: 16 }}>
+                  <View className="flex-1">
+                    <ThemedStatBox
+                      label={t("gym.share.exercises")}
+                      value={String(stats.exerciseCount)}
+                      theme={theme}
+                    />
+                  </View>
+                  <View className="flex-1">
+                    <ThemedStatBox
+                      label={t("gym.share.sets")}
+                      value={String(stats.totalSets)}
+                      theme={theme}
+                    />
+                  </View>
                 </View>
               </View>
-              <View className="flex-row gap-4">
-                <View className="flex-1">
-                  <ThemedStatBox
-                    label={t("gym.share.exercises")}
-                    value={String(stats.exerciseCount)}
-                    theme={theme}
-                  />
-                </View>
-                <View className="flex-1">
-                  <ThemedStatBox
-                    label={t("gym.share.sets")}
-                    value={String(stats.totalSets)}
-                    theme={theme}
-                  />
-                </View>
-              </View>
-            </View>
 
-            {/* Right: Top exercises */}
-            <View className="flex-1 justify-center gap-3">
-              {topExercises.map((ex, i) => (
-                <View key={i} className="flex-row justify-between items-center">
-                  <View className="flex-1 mr-4">
-                    <AppText
-                      className="text-[30px]"
-                      style={{ color: colors.textSecondary }}
-                      numberOfLines={1}
-                    >
-                      {ex.name}
-                    </AppText>
-                    <AppText
-                      className="text-[22px]"
-                      style={{ color: colors.textMuted }}
-                    >
-                      {t(`gym.equipment.${ex.equipment?.toLowerCase()}`)}
+              {/* Right: Top exercises */}
+              <View className="flex-1" style={{ gap: 12 }}>
+                <AppText style={{ fontSize: 28, color: colors.textPrimary, marginBottom: 16,  }}>
+                  {t("gym.share.bestSets")}
+                </AppText>
+                {topExercises.map((ex, i) => (
+                  <View key={i} className="flex-row justify-between items-center">
+                    <View className="mr-4">
+                      <AppText
+                        style={{ fontSize: 30, color: colors.textSecondary }}
+                        numberOfLines={1}
+                      >
+                        {ex.name}
+                      </AppText>
+                      <AppText
+                        style={{ fontSize: 22, color: colors.textMuted }}
+                      >
+                        {t(`gym.equipment.${ex.equipment?.toLowerCase()}`)}
+                      </AppText>
+                    </View>
+                    <AppText style={{ fontSize: 30, color: colors.textMuted }}>
+                      {formatTopSet(ex)}
                     </AppText>
                   </View>
-                  <AppText
-                    className="text-[30px]"
-                    style={{ color: colors.textMuted }}
-                  >
-                    {formatTopSet(ex)}
-                  </AppText>
-                </View>
-              ))}
+                ))}
+              </View>
             </View>
           </View>
 
@@ -159,8 +152,8 @@ const ShareCard = forwardRef<View, ShareCardProps>(
 
     return (
       <ThemedCardWrapper ref={ref} theme={theme} size={size}>
-        {/* Header - App branding */}
-        <View className="flex-row items-center gap-4">
+        {/* Logo fixed at top */}
+        <View className="flex-row items-center gap-4" style={{ position: "absolute", top: 60, left: 60 }}>
           <Image
             source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
             style={{ width: isStory ? 80 : 64, height: isStory ? 80 : 64, borderRadius: 8 }}
@@ -172,86 +165,92 @@ const ShareCard = forwardRef<View, ShareCardProps>(
           </AppText>
         </View>
 
-        {/* Title + Date */}
-        <View className="items-center gap-3">
-          <AppText
-            className="text-center"
-            style={{ fontSize: isStory ? 68 : 52, color: colors.textPrimary }}
-            numberOfLines={2}
-          >
-            {title}
-          </AppText>
-          <AppText
-            style={{ fontSize: isStory ? 40 : 32, color: colors.textMuted }}
-          >
-            {formatDateShort(date)}
-          </AppText>
-        </View>
+        {/* All content */}
+        <View style={{ flex: 1, justifyContent: "center", gap: isStory ? 60 : 40, paddingTop: isStory ? 140 : 0, paddingBottom: isStory ? 120 : 0 }}>
+          {/* Title + Date */}
+          <View className="items-center gap-3" style={{ transform: [{ translateY: isStory ? -80 : -20 }] }}>
+            <AppText
+              className="text-center"
+              style={{ fontSize: isStory ? 68 : 52, color: colors.textPrimary }}
+              numberOfLines={2}
+            >
+              {title}
+            </AppText>
+            <AppText
+              style={{ fontSize: isStory ? 40 : 32, color: colors.textMuted }}
+            >
+              {formatDateShort(date)}
+            </AppText>
+          </View>
 
-        {/* 2x2 Stat Grid */}
-        <View className="gap-4">
-          <View className="flex-row gap-4">
-            <View className="flex-1">
-              <ThemedStatBox
-                label={t("gym.share.duration")}
-                value={formatDurationLong(duration)}
-                theme={theme}
-                size={isStory ? "large" : "normal"}
-              />
+          {/* 2x2 Stat Grid */}
+          <View className="gap-4">
+            <View className="flex-row gap-4">
+              <View className="flex-1">
+                <ThemedStatBox
+                  label={t("gym.share.duration")}
+                  value={formatDurationLong(duration)}
+                  theme={theme}
+                  size={isStory ? "large" : "normal"}
+                />
+              </View>
+              <View className="flex-1">
+                <ThemedStatBox
+                  label={t("gym.share.volume")}
+                  value={formatVolume(stats.totalVolume)}
+                  theme={theme}
+                  size={isStory ? "large" : "normal"}
+                />
+              </View>
             </View>
-            <View className="flex-1">
-              <ThemedStatBox
-                label={t("gym.share.volume")}
-                value={formatVolume(stats.totalVolume)}
-                theme={theme}
-                size={isStory ? "large" : "normal"}
-              />
+            <View className="flex-row gap-4">
+              <View className="flex-1">
+                <ThemedStatBox
+                  label={t("gym.share.exercises")}
+                  value={String(stats.exerciseCount)}
+                  theme={theme}
+                  size={isStory ? "large" : "normal"}
+                />
+              </View>
+              <View className="flex-1">
+                <ThemedStatBox
+                  label={t("gym.share.sets")}
+                  value={String(stats.totalSets)}
+                  theme={theme}
+                  size={isStory ? "large" : "normal"}
+                />
+              </View>
             </View>
           </View>
-          <View className="flex-row gap-4">
-            <View className="flex-1">
-              <ThemedStatBox
-                label={t("gym.share.exercises")}
-                value={String(stats.exerciseCount)}
-                theme={theme}
-                size={isStory ? "large" : "normal"}
-              />
-            </View>
-            <View className="flex-1">
-              <ThemedStatBox
-                label={t("gym.share.sets")}
-                value={String(stats.totalSets)}
-                theme={theme}
-                size={isStory ? "large" : "normal"}
-              />
-            </View>
-          </View>
-        </View>
 
-        {/* Top Exercises */}
-        <View className="gap-3">
-          {topExercises.map((ex, i) => (
-            <View key={i} className="flex-row justify-between items-center">
-              <View className="flex-1 mr-4">
+          {/* Top Exercises */}
+          <View className="self-center" style={{ width: "85%", gap: 12 }}>
+            <AppText style={{ fontSize: isStory ? 36 : 28, color: colors.textPrimary, textAlign: "center", marginBottom: isStory ? 24 : 20 }}>
+              {t("gym.share.bestSets")}
+            </AppText>
+            {topExercises.map((ex, i) => (
+              <View key={i} className="flex-row justify-between items-center">
+                <View className="mr-4">
+                  <AppText
+                    style={{ fontSize: isStory ? 36 : 28, color: colors.textSecondary }}
+                    numberOfLines={1}
+                  >
+                    {ex.name}
+                  </AppText>
+                  <AppText
+                    style={{ fontSize: isStory ? 26 : 20, color: colors.textMuted }}
+                  >
+                    {t(`gym.equipment.${ex.equipment?.toLowerCase()}`)}
+                  </AppText>
+                </View>
                 <AppText
-                  style={{ fontSize: isStory ? 36 : 28, color: colors.textSecondary }}
-                  numberOfLines={1}
+                  style={{ fontSize: isStory ? 36 : 28, color: colors.textMuted }}
                 >
-                  {ex.name}
-                </AppText>
-                <AppText
-                  style={{ fontSize: isStory ? 26 : 20, color: colors.textMuted }}
-                >
-                  {t(`gym.equipment.${ex.equipment?.toLowerCase()}`)}
+                  {formatTopSet(ex)}
                 </AppText>
               </View>
-              <AppText
-                style={{ fontSize: isStory ? 36 : 28, color: colors.textMuted }}
-              >
-                {formatTopSet(ex)}
-              </AppText>
-            </View>
-          ))}
+            ))}
+          </View>
         </View>
 
         {/* URL bottom center */}

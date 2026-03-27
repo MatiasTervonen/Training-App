@@ -91,7 +91,7 @@ export default function ActivitySessionEdit({
     <View className="flex-1">
       <AutoSaveIndicator status={status} />
       <Pressable onPress={Keyboard.dismiss} className="flex-1">
-        <PageContainer className="justify-between mt-5">
+        <PageContainer className="justify-between">
           <View className="gap-5">
           <AppText className="text-xl text-center mb-5">
             {t("activities.editSession.title")}

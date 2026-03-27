@@ -20,6 +20,7 @@ export function useDeleteFoodLog() {
           queryKey: ["dailyLogs", loggedAt],
         }),
         queryClient.invalidateQueries({ queryKey: ["feed"] }),
+        queryClient.invalidateQueries({ queryKey: ["energyBalance", loggedAt] }),
       ]);
 
       Toast.show({

@@ -70,19 +70,6 @@ export function useStartActivity({
             );
         `);
 
-          // Store session start time so the background task can skip
-          // cached/stale locations delivered before the session began
-          await db.execAsync(`
-            CREATE TABLE IF NOT EXISTS session_meta (
-              key TEXT PRIMARY KEY,
-              value TEXT NOT NULL
-            );
-          `);
-          await db.runAsync(
-            `INSERT OR REPLACE INTO session_meta (key, value) VALUES ('started_at', ?)`,
-            [String(Date.now())],
-          );
-
           return true;
         } catch (error) {
           console.error("Error initializing database", error);

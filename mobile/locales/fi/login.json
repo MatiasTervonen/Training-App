@@ -49,6 +49,7 @@
       "message": "Sähköposti lähetetty! Tarkista saapuneet (ja roskaposti) vahvistaaksesi tilisi ennen kirjautumista."
     },
     "or": "tai",
+    "agreeToTerms": "Rekisteröitymällä hyväksyt <terms>ehdot</terms> ja <privacy>tietosuojakäytännön</privacy>.",
     "signInWithGoogle": "Kirjaudu Googlella",
     "guest": {
       "title": "Demotili",

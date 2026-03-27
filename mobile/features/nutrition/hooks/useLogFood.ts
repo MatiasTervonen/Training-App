@@ -19,7 +19,7 @@ type LogFoodParams = {
   notes?: string;
 };
 
-export function useLogFood() {
+export function useLogFood({ skipBack = false }: { skipBack?: boolean } = {}) {
   const queryClient = useQueryClient();
   const router = useRouter();
   const { t } = useTranslation(["nutrition", "common"]);
@@ -52,9 +52,10 @@ export function useLogFood() {
         }),
         queryClient.invalidateQueries({ queryKey: ["feed"] }),
         queryClient.invalidateQueries({ queryKey: ["recentFoods"] }),
+        queryClient.invalidateQueries({ queryKey: ["energyBalance", params.loggedAt] }),
       ]);
 
-      router.back();
+      if (!skipBack) router.back();
       Toast.show({
         type: "success",
         text1: t("common:common.success"),

@@ -86,7 +86,7 @@ export default function SettingsScreen() {
   return (
     <>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
           <PageContainer className="flex-col justify-between">
             <View className="gap-5">
               <AppText className="text-2xl text-center mb-5">

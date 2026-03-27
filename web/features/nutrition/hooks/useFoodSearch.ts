@@ -39,6 +39,9 @@ function mapLocalResult(r: FoodSearchResult): NutritionSearchResult {
     barcode: r.barcode,
     is_custom: r.is_custom,
     source: r.is_custom ? "custom" : "local",
+    ...(r.data_source === "openfoodfacts" || r.data_source === "usda" || r.data_source === "manual"
+      ? { apiSource: r.data_source }
+      : {}),
   };
 }
 

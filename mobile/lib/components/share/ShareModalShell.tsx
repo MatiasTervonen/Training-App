@@ -334,6 +334,7 @@ export default function ShareModalShell({
               <FlatList
                 data={friends ?? []}
                 keyExtractor={(item: Friends) => item.id}
+                showsVerticalScrollIndicator={false}
                 renderItem={renderFriendItem}
                 ListEmptyComponent={
                   <View className="items-center py-10">

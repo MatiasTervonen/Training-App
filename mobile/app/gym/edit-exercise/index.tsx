@@ -117,7 +117,7 @@ export default function EditExercises() {
   return (
     <View className="flex-1">
       <AutoSaveIndicator status={status} />
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <PageContainer className="justify-between">
           <View className="gap-4">

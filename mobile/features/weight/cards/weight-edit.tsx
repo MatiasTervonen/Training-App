@@ -262,10 +262,10 @@ export default function EditWeight({
   return (
     <View className="flex-1">
       <AutoSaveIndicator status={status} />
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} onScroll={handleScroll} scrollEventThrottle={16}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} onScroll={handleScroll} scrollEventThrottle={16}>
         <Pressable onPress={Keyboard.dismiss} className="flex-1">
           <PageContainer className="mb-5">
-            <AppText className="text-xl text-center mt-5 mb-10">
+            <AppText className="text-xl text-center mb-10">
               {t("weight.editScreen.title")}
             </AppText>
             <View className="gap-5">

@@ -49,6 +49,7 @@
       "message": "Email sent! Check your inbox (and spam folder) to verify your account before logging in."
     },
     "or": "or",
+    "agreeToTerms": "By signing up, you agree to our <terms>Terms</terms> and <privacy>Privacy Policy</privacy>.",
     "signInWithGoogle": "Sign in with Google",
     "guest": {
       "title": "Demo account",

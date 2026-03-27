@@ -11,7 +11,7 @@ export async function searchFoods(query: string): Promise<FoodSearchResult[]> {
     supabase
       .from("foods")
       .select(
-        "id, name, name_en, brand, serving_size_g, serving_description, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g, fiber_per_100g, sugar_per_100g, sodium_per_100g, saturated_fat_per_100g, image_url, nutrition_label_url, barcode",
+        "id, name, name_en, brand, serving_size_g, serving_description, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g, fiber_per_100g, sugar_per_100g, sodium_per_100g, saturated_fat_per_100g, image_url, nutrition_label_url, barcode, source",
       )
       .or(`name.ilike.${pattern},name_en.ilike.${pattern}`)
       .limit(20),
@@ -62,6 +62,7 @@ export async function searchFoods(query: string): Promise<FoodSearchResult[]> {
     nutrition_label_url: f.nutrition_label_url,
     is_custom: false,
     barcode: f.barcode,
+    data_source: f.source ?? null,
   }));
 
   const customFoods: FoodSearchResult[] = (customFoodsResult.data ?? []).map(
@@ -83,6 +84,7 @@ export async function searchFoods(query: string): Promise<FoodSearchResult[]> {
       nutrition_label_url: f.nutrition_label_url,
       is_custom: true,
       barcode: null,
+      data_source: null,
     }),
   );
 

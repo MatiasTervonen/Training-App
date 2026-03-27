@@ -292,6 +292,7 @@ export default function TemplateForm() {
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ flexGrow: 1 }}
           bottomOffset={80}
+          showsVerticalScrollIndicator={false}
         >
           <PageContainer className="justify-between">
             <View>

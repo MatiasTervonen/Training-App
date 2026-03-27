@@ -333,7 +333,7 @@ const NutritionShareCard = forwardRef<View, NutritionShareCardProps>(
           {/* All content centered */}
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center", gap: 60 }}>
             {/* Title + Date */}
-            <View style={{ alignItems: "center", gap: 16 }}>
+            <View style={{ alignItems: "center", gap: 16, transform: [{ translateY: -60 }] }}>
               <AppText
                 style={{ fontSize: 80, color: colors.textPrimary, textAlign: "center" }}
               >

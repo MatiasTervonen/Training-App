@@ -109,7 +109,7 @@ export default function AddActivity() {
 
   return (
     <>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <PageContainer className="justify-between flex-1">
             <View>

@@ -16,19 +16,6 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
   try {
     const db = await getDatabase();
 
-    // Read session start time to skip stale cached locations
-    // Android's fused location provider may deliver the last known location
-    // immediately when tracking starts, even if it's from before the session
-    let sessionStartMs: number | null = null;
-    try {
-      const meta = await db.getFirstAsync<{ value: string }>(
-        "SELECT value FROM session_meta WHERE key = 'started_at'",
-      );
-      sessionStartMs = meta ? Number(meta.value) : null;
-    } catch {
-      // Table may not exist for sessions started before this fix
-    }
-
     // Get last saved point (full context)
     const lastSaved = await db.getFirstAsync<{
       latitude: number;
@@ -92,8 +79,13 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
         timestamp: location.timestamp,
       };
 
-      // Skip locations from before the session started (stale cache from OS)
-      if (sessionStartMs && point.timestamp < sessionStartMs) {
+      // On a fresh session (no points in DB yet), skip the very first delivery.
+      // The fused location provider's first update after startLocationUpdatesAsync
+      // is often a cached/network location with stale coordinates (e.g., home)
+      // but a current timestamp. Subsequent deliveries are fresh GPS fixes.
+      // The foreground tracker handles live display during this brief skip.
+      if (!lastSaved && !lastPoint) {
+        lastPoint = { latitude: point.latitude, longitude: point.longitude };
         continue;
       }
 

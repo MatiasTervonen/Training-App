@@ -5,6 +5,7 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
   Alert,
+  Linking,
 } from "react-native";
 import AppText from "@/components/AppText";
 import { useRouter } from "expo-router";
@@ -298,6 +299,34 @@ export default function LoginScreen() {
                     }}
                   />
                 </View>
+
+                <BodyTextNC className="text-gray-500 text-xs text-center mt-3">
+                  {t("login.agreeToTerms")
+                    .split(/(<terms>.*?<\/terms>|<privacy>.*?<\/privacy>)/)
+                    .map((part: string, i: number) => {
+                      if (part.startsWith("<terms>"))
+                        return (
+                          <BodyTextNC
+                            key={i}
+                            className="text-blue-400 text-xs"
+                            onPress={() => Linking.openURL("https://kurvi.io/terms")}
+                          >
+                            {part.replace(/<\/?terms>/g, "")}
+                          </BodyTextNC>
+                        );
+                      if (part.startsWith("<privacy>"))
+                        return (
+                          <BodyTextNC
+                            key={i}
+                            className="text-blue-400 text-xs"
+                            onPress={() => Linking.openURL("https://kurvi.io/privacy")}
+                          >
+                            {part.replace(/<\/?privacy>/g, "")}
+                          </BodyTextNC>
+                        );
+                      return part;
+                    })}
+                </BodyTextNC>
 
                 <View className="flex-row items-center mt-5 mb-3">
                   <View className="flex-1 h-px bg-gray-600" />

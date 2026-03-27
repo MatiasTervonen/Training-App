@@ -121,6 +121,7 @@ export default function ExerciseDropdownEdit({
             <FlatList
               data={searchQuery.length > 0 ? filteredExercises : exercises || []}
               keyExtractor={(item) => item.id}
+              showsVerticalScrollIndicator={false}
               ListHeaderComponent={
                 <AppText className="text-center text-lg bg-blue-500/20 border-y border-blue-500/40 rounded-t-md">
                   {t("gym.exerciseDropdownEdit.myExercises")}

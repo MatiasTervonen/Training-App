@@ -262,9 +262,9 @@ export default function EditNotes({
   return (
     <View className="flex-1">
       <AutoSaveIndicator status={status} />
-      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={50} onScroll={handleScroll} scrollEventThrottle={16}>
+      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={50} showsVerticalScrollIndicator={false} onScroll={handleScroll} scrollEventThrottle={16}>
         <PageContainer className="mb-5">
-          <AppText className="text-xl text-center mt-5 mb-10">
+          <AppText className="text-xl text-center mb-10">
             {t("notes.editScreen.title")}
           </AppText>
           <View className="mb-5">

@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import { Plus, Settings, ChevronLeft, ChevronRight, Share2 } from "lucide-react-native";
 import FoodDetailSheet from "@/features/nutrition/components/FoodDetailSheet";
 import EnergyBalanceCard from "@/features/energy-balance/components/EnergyBalanceCard";
+import { useLogFood } from "@/features/nutrition/hooks/useLogFood";
 import { useToggleFavorite } from "@/features/nutrition/hooks/useToggleFavorite";
 import { useFavorites } from "@/features/nutrition/hooks/useFavorites";
 import { getTrackingDate } from "@/lib/formatDate";
@@ -45,6 +46,7 @@ export default function NutritionScreen() {
   const { data: goals } = useNutritionGoals();
   const { handleDelete } = useDeleteFoodLog();
   const { updateMealTime } = useUpdateMealTime();
+  const { handleLogFood } = useLogFood({ skipBack: true });
   const { handleToggle } = useToggleFavorite();
   const { data: favorites } = useFavorites();
 
@@ -222,15 +224,16 @@ export default function NutritionScreen() {
           </View>
 
           {/* Date picker */}
-          <View className="flex-row items-center justify-center gap-4 mb-4">
-            <AnimatedButton onPress={() => changeDate(-1)} hitSlop={10}>
+          <View className="flex-row items-center justify-center mb-4">
+            <AnimatedButton onPress={() => changeDate(-1)} hitSlop={20} className="p-2">
               <ChevronLeft size={24} color="#94a3b8" />
             </AnimatedButton>
-            <AppText className="text-base">{formatDisplayDate(date)}</AppText>
+            <AppText className="text-base text-center w-40" numberOfLines={1}>{formatDisplayDate(date)}</AppText>
             <AnimatedButton
               onPress={() => changeDate(1)}
-              hitSlop={10}
+              hitSlop={20}
               disabled={isToday}
+              className="p-2"
             >
               <ChevronRight size={24} color={isToday ? "#334155" : "#94a3b8"} />
             </AnimatedButton>
@@ -300,7 +303,23 @@ export default function NutritionScreen() {
         food={selectedFood}
         visible={!!selectedLog}
         onClose={() => setSelectedLog(null)}
-        onLog={() => setSelectedLog(null)}
+        onLog={async (params) => {
+          if (!selectedLog) return;
+          setSelectedLog(null);
+          await handleLogFood({
+            foodId: selectedLog.is_custom ? null : selectedLog.food_id,
+            customFoodId: selectedLog.is_custom ? selectedLog.custom_food_id : null,
+            foodName: params.food.name,
+            mealType: params.mealType,
+            servingSizeG: params.servingSizeG,
+            quantity: params.quantity,
+            calories: params.calories,
+            protein: params.protein,
+            carbs: params.carbs,
+            fat: params.fat,
+            loggedAt: date,
+          });
+        }}
         isFavorite={isSelectedFavorite}
         onToggleFavorite={() => {
           if (!selectedLog) return;

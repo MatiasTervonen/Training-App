@@ -84,7 +84,7 @@ export default function SelectInput({
                 {label}
               </AppText>
             )}
-            <ScrollView>
+            <ScrollView showsVerticalScrollIndicator={false}>
               {options.map((option) => (
                 <AnimatedButton
                   key={option.value}

@@ -61,7 +61,7 @@ export default function ManageFoldersScreen() {
   };
 
   return (
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <FolderFilterChips
           folders={folders}
           selectedFolderId={"__folders__"}

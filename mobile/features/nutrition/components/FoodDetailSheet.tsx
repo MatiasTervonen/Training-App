@@ -33,7 +33,7 @@ type FoodForDetail = {
   image_url: string | null;
   image_nutrition_url: string | null;
   source: "local" | "custom" | "api";
-  apiSource?: "openfoodfacts" | "usda";
+  apiSource?: "openfoodfacts" | "usda" | "manual";
 };
 
 type FoodDetailSheetProps = {
@@ -116,6 +116,12 @@ export default function FoodDetailSheet({
     [food?.image_url, food?.image_nutrition_url],
   );
 
+  const sourceLabel = useMemo(() => {
+    if (food?.source === "custom") return t("detail.source_custom");
+    if (food?.apiSource) return t(`detail.source_${food.apiSource}`);
+    return null;
+  }, [food?.source, food?.apiSource, t]);
+
   if (!food) return null;
 
   return (
@@ -134,6 +140,11 @@ export default function FoodDetailSheet({
               {food.serving_description && (
                 <BodyTextNC className="text-xs text-slate-500 mt-1">
                   {food.serving_description}
+                </BodyTextNC>
+              )}
+              {sourceLabel && (
+                <BodyTextNC className="text-xs text-slate-500 mt-1">
+                  {t("detail.source", { source: sourceLabel })}
                 </BodyTextNC>
               )}
             </View>

@@ -285,7 +285,8 @@
       "exercises": "Liikkeet",
       "sets": "Sarjat",
       "subtitle": "Jaa treeni kavereidesi kanssa",
-      "customizeCard": "Muokkaa korttia"
+      "customizeCard": "Muokkaa korttia",
+      "bestSets": "Parhaat sarjat"
     },
     "analytics": {
       "title": "Viimeisten 30 päivän analytiikka",

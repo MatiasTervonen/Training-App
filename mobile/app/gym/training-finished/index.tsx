@@ -223,6 +223,7 @@ export default function TrainingFinishedScreen() {
           <FlatList
             data={friends ?? []}
             keyExtractor={(item: Friends) => item.id}
+            showsVerticalScrollIndicator={false}
             renderItem={({ item }: { item: Friends }) => (
               <AnimatedButton
                 onPress={() => handleSelectFriend(item.user.id)}

@@ -25,6 +25,9 @@ export function mapFoodItem(f: FoodItem): NutritionSearchResult {
     barcode: f.barcode,
     is_custom: false,
     source: "local",
+    ...(f.source === "openfoodfacts" || f.source === "usda" || f.source === "manual"
+      ? { apiSource: f.source }
+      : {}),
   };
 }
 
@@ -91,6 +94,7 @@ export function useBarcodeLookup() {
           barcode: apiResult.barcode,
           is_custom: false,
           source: "local",
+          apiSource: "openfoodfacts",
         };
         return mapped;
       }

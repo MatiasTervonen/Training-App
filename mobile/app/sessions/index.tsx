@@ -14,7 +14,7 @@ import {
 } from "lucide-react-native";
 import LinkButton from "@/components/buttons/LinkButton";
 import PageContainer from "@/components/PageContainer";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import DraggableList from "@/components/DraggableList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -68,6 +68,7 @@ function sortByOrder(order: string[]): SessionItem[] {
 export default function SessionsScreen() {
   const { t } = useTranslation();
   const [items, setItems] = useState(DEFAULT_ITEMS);
+  const [scrollEnabled, setScrollEnabled] = useState(true);
 
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY).then((stored) => {
@@ -84,29 +85,36 @@ export default function SessionsScreen() {
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(order));
   }, []);
 
+  const handleDragStart = useCallback(() => setScrollEnabled(false), []);
+  const handleDragEnd = useCallback(() => setScrollEnabled(true), []);
+
   return (
-    <PageContainer>
-      <AppText className="text-2xl text-center mb-10">{t("sessions.title")}</AppText>
-      <DraggableList
-        items={items}
-        onReorder={handleReorder}
-        keyExtractor={(item) => item.id}
-        renderItem={(item) => {
-          const Icon = item.icon;
-          return (
-            <View className="mb-4">
-              <LinkButton
-                label={t(item.labelKey)}
-                href={item.href}
-                gradientColors={item.colors.gradient}
-                borderColor={item.colors.border}
-              >
-                <Icon size={20} color={item.colors.icon} />
-              </LinkButton>
-            </View>
-          );
-        }}
-      />
-    </PageContainer>
+    <ScrollView scrollEnabled={scrollEnabled}>
+      <PageContainer>
+        <AppText className="text-2xl text-center mb-10">{t("sessions.title")}</AppText>
+        <DraggableList
+          items={items}
+          onReorder={handleReorder}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          keyExtractor={(item) => item.id}
+          renderItem={(item) => {
+            const Icon = item.icon;
+            return (
+              <View className="mb-4">
+                <LinkButton
+                  label={t(item.labelKey)}
+                  href={item.href}
+                  gradientColors={item.colors.gradient}
+                  borderColor={item.colors.border}
+                >
+                  <Icon size={20} color={item.colors.icon} />
+                </LinkButton>
+              </View>
+            );
+          }}
+        />
+      </PageContainer>
+    </ScrollView>
   );
 }

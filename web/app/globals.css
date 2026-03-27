@@ -209,6 +209,10 @@ input[type="number"] {
   font-size: 13px !important;
 }
 
+* {
+  scrollbar-width: none;
+}
+
 ::-webkit-scrollbar {
   display: none;
 }

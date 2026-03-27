@@ -1,12 +1,15 @@
 import { View, ActivityIndicator } from "react-native";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import AppText from "@/components/AppText";
 import AppTextNC from "@/components/AppTextNC";
 import BodyText from "@/components/BodyText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import BalanceBar from "@/features/energy-balance/components/BalanceBar";
 import BreakdownRow from "@/features/energy-balance/components/BreakdownRow";
+import ActivityLevelSelector from "@/features/energy-balance/components/ActivityLevelSelector";
 import { useEnergyBalance } from "@/features/energy-balance/hooks/useEnergyBalance";
+import { saveActivityLevel } from "@/database/energy-balance/save-activity-level";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronUp, Info } from "lucide-react-native";
@@ -18,8 +21,21 @@ type EnergyBalanceCardProps = {
 export default function EnergyBalanceCard({ date }: EnergyBalanceCardProps) {
   const { t } = useTranslation("nutrition");
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { data, isLoading } = useEnergyBalance(date);
   const [expanded, setExpanded] = useState(false);
+
+  const handleActivityLevelChange = useCallback(
+    async (level: number) => {
+      try {
+        await saveActivityLevel(date, level);
+        queryClient.invalidateQueries({ queryKey: ["energyBalance", date] });
+      } catch {
+        // Error already handled in saveActivityLevel
+      }
+    },
+    [date, queryClient],
+  );
 
   if (isLoading) {
     return (
@@ -68,6 +84,12 @@ export default function EnergyBalanceCard({ date }: EnergyBalanceCardProps) {
         </View>
       </View>
 
+      {/* Activity level selector (always visible) */}
+      <ActivityLevelSelector
+        level={data.activity_level}
+        onSelect={handleActivityLevelChange}
+      />
+
       {/* Expanded breakdown */}
       {expanded ? (
         <View className="mt-4">
@@ -82,17 +104,12 @@ export default function EnergyBalanceCard({ date }: EnergyBalanceCardProps) {
 
           {/* Calories Out breakdown */}
           <BreakdownRow
-            label={t("energyBalance.bmr")}
-            value={data.bmr}
+            label={t("energyBalance.baseBurn")}
+            value={data.base_burn}
           />
           <BreakdownRow
             label={t("energyBalance.exercise")}
             value={data.net_exercise_calories}
-          />
-          <BreakdownRow
-            label={t("energyBalance.steps")}
-            value={data.net_step_calories}
-            detail={`(${data.step_count.toLocaleString()})`}
           />
           <BreakdownRow
             label={t("energyBalance.tef")}

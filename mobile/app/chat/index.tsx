@@ -91,6 +91,7 @@ export default function ChatListScreen() {
       <FlatList
         data={conversations ?? []}
         keyExtractor={(item) => item.conversation_id}
+        showsVerticalScrollIndicator={false}
         renderItem={renderItem}
         onRefresh={refetch}
         refreshing={isLoading}

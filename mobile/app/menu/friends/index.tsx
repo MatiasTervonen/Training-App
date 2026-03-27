@@ -68,6 +68,7 @@ export default function FriendsScreen() {
       className="flex-1"
       contentContainerClassName=" grow"
       keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
     >
       <PageContainer>
         <FriendRequestForm />

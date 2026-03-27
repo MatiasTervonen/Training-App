@@ -91,7 +91,7 @@ export default function NotesScreen() {
 
   return (
     <View className="flex-1">
-      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={50}>
+      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={50} showsVerticalScrollIndicator={false}>
         <PageContainer className="justify-between">
           <View>
             <AppText className="text-2xl text-center mb-10">

@@ -65,6 +65,7 @@ export default function FavoriteFoodsList({
       data={favorites}
       keyExtractor={(item) => item.id}
       keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
       renderItem={({ item }) => (
         <AnimatedButton
           onPress={() => onSelect(mapFavoriteToSearchResult(item))}

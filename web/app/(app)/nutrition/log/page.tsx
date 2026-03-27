@@ -95,7 +95,7 @@ function LogFoodContent() {
       image_url: string | null;
       image_nutrition_url: string | null;
       source: "local" | "custom" | "api";
-      apiSource?: "openfoodfacts" | "usda";
+      apiSource?: "openfoodfacts" | "usda" | "manual";
     };
     servingSizeG: number;
     quantity: number;

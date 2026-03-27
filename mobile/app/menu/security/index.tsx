@@ -153,7 +153,7 @@ export default function SecurityPage() {
   };
 
   return (
-    <KeyboardAwareScrollView bottomOffset={50}>
+    <KeyboardAwareScrollView bottomOffset={50} showsVerticalScrollIndicator={false}>
       <Pressable onPress={Keyboard.dismiss} className="flex-1">
         <PageContainer className="items-center">
           {isGoogleUser || isGuest ? (

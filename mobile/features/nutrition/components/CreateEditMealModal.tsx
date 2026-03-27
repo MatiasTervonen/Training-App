@@ -103,6 +103,7 @@ function MealModalContent({
         scrollEventThrottle={16}
         keyboardShouldPersistTaps="handled"
         contentContainerClassName="px-5 pt-5 pb-4"
+        showsVerticalScrollIndicator={false}
       >
         <AppText className="text-xl text-center mb-4">
           {editingMeal ? t("savedMeals.edit") : t("savedMeals.create")}

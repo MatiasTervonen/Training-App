@@ -19,7 +19,7 @@ This feature lets users:
 ```sql
 CREATE TABLE food_reports (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL DEFAULT auth.uid() REFERENCES public.users(id) ON DELETE CASCADE,
   food_id UUID NOT NULL REFERENCES foods(id) ON DELETE CASCADE,
   reported_calories_per_100g NUMERIC(7,2),
   reported_protein_per_100g NUMERIC(7,2),
@@ -45,9 +45,18 @@ CREATE POLICY "food_reports_insert"
   ON food_reports FOR INSERT TO authenticated
   WITH CHECK (user_id = auth.uid());
 
-CREATE POLICY "food_reports_select_own"
+CREATE POLICY "food_reports_admin_select"
   ON food_reports FOR SELECT TO authenticated
-  USING (user_id = auth.uid());
+  USING ((auth.jwt()->'app_metadata'->>'role') IN ('admin', 'super_admin'));
+
+CREATE POLICY "food_reports_admin_update"
+  ON food_reports FOR UPDATE TO authenticated
+  USING ((auth.jwt()->'app_metadata'->>'role') IN ('admin', 'super_admin'))
+  WITH CHECK ((auth.jwt()->'app_metadata'->>'role') IN ('admin', 'super_admin'));
+
+CREATE POLICY "food_reports_admin_delete"
+  ON food_reports FOR DELETE TO authenticated
+  USING ((auth.jwt()->'app_metadata'->>'role') IN ('admin', 'super_admin'));
 ```
 
 ### 1c. RPC: `nutrition_report_food` (user-facing)

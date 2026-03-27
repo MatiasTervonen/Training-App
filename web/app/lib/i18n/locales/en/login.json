@@ -27,6 +27,7 @@
     "confirmPassword": "Confirm Password",
     "confirmPasswordPlaceholder": "Confirm Password...",
     "or": "or",
+    "agreeToTerms": "By signing up, you agree to our <terms>Terms</terms> and <privacy>Privacy Policy</privacy>.",
     "signInWithGoogle": "Sign in with Google",
     "logIn": "Log in",
     "signUp": "Sign up",

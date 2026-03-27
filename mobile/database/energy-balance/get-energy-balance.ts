@@ -4,10 +4,10 @@ import { handleError } from "@/utils/handleError";
 export type EnergyBalance = {
   calories_consumed: number;
   bmr: number;
+  activity_level: number;
+  base_burn: number;
   net_exercise_calories: number;
   gross_exercise_calories: number;
-  step_count: number;
-  net_step_calories: number;
   tef: number;
   tdee: number;
   balance: number;
@@ -17,14 +17,12 @@ export type EnergyBalance = {
 
 export async function getEnergyBalance(
   date: string,
-  todaySteps: number | null,
 ): Promise<EnergyBalance> {
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const { data, error } = await supabase.rpc("energy_balance_get_daily", {
     p_date: date,
     p_tz: tz,
-    p_today_steps: todaySteps,
   });
 
   if (error) {

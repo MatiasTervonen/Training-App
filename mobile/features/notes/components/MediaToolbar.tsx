@@ -522,7 +522,7 @@ export default function MediaToolbar({
             <AppText className="mb-6 text-center text-xl px-4">
               {t("notes:notes.folders.saveToFolder")}
             </AppText>
-            <ScrollView>
+            <ScrollView showsVerticalScrollIndicator={false}>
               <AnimatedButton
                 onPress={() => {
                   onFolderSelect(null);

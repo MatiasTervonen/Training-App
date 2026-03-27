@@ -60,6 +60,7 @@ export type FoodSearchResult = {
   nutrition_label_url: string | null;
   is_custom: boolean;
   barcode: string | null;
+  data_source: string | null;
 };
 
 export type NutritionSearchResult = {
@@ -81,7 +82,7 @@ export type NutritionSearchResult = {
   barcode: string | null;
   is_custom: boolean;
   source: "local" | "custom" | "api";
-  apiSource?: "openfoodfacts" | "usda";
+  apiSource?: "openfoodfacts" | "usda" | "manual";
 };
 
 export type FavoriteFood = {

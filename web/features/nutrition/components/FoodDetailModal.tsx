@@ -29,7 +29,7 @@ type FoodForDetail = {
   image_url: string | null;
   image_nutrition_url: string | null;
   source: "local" | "custom" | "api";
-  apiSource?: "openfoodfacts" | "usda";
+  apiSource?: "openfoodfacts" | "usda" | "manual";
 };
 
 type FoodDetailModalProps = {
@@ -113,6 +113,12 @@ export default function FoodDetailModal({
     });
   };
 
+  const sourceLabel = food?.source === "custom"
+    ? t("detail.source_custom")
+    : food?.apiSource
+      ? t(`detail.source_${food.apiSource}`)
+      : null;
+
   if (!food) return null;
 
   return (
@@ -131,6 +137,11 @@ export default function FoodDetailModal({
                 {food.serving_description}
               </p>
             )}
+            {sourceLabel && (
+              <p className="font-body text-xs text-slate-500 mt-1">
+                {t("detail.source", { source: sourceLabel })}
+              </p>
+            )}
           </div>
           <button
             onClick={onToggleFavorite}
@@ -146,7 +157,7 @@ export default function FoodDetailModal({
 
         {/* Product images */}
         {(food.image_url || food.image_nutrition_url) && (
-          <div className="flex gap-3 overflow-x-auto">
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide">
             {food.image_url && (
               <button onClick={() => setViewingImage(food.image_url)} className="shrink-0 cursor-pointer">
                 <Image

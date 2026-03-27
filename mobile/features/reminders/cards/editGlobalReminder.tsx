@@ -155,7 +155,7 @@ export default function HandleEditGlobalReminder({
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <PageContainer className="justify-between">
           <View>
-            <AppText className=" text-xl text-center mb-10 mt-5">
+            <AppText className="text-xl text-center mb-10">
               {t("reminders.editReminder")}
             </AppText>
             <View className="mb-5">

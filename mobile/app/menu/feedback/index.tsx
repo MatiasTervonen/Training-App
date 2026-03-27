@@ -120,7 +120,7 @@ export default function FeedbackScreen() {
 
   return (
     <View className="flex-1">
-      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={50}>
+      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={50} showsVerticalScrollIndicator={false}>
         <PageContainer className="justify-between">
           <View>
             <View className="mb-4">

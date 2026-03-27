@@ -229,6 +229,7 @@ export default function CreateReminderScreen() {
       <KeyboardAwareScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         bottomOffset={50}
+        showsVerticalScrollIndicator={false}
       >
         {/* Type selector — 2x2 grid */}
         <View className="px-5 pt-2 pb-3">

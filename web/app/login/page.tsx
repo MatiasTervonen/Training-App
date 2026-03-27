@@ -16,6 +16,7 @@ import CustomInput from "@/ui/CustomInput";
 import ResetPasswordButton from "@/app/login/components/resetPasswordButton";
 import ResendButton from "@/app/login/components/resendButton";
 import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { guestLogin } from "@/app/login/guest-login/action";
@@ -318,6 +319,26 @@ export default function LoginPage() {
                   }`}
                 >
                   {!hideErrorMessage && state.message}
+                </p>
+
+                <p className="text-xs text-gray-500 text-center font-body">
+                  {t("login.agreeToTerms")
+                    .split(/(<terms>.*?<\/terms>|<privacy>.*?<\/privacy>)/)
+                    .map((part: string, i: number) => {
+                      if (part.startsWith("<terms>"))
+                        return (
+                          <Link key={i} href="/terms" target="_blank" className="text-blue-400 hover:text-blue-300">
+                            {part.replace(/<\/?terms>/g, "")}
+                          </Link>
+                        );
+                      if (part.startsWith("<privacy>"))
+                        return (
+                          <Link key={i} href="/privacy" target="_blank" className="text-blue-400 hover:text-blue-300">
+                            {part.replace(/<\/?privacy>/g, "")}
+                          </Link>
+                        );
+                      return part;
+                    })}
                 </p>
 
                 {/* Google Sign-In divider */}

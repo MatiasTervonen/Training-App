@@ -38,7 +38,7 @@ export type NutritionSearchResult = {
   barcode: string | null;
   is_custom: boolean;
   source: "local" | "custom" | "api";
-  apiSource?: "openfoodfacts" | "usda";
+  apiSource?: "openfoodfacts" | "usda" | "manual";
 };
 
 function mapLocalResult(r: FoodSearchResult): NutritionSearchResult {
@@ -61,6 +61,9 @@ function mapLocalResult(r: FoodSearchResult): NutritionSearchResult {
     barcode: r.barcode,
     is_custom: r.is_custom,
     source: r.is_custom ? "custom" : "local",
+    ...(r.data_source === "openfoodfacts" || r.data_source === "usda" || r.data_source === "manual"
+      ? { apiSource: r.data_source }
+      : {}),
   };
 }
 

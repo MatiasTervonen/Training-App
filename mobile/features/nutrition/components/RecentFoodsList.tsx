@@ -65,6 +65,7 @@ export default function RecentFoodsList({ onSelect }: RecentFoodsListProps) {
         item.food_id ?? item.custom_food_id ?? item.name
       }
       keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
       renderItem={({ item }) => (
         <AnimatedButton
           onPress={() => onSelect(mapRecentToSearchResult(item))}

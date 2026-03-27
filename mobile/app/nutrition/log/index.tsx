@@ -27,6 +27,7 @@ import { useLogSavedMeal } from "@/features/nutrition/hooks/useLogSavedMeal";
 import { getPendingDraft, clearPendingDraft } from "@/features/nutrition/hooks/useBarcodeDraft";
 import type { BarcodeDraft } from "@/features/nutrition/hooks/useBarcodeDraft";
 import { saveSharedFood } from "@/database/nutrition/save-shared-food";
+import { reportFood } from "@/database/nutrition/report-food";
 import { useTranslation } from "react-i18next";
 import { useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Search, ScanLine, Heart, Clock, PenLine, UtensilsCrossed, X } from "lucide-react-native";
@@ -135,6 +136,17 @@ export default function LogFoodScreen() {
     protein: number;
     carbs: number;
     fat: number;
+    reportData?: {
+      foodId: string;
+      caloriesPer100g: number;
+      proteinPer100g: number;
+      carbsPer100g: number;
+      fatPer100g: number;
+      saturatedFatPer100g: number | null;
+      sugarPer100g: number | null;
+      fiberPer100g: number | null;
+      sodiumPer100g: number | null;
+    };
   }) => {
     let foodId = params.food.is_custom ? null : params.food.id;
     const customFoodId = params.food.is_custom ? params.food.id : null;
@@ -178,6 +190,14 @@ export default function LogFoodScreen() {
       fat: params.fat,
       loggedAt,
     });
+
+    if (params.reportData) {
+      try {
+        await reportFood(params.reportData);
+      } catch {
+        // Silent fail — food log already succeeded
+      }
+    }
   };
 
   const handleToggleFavorite = () => {

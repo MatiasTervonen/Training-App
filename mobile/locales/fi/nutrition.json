@@ -68,7 +68,9 @@
     "source_custom": "Oma",
     "logFood": "Kirjaa ruoka",
     "addFavorite": "Lisää suosikkeihin",
-    "removeFavorite": "Poista suosikeista"
+    "removeFavorite": "Poista suosikeista",
+    "editPer100g": "Muokkaa per 100g -arvoja",
+    "reportIncorrectData": "Ilmoita virheelliset tiedot"
   },
   "goals": {
     "title": "Ravintotavoitteet",

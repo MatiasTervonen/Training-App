@@ -68,7 +68,9 @@
     "source_custom": "Custom",
     "logFood": "Log Food",
     "addFavorite": "Add to favorites",
-    "removeFavorite": "Remove from favorites"
+    "removeFavorite": "Remove from favorites",
+    "editPer100g": "Edit per 100g values",
+    "reportIncorrectData": "Report incorrect data"
   },
   "goals": {
     "title": "Nutrition Goals",

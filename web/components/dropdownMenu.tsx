@@ -70,7 +70,7 @@ export default function DropdownMenu({
         createPortal(
           <div
             ref={dropdownRef}
-            className={`fixed z-9999 flex flex-col p-2 rounded-xl border-[1.5px] border-slate-600 shadow-[0_0_20px_rgba(59,130,246,0.4)] w-40 ${className}`}
+            className={`fixed z-9999 flex flex-col p-2 rounded-xl border-[1.5px] border-slate-600 shadow-[0_0_20px_rgba(59,130,246,0.4)] w-44 ${className}`}
             style={{
               top: pos.top,
               right: pos.right,

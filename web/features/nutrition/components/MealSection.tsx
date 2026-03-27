@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef } from "react";
 import { Clock } from "lucide-react";
+import TimePicker from "@/components/TimePicker";
 import FoodLogItem from "@/features/nutrition/components/FoodLogItem";
 import type { DailyFoodLog } from "@/types/nutrition";
 
@@ -19,7 +19,6 @@ function getMealTime(items: DailyFoodLog[]): string | null {
 }
 
 function formatMealTime(time: string): string {
-  // meal_time comes as "HH:MM:SS" from Postgres TIME — show only HH:MM
   return time.slice(0, 5);
 }
 
@@ -30,53 +29,30 @@ export default function MealSection({
   onDelete,
   onUpdateMealTime,
 }: MealSectionProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-
   if (items.length === 0) return null;
 
   const totalCalories = items.reduce((sum, item) => sum + item.calories, 0);
   const mealTime = getMealTime(items);
-
-  const handleTimeClick = () => {
-    inputRef.current?.showPicker();
-  };
-
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value && onUpdateMealTime) {
-      onUpdateMealTime(e.target.value);
-    }
-  };
 
   return (
     <div className="flex flex-col gap-2 mb-4">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <span className="text-base">{title}</span>
-          {mealTime ? (
-            <button
-              onClick={handleTimeClick}
-              className="font-body text-sm text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
-            >
+          {onUpdateMealTime ? (
+            <div className="flex items-center gap-1">
+              {!mealTime && <Clock size={14} className="text-slate-500" />}
+              <TimePicker
+                value={mealTime ? formatMealTime(mealTime) : null}
+                onChange={(time) => onUpdateMealTime(time)}
+                className="w-16 p-0.5 text-center rounded border border-transparent font-body text-sm text-slate-500 bg-transparent cursor-pointer hover:text-slate-300 hover:border-slate-600 focus:outline-none focus:border-green-300"
+              />
+            </div>
+          ) : mealTime ? (
+            <span className="font-body text-sm text-slate-500">
               {formatMealTime(mealTime)}
-            </button>
-          ) : onUpdateMealTime ? (
-            <button
-              onClick={handleTimeClick}
-              className="text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
-            >
-              <Clock size={14} />
-            </button>
+            </span>
           ) : null}
-          {onUpdateMealTime && (
-            <input
-              ref={inputRef}
-              type="time"
-              value={mealTime ? formatMealTime(mealTime) : ""}
-              onChange={handleTimeChange}
-              className="sr-only"
-              tabIndex={-1}
-            />
-          )}
         </div>
         <span className="font-body text-sm text-slate-400">
           {Math.round(totalCalories)} kcal

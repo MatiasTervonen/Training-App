@@ -5,7 +5,7 @@ import { handleError } from "@/utils/handleError";
 
 type ResolveFoodReportParams = {
   reportId: string;
-  action: "accepted" | "rejected";
+  action: "accepted" | "rejected" | "pending";
   caloriesPer100g?: number | null;
   proteinPer100g?: number | null;
   carbsPer100g?: number | null;
@@ -14,6 +14,8 @@ type ResolveFoodReportParams = {
   sugarPer100g?: number | null;
   fiberPer100g?: number | null;
   sodiumPer100g?: number | null;
+  imageUrl?: string | null;
+  nutritionLabelUrl?: string | null;
 };
 
 export async function resolveFoodReport(params: ResolveFoodReportParams) {
@@ -34,14 +36,16 @@ export async function resolveFoodReport(params: ResolveFoodReportParams) {
   const { error } = await supabase.rpc("admin_resolve_food_report", {
     p_report_id: params.reportId,
     p_action: params.action,
-    p_calories_per_100g: params.caloriesPer100g ?? null,
-    p_protein_per_100g: params.proteinPer100g ?? null,
-    p_carbs_per_100g: params.carbsPer100g ?? null,
-    p_fat_per_100g: params.fatPer100g ?? null,
-    p_saturated_fat_per_100g: params.saturatedFatPer100g ?? null,
-    p_sugar_per_100g: params.sugarPer100g ?? null,
-    p_fiber_per_100g: params.fiberPer100g ?? null,
-    p_sodium_per_100g: params.sodiumPer100g ?? null,
+    p_calories_per_100g: params.caloriesPer100g ?? undefined,
+    p_protein_per_100g: params.proteinPer100g ?? undefined,
+    p_carbs_per_100g: params.carbsPer100g ?? undefined,
+    p_fat_per_100g: params.fatPer100g ?? undefined,
+    p_saturated_fat_per_100g: params.saturatedFatPer100g ?? undefined,
+    p_sugar_per_100g: params.sugarPer100g ?? undefined,
+    p_fiber_per_100g: params.fiberPer100g ?? undefined,
+    p_sodium_per_100g: params.sodiumPer100g ?? undefined,
+    p_image_url: params.imageUrl !== undefined ? (params.imageUrl ?? undefined) : "__KEEP__",
+    p_nutrition_label_url: params.nutritionLabelUrl !== undefined ? (params.nutritionLabelUrl ?? undefined) : "__KEEP__",
   });
 
   if (error) {

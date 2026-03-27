@@ -26,6 +26,10 @@ class StepCounterHelper(private val context: Context) {
         // Safety cap: no single sensor event can produce more than 100K steps.
         // Prevents inflated counts from sensor glitches or false reboot detection.
         private const val MAX_SINGLE_DELTA = 100_000L
+        // If the last reading is older than this, re-anchor without adding steps.
+        // Prevents dumping multi-day accumulated steps into today after a tracking gap
+        // (e.g. permission revoked/re-granted, app reinstalled, service stopped for days).
+        private const val STALE_READING_THRESHOLD_MS = 6 * 3600_000L // 6 hours
     }
 
     private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -83,11 +87,16 @@ class StepCounterHelper(private val context: Context) {
     fun recordReadingWithValue(currentValue: Long) {
 
         val lastValue = prefs.getLong(KEY_LAST_SENSOR_VALUE, -1L)
+        val lastReadTime = prefs.getLong(KEY_LAST_READ_TIME, -1L)
         val today = getTrackingDate()
+        val now = System.currentTimeMillis()
+
+        val isStale = lastReadTime != -1L && (now - lastReadTime) > STALE_READING_THRESHOLD_MS
 
         val delta = when {
             lastValue == -1L -> 0L // First ever read, no delta yet
             currentValue < lastValue -> 0L // Reboot or sensor glitch: re-anchor without adding steps
+            isStale -> 0L // Too long since last reading: can't attribute steps to correct days
             else -> currentValue - lastValue
         }
 

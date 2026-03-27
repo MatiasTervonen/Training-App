@@ -588,7 +588,7 @@ export default function CustomFoodForm({ onSaved, onExistingFound, barcode }: Cu
         />
       </View>
 
-      <View className="flex-row gap-3">
+      <View className="flex-row gap-3 items-end">
         <View className="flex-1 gap-1">
           <AppText className="text-sm">{t("custom.saltPer100g")}</AppText>
           <TextInput
@@ -600,6 +600,9 @@ export default function CustomFoodForm({ onSaved, onExistingFound, barcode }: Cu
             className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-gray-100 font-lexend text-sm"
           />
         </View>
+        <BodyTextNC className="text-slate-500 text-xs pb-3.5">
+          {t("login:login.or")}
+        </BodyTextNC>
         <View className="flex-1 gap-1">
           <AppText className="text-sm">{t("custom.sodiumPer100g")}</AppText>
           <TextInput

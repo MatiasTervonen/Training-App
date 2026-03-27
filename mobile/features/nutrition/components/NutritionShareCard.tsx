@@ -319,8 +319,8 @@ const NutritionShareCard = forwardRef<View, NutritionShareCardProps>(
     if (size === "story") {
       return (
         <ThemedCardWrapper ref={ref} theme={theme} size={size}>
-          {/* Logo fixed at top */}
-          <View className="flex-row items-center gap-4" style={{ position: "absolute", top: 60, left: 60 }}>
+          {/* Logo fixed at top — pushed down to clear Instagram's story UI overlay */}
+          <View className="flex-row items-center gap-4" style={{ position: "absolute", top: 200, left: 60 }}>
             <Image
               source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
               style={{ width: 80, height: 80, borderRadius: 8 }}
@@ -333,7 +333,7 @@ const NutritionShareCard = forwardRef<View, NutritionShareCardProps>(
           {/* All content centered */}
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center", gap: 60 }}>
             {/* Title + Date */}
-            <View style={{ alignItems: "center", gap: 16, transform: [{ translateY: -60 }] }}>
+            <View style={{ alignItems: "center", gap: 16, transform: [{ translateY: -20 }] }}>
               <AppText
                 style={{ fontSize: 80, color: colors.textPrimary, textAlign: "center" }}
               >

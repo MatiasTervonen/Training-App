@@ -47,7 +47,7 @@ import useToggleLike from "@/features/social-feed/hooks/useToggleLike";
 import SocialFeedCard from "@/features/social-feed/components/SocialFeedCard";
 import FeedModeToggle from "@/features/social-feed/components/FeedModeToggle";
 import { SocialFeedItem } from "@/types/social-feed";
-import CommentSheet from "@/features/social-feed/components/CommentSheet";
+import SocialExpandedContent from "@/features/social-feed/components/SocialExpandedContent";
 import { getFriendGymSession } from "@/database/social-feed/get-friend-gym-session";
 import { getFriendActivitySession } from "@/database/social-feed/get-friend-activity-session";
 import BodyTextNC from "@/components/BodyTextNC";
@@ -74,11 +74,10 @@ export default function SessionFeed({
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [expandedSocialItem, setExpandedSocialItem] =
-    useState<SocialFeedItem | null>(null);
-  const [commentFeedItemId, setCommentFeedItemId] = useState<string | null>(
-    initialCommentFeedItemId ?? null,
-  );
+  const [openSocialItem, setOpenSocialItem] = useState<{
+    item: SocialFeedItem;
+    scrollToComments: boolean;
+  } | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] =
     useState(false);
@@ -90,13 +89,6 @@ export default function SessionFeed({
       setFeedMode(initialFeedMode);
     }
   }, [initialFeedMode]);
-
-  // Auto-open comment sheet when navigating from comment/reply notification
-  useEffect(() => {
-    if (initialCommentFeedItemId) {
-      setCommentFeedItemId(initialCommentFeedItemId);
-    }
-  }, [initialCommentFeedItemId]);
 
   const router = useRouter();
 
@@ -194,19 +186,33 @@ export default function SessionFeed({
   const socialFeed = useSocialFeed();
   const { mutate: toggleLikeMutation } = useToggleLike();
 
+  // Auto-open comments when navigating from comment/reply notification
+  useEffect(() => {
+    if (initialCommentFeedItemId && socialFeed.items.length > 0) {
+      const target = socialFeed.items.find(
+        (item) => item.id === initialCommentFeedItemId,
+      );
+      if (target) {
+        setOpenSocialItem({ item: target, scrollToComments: true });
+      }
+    }
+  }, [initialCommentFeedItemId, socialFeed.items]);
+
   // Fetch full friend session when expanded
   const { data: friendGymData, isLoading: isLoadingFriendGym } = useQuery({
-    queryKey: ["friendGymSession", expandedSocialItem?.id],
-    queryFn: () => getFriendGymSession(expandedSocialItem!.id),
-    enabled: !!expandedSocialItem && expandedSocialItem.type === "gym_sessions",
+    queryKey: ["friendGymSession", openSocialItem?.item.id],
+    queryFn: () => getFriendGymSession(openSocialItem!.item.id),
+    enabled:
+      !!openSocialItem && openSocialItem.item.type === "gym_sessions",
   });
 
   const { data: friendActivityData, isLoading: isLoadingFriendActivity } =
     useQuery({
-      queryKey: ["friendActivitySession", expandedSocialItem?.id],
-      queryFn: () => getFriendActivitySession(expandedSocialItem!.id),
+      queryKey: ["friendActivitySession", openSocialItem?.item.id],
+      queryFn: () => getFriendActivitySession(openSocialItem!.item.id),
       enabled:
-        !!expandedSocialItem && expandedSocialItem.type === "activity_sessions",
+        !!openSocialItem &&
+        openSocialItem.item.type === "activity_sessions",
     });
 
   // useUpdateFeedItem hook to update feed item in cache
@@ -284,7 +290,8 @@ export default function SessionFeed({
                         return;
                       }
                       if (feedItem.type === "nutrition") {
-                        router.push("/nutrition");
+                        const feedDate = new Date(feedItem.occurred_at).toLocaleDateString("en-CA");
+                        router.push(`/nutrition?date=${feedDate}`);
                         return;
                       }
                       setExpandedItem(feedItem);
@@ -388,8 +395,12 @@ export default function SessionFeed({
                 <SocialFeedCard
                   item={socialItem}
                   onToggleLike={() => toggleLikeMutation(socialItem.id)}
-                  onExpand={() => setExpandedSocialItem(socialItem)}
-                  onOpenComments={() => setCommentFeedItemId(socialItem.id)}
+                  onExpand={() =>
+                    setOpenSocialItem({ item: socialItem, scrollToComments: false })
+                  }
+                  onOpenComments={() =>
+                    setOpenSocialItem({ item: socialItem, scrollToComments: true })
+                  }
                 />
               )}
             />
@@ -662,56 +673,62 @@ export default function SessionFeed({
         </FullScreenModal>
       )}
 
-      <CommentSheet
-        feedItemId={commentFeedItemId}
-        onClose={() => setCommentFeedItemId(null)}
-      />
-
-      {expandedSocialItem && (
+      {openSocialItem && (
         <FullScreenModal
-          isOpen={!!expandedSocialItem}
-          onClose={() => setExpandedSocialItem(null)}
+          isOpen={!!openSocialItem}
+          onClose={() => setOpenSocialItem(null)}
           scrollable={false}
         >
-          {expandedSocialItem.type === "gym_sessions" && (
-            <>
-              {isLoadingFriendGym ? (
-                <View className="gap-5 items-center justify-center mt-40 px-10">
-                  <BodyText className="text-lg">{t("feed.loadingGym")}</BodyText>
-                  <ActivityIndicator />
-                </View>
-              ) : friendGymData ? (
-                <GymSession {...friendGymData} readOnly />
-              ) : (
-                <BodyText className="text-center text-xl mt-40 px-10">
-                  {t("feed.gymError")}
-                </BodyText>
-              )}
-            </>
-          )}
-          {expandedSocialItem.type === "activity_sessions" && (
-            <>
-              {isLoadingFriendActivity ? (
-                <View className="gap-5 items-center justify-center mt-40 px-10">
-                  <BodyText className="text-lg">
-                    {t("feed.loadingActivity")}
+          <SocialExpandedContent
+            feedItemId={openSocialItem.item.id}
+            scrollToComments={openSocialItem.scrollToComments}
+            isLoadingSession={
+              openSocialItem.item.type === "gym_sessions"
+                ? isLoadingFriendGym
+                : isLoadingFriendActivity
+            }
+          >
+            {openSocialItem.item.type === "gym_sessions" && (
+              <>
+                {isLoadingFriendGym ? (
+                  <View className="gap-5 items-center justify-center mt-40 px-10">
+                    <BodyText className="text-lg">{t("feed.loadingGym")}</BodyText>
+                    <ActivityIndicator />
+                  </View>
+                ) : friendGymData ? (
+                  <GymSession {...friendGymData} readOnly embedded />
+                ) : (
+                  <BodyText className="text-center text-xl mt-40 px-10">
+                    {t("feed.gymError")}
                   </BodyText>
-                  <ActivityIndicator />
-                </View>
-              ) : friendActivityData ? (
-                <ActivitySession
-                  {...friendActivityData.session}
-                  voiceRecordings={friendActivityData.voiceRecordings}
-                  media={friendActivityData.media}
-                  readOnly
-                />
-              ) : (
-                <BodyText className="text-center text-xl mt-40 px-10">
-                  {t("feed.activityError")}
-                </BodyText>
-              )}
-            </>
-          )}
+                )}
+              </>
+            )}
+            {openSocialItem.item.type === "activity_sessions" && (
+              <>
+                {isLoadingFriendActivity ? (
+                  <View className="gap-5 items-center justify-center mt-40 px-10">
+                    <BodyText className="text-lg">
+                      {t("feed.loadingActivity")}
+                    </BodyText>
+                    <ActivityIndicator />
+                  </View>
+                ) : friendActivityData ? (
+                  <ActivitySession
+                    {...friendActivityData.session}
+                    voiceRecordings={friendActivityData.voiceRecordings}
+                    media={friendActivityData.media}
+                    readOnly
+                    embedded
+                  />
+                ) : (
+                  <BodyText className="text-center text-xl mt-40 px-10">
+                    {t("feed.activityError")}
+                  </BodyText>
+                )}
+              </>
+            )}
+          </SocialExpandedContent>
         </FullScreenModal>
       )}
     </LinearGradient>

@@ -219,7 +219,21 @@
       "saturatedFat": "Sat. fat/100g",
       "sugar": "Sugar/100g",
       "fiber": "Fiber/100g",
-      "sodium": "Sodium/100g"
+      "sodium": "Sodium/100g",
+      "reportImages": "User-submitted photos",
+      "explanation": "Explanation",
+      "allImages": "All images (click to expand)",
+      "finalImages": "Final images (saved on accept)",
+      "productImage": "Product",
+      "nutritionLabel": "Label",
+      "currentProduct": "Current product",
+      "currentLabel": "Current label",
+      "reportedProduct": "Reported product",
+      "reportedLabel": "Reported label",
+      "setAsProduct": "Set as product image",
+      "setAsLabel": "Set as nutrition label",
+      "deleted": "Deleted",
+      "revertToPending": "Revert to pending"
     },
     "dashboard": {
       "link": "Dashboard",

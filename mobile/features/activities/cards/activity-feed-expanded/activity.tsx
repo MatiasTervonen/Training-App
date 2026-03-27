@@ -40,6 +40,7 @@ type ActivitySessionProps = FullActivitySession & {
   isLoadingMedia?: boolean;
   mediaError?: unknown;
   readOnly?: boolean;
+  embedded?: boolean;
 };
 
 export default function ActivitySession(
@@ -85,14 +86,8 @@ export default function ActivitySession(
     setTemplateNotes,
   });
 
-  return (
-    <ScrollView
-      scrollEnabled={scrollEnabled}
-      contentContainerStyle={{ flexGrow: 1 }}
-      showsVerticalScrollIndicator={false}
-      onScroll={handleScroll}
-      scrollEventThrottle={16}
-    >
+  const content = (
+    <>
       <PageContainer>
         <View className="flex-1 justify-between">
           <View>
@@ -324,6 +319,22 @@ export default function ActivitySession(
             onClose={() => setViewerIndex(-1)}
           />
         )}
+    </>
+  );
+
+  if (activity_session.embedded) {
+    return content;
+  }
+
+  return (
+    <ScrollView
+      scrollEnabled={scrollEnabled}
+      contentContainerStyle={{ flexGrow: 1 }}
+      showsVerticalScrollIndicator={false}
+      onScroll={handleScroll}
+      scrollEventThrottle={16}
+    >
+      {content}
     </ScrollView>
   );
 }

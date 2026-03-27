@@ -70,7 +70,15 @@
     "addFavorite": "Add to favorites",
     "removeFavorite": "Remove from favorites",
     "editPer100g": "Edit per 100g values",
-    "reportIncorrectData": "Report incorrect data"
+    "reportWrongData": "Report wrong data",
+    "reportTitle": "Report Wrong Data",
+    "reportImages": "Add photos as proof",
+    "reportExplanation": "Explanation (optional)",
+    "reportExplanationPlaceholder": "Describe what's wrong with the data...",
+    "submitReport": "Submit Report",
+    "reportSubmitted": "Report submitted",
+    "currentValues": "Current",
+    "reportedValues": "New"
   },
   "goals": {
     "title": "Nutrition Goals",
@@ -197,5 +205,27 @@
     "favoriteAdded": "Added to favorites",
     "favoriteRemoved": "Removed from favorites",
     "cameraPermission": "Camera permission is required to scan barcodes"
+  },
+  "analytics": {
+    "title": "Nutrition Analytics",
+    "summary": {
+      "avgCalories": "avg kcal/day",
+      "avgProtein": "avg protein/day",
+      "avgCarbs": "avg carbs/day",
+      "avgFat": "avg fat/day"
+    },
+    "charts": {
+      "calories": "Calories",
+      "macros": "Macros",
+      "distribution": "Macro Distribution",
+      "goal": "Goal"
+    },
+    "topFoods": {
+      "title": "Top Foods",
+      "times": "times",
+      "kcal": "kcal"
+    },
+    "noData": "No nutrition data",
+    "noDataDesc": "Start logging your meals to see trends and insights here."
   }
 }

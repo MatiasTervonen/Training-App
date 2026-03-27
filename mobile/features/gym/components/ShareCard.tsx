@@ -152,8 +152,8 @@ const ShareCard = forwardRef<View, ShareCardProps>(
 
     return (
       <ThemedCardWrapper ref={ref} theme={theme} size={size}>
-        {/* Logo fixed at top */}
-        <View className="flex-row items-center gap-4" style={{ position: "absolute", top: 60, left: 60 }}>
+        {/* Logo fixed at top — story pushed down to clear Instagram's UI overlay */}
+        <View className="flex-row items-center gap-4" style={{ position: "absolute", top: isStory ? 200 : 60, left: 60 }}>
           <Image
             source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
             style={{ width: isStory ? 80 : 64, height: isStory ? 80 : 64, borderRadius: 8 }}
@@ -168,30 +168,30 @@ const ShareCard = forwardRef<View, ShareCardProps>(
         {/* All content */}
         <View style={{ flex: 1, justifyContent: "center", gap: isStory ? 60 : 40, paddingTop: isStory ? 140 : 0, paddingBottom: isStory ? 120 : 0 }}>
           {/* Title + Date */}
-          <View className="items-center gap-3" style={{ transform: [{ translateY: isStory ? -80 : -20 }] }}>
+          <View className="items-center gap-3" style={{ transform: [{ translateY: isStory ? -80 : -70 }] }}>
             <AppText
               className="text-center"
-              style={{ fontSize: isStory ? 68 : 52, color: colors.textPrimary }}
+              style={{ fontSize: isStory ? 58 : 44, color: colors.textPrimary }}
               numberOfLines={2}
             >
               {title}
             </AppText>
             <AppText
-              style={{ fontSize: isStory ? 40 : 32, color: colors.textMuted }}
+              style={{ fontSize: isStory ? 34 : 26, color: colors.textMuted }}
             >
               {formatDateShort(date)}
             </AppText>
           </View>
 
           {/* 2x2 Stat Grid */}
-          <View className="gap-4">
+          <View className="gap-4 self-center" style={{ width: isStory ? "80%" : "75%", transform: [{ translateY: isStory ? 0 : -40 }] }}>
             <View className="flex-row gap-4">
               <View className="flex-1">
                 <ThemedStatBox
                   label={t("gym.share.duration")}
                   value={formatDurationLong(duration)}
                   theme={theme}
-                  size={isStory ? "large" : "normal"}
+                  size={isStory ? "normal" : "small"}
                 />
               </View>
               <View className="flex-1">
@@ -199,7 +199,7 @@ const ShareCard = forwardRef<View, ShareCardProps>(
                   label={t("gym.share.volume")}
                   value={formatVolume(stats.totalVolume)}
                   theme={theme}
-                  size={isStory ? "large" : "normal"}
+                  size={isStory ? "normal" : "small"}
                 />
               </View>
             </View>
@@ -209,7 +209,7 @@ const ShareCard = forwardRef<View, ShareCardProps>(
                   label={t("gym.share.exercises")}
                   value={String(stats.exerciseCount)}
                   theme={theme}
-                  size={isStory ? "large" : "normal"}
+                  size={isStory ? "normal" : "small"}
                 />
               </View>
               <View className="flex-1">
@@ -217,7 +217,7 @@ const ShareCard = forwardRef<View, ShareCardProps>(
                   label={t("gym.share.sets")}
                   value={String(stats.totalSets)}
                   theme={theme}
-                  size={isStory ? "large" : "normal"}
+                  size={isStory ? "normal" : "small"}
                 />
               </View>
             </View>

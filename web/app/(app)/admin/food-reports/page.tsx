@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
-import { SquareArrowOutUpRight } from "lucide-react";
+import { SquareArrowOutUpRight, Trash2, Check } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import useFoodReports from "@/features/admin/hooks/useFoodReports";
 import { resolveFoodReport } from "@/database/admin/resolve-food-report";
@@ -143,7 +143,7 @@ function ReportExpanded({
   onResolved: () => void;
 }) {
   const { t } = useTranslation("common");
-  const [resolving, setResolving] = useState(false);
+  const [resolving, setResolving] = useState<string | false>(false);
 
   // Editable fields pre-filled with reported values
   const [fields, setFields] = useState(() =>
@@ -155,11 +155,28 @@ function ReportExpanded({
     ),
   );
 
+  // Image state: tracks what the final image_url / nutrition_label_url should be on accept
+  // null = delete, string = use this URL, undefined = keep current
+  const [finalImageUrl, setFinalImageUrl] = useState<string | null | undefined>(undefined);
+  const [finalNutritionLabelUrl, setFinalNutritionLabelUrl] = useState<string | null | undefined>(undefined);
+  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+
+  const currentImageUrl = finalImageUrl === undefined ? item.image_url : finalImageUrl;
+  const currentNutritionLabelUrl = finalNutritionLabelUrl === undefined ? item.nutrition_label_url : finalNutritionLabelUrl;
+
+  // Collect all available images for the picker
+  const allImages = [
+    item.image_url ? { url: item.image_url, label: t("admin.foodReports.currentProduct") } : null,
+    item.nutrition_label_url ? { url: item.nutrition_label_url, label: t("admin.foodReports.currentLabel") } : null,
+    item.report_image_url ? { url: item.report_image_url, label: t("admin.foodReports.reportedProduct") } : null,
+    item.report_nutrition_label_url ? { url: item.report_nutrition_label_url, label: t("admin.foodReports.reportedLabel") } : null,
+  ].filter((img): img is { url: string; label: string } => img !== null);
+
   const updateField = (key: string, value: string) =>
     setFields((prev) => ({ ...prev, [key]: value }));
 
-  const handleResolve = async (action: "accepted" | "rejected") => {
-    setResolving(true);
+  const handleResolve = async (action: "accepted" | "rejected" | "pending") => {
+    setResolving(action);
     try {
       await resolveFoodReport({
         reportId: item.id,
@@ -174,6 +191,8 @@ function ReportExpanded({
               sugarPer100g: fields.sugar ? parseFloat(fields.sugar) || null : null,
               fiberPer100g: fields.fiber ? parseFloat(fields.fiber) || null : null,
               sodiumPer100g: fields.sodium ? parseFloat(fields.sodium) || null : null,
+              ...(finalImageUrl !== undefined ? { imageUrl: finalImageUrl } : {}),
+              ...(finalNutritionLabelUrl !== undefined ? { nutritionLabelUrl: finalNutritionLabelUrl } : {}),
             }
           : {}),
       });
@@ -195,29 +214,131 @@ function ReportExpanded({
         </p>
       </div>
 
-      {/* Images */}
-      {(item.image_url || item.nutrition_label_url) && (
-        <div className="flex gap-4 justify-center mb-6">
-          {item.image_url && (
-            <Image
-              src={item.image_url}
-              alt="Product"
-              width={200}
-              height={200}
-              className="rounded-lg object-cover max-h-48"
-              unoptimized
-            />
-          )}
-          {item.nutrition_label_url && (
-            <Image
-              src={item.nutrition_label_url}
-              alt="Nutrition label"
-              width={200}
-              height={200}
-              className="rounded-lg object-cover max-h-48"
-              unoptimized
-            />
-          )}
+      {/* All available images — click to expand */}
+      {allImages.length > 0 && (
+        <div className="mb-4">
+          <p className="text-sm text-slate-400 font-body text-center mb-2">
+            {t("admin.foodReports.allImages")}
+          </p>
+          <div className="flex gap-3 justify-center flex-wrap">
+            {allImages.map((img) => (
+              <div key={img.url} className="flex flex-col items-center gap-1">
+                <button
+                  onClick={() => setFullscreenImage(img.url)}
+                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                >
+                  <Image
+                    src={img.url}
+                    alt={img.label}
+                    width={100}
+                    height={100}
+                    className="rounded-lg object-cover w-[100px] h-[100px]"
+                    unoptimized
+                  />
+                </button>
+                <span className="text-[10px] text-slate-500 font-body">{img.label}</span>
+                {item.status === "pending" && (
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => setFinalImageUrl(img.url)}
+                      className={`text-[10px] font-body px-1.5 py-0.5 rounded cursor-pointer transition-colors ${
+                        currentImageUrl === img.url
+                          ? "bg-blue-500/30 text-blue-300"
+                          : "bg-white/5 text-slate-500 hover:text-slate-300"
+                      }`}
+                      title={t("admin.foodReports.setAsProduct")}
+                    >
+                      {currentImageUrl === img.url && <Check size={10} className="inline mr-0.5" />}
+                      {t("admin.foodReports.productImage")}
+                    </button>
+                    <button
+                      onClick={() => setFinalNutritionLabelUrl(img.url)}
+                      className={`text-[10px] font-body px-1.5 py-0.5 rounded cursor-pointer transition-colors ${
+                        currentNutritionLabelUrl === img.url
+                          ? "bg-blue-500/30 text-blue-300"
+                          : "bg-white/5 text-slate-500 hover:text-slate-300"
+                      }`}
+                      title={t("admin.foodReports.setAsLabel")}
+                    >
+                      {currentNutritionLabelUrl === img.url && <Check size={10} className="inline mr-0.5" />}
+                      {t("admin.foodReports.nutritionLabel")}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Final image slots — what will be saved */}
+      {item.status === "pending" && (
+        <div className="mb-4">
+          <p className="text-sm text-slate-400 font-body text-center mb-2">
+            {t("admin.foodReports.finalImages")}
+          </p>
+          <div className="flex gap-6 justify-center">
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-xs text-slate-500 font-body">{t("admin.foodReports.productImage")}</p>
+              {currentImageUrl ? (
+                <div className="relative">
+                  <Image
+                    src={currentImageUrl}
+                    alt="Product"
+                    width={80}
+                    height={80}
+                    className="rounded-lg object-cover w-[80px] h-[80px]"
+                    unoptimized
+                  />
+                  <button
+                    onClick={() => setFinalImageUrl(null)}
+                    className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center cursor-pointer hover:bg-red-900/50"
+                  >
+                    <Trash2 size={10} className="text-red-400" />
+                  </button>
+                </div>
+              ) : (
+                <div className="w-[80px] h-[80px] rounded-lg border border-dashed border-slate-600 flex items-center justify-center">
+                  <span className="text-[10px] text-slate-600 font-body">{t("admin.foodReports.deleted")}</span>
+                </div>
+              )}
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-xs text-slate-500 font-body">{t("admin.foodReports.nutritionLabel")}</p>
+              {currentNutritionLabelUrl ? (
+                <div className="relative">
+                  <Image
+                    src={currentNutritionLabelUrl}
+                    alt="Nutrition label"
+                    width={80}
+                    height={80}
+                    className="rounded-lg object-cover w-[80px] h-[80px]"
+                    unoptimized
+                  />
+                  <button
+                    onClick={() => setFinalNutritionLabelUrl(null)}
+                    className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center cursor-pointer hover:bg-red-900/50"
+                  >
+                    <Trash2 size={10} className="text-red-400" />
+                  </button>
+                </div>
+              ) : (
+                <div className="w-[80px] h-[80px] rounded-lg border border-dashed border-slate-600 flex items-center justify-center">
+                  <span className="text-[10px] text-slate-600 font-body">{t("admin.foodReports.deleted")}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Explanation */}
+      {item.explanation && (
+        <div className="mb-4 bg-white/5 rounded-md p-3">
+          <p className="text-sm text-slate-400 font-body mb-1">
+            {t("admin.foodReports.explanation")}
+          </p>
+          <p className="text-sm text-slate-200 font-body">{item.explanation}</p>
         </div>
       )}
 
@@ -257,25 +378,57 @@ function ReportExpanded({
         <div className="flex gap-3 mt-6">
           <button
             onClick={() => handleResolve("rejected")}
-            disabled={resolving}
-            className="flex-1 btn-danger"
+            disabled={!!resolving}
+            className="flex-1 btn-danger flex items-center justify-center"
           >
-            {t("admin.foodReports.reject")}
+            {resolving === "rejected" ? <Spinner size="w-4 h-4" /> : t("admin.foodReports.reject")}
           </button>
           <button
             onClick={() => handleResolve("accepted")}
-            disabled={resolving}
-            className="flex-1 btn-base"
+            disabled={!!resolving}
+            className="flex-1 btn-base flex items-center justify-center"
           >
-            {resolving ? <Spinner size="w-4 h-4" /> : t("admin.foodReports.accept")}
+            {resolving === "accepted" ? <Spinner size="w-4 h-4" /> : t("admin.foodReports.accept")}
           </button>
         </div>
       )}
 
-      {item.status !== "pending" && (
+      {item.status === "rejected" && (
+        <div className="flex flex-col items-center gap-2 mt-6">
+          <p className="text-slate-500 font-body">
+            {t("admin.foodReports.rejected")}
+          </p>
+          <button
+            onClick={() => handleResolve("pending")}
+            disabled={!!resolving}
+            className="text-sm font-body text-blue-400 hover:text-blue-300 cursor-pointer"
+          >
+            {t("admin.foodReports.revertToPending")}
+          </button>
+        </div>
+      )}
+
+      {item.status === "accepted" && (
         <p className="text-center text-slate-500 font-body mt-6">
-          {t(`admin.foodReports.${item.status}`)}
+          {t("admin.foodReports.accepted")}
         </p>
+      )}
+
+      {/* Fullscreen image viewer */}
+      {fullscreenImage && (
+        <div
+          className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center cursor-pointer"
+          onClick={() => setFullscreenImage(null)}
+        >
+          <Image
+            src={fullscreenImage}
+            alt=""
+            width={800}
+            height={800}
+            className="max-w-[90vw] max-h-[90vh] object-contain"
+            unoptimized
+          />
+        </div>
       )}
     </div>
   );

@@ -28,7 +28,7 @@ const MAP_VIEW_STYLE = { flex: 1 };
 
 const ROUTE_SCALE: Record<string, number> = {
   square: 1,
-  story: 1.8,
+  story: 1.5,
   wide: 1.3,
 };
 
@@ -374,8 +374,8 @@ export default function ActivityShareModal({
                   bounds: {
                     ne: bounds.ne,
                     sw: bounds.sw,
-                    paddingTop: Math.round(mapDims.height * 0.15),
-                    paddingBottom: Math.round(mapDims.height * 0.45),
+                    paddingTop: Math.round(mapDims.height * (size === "story" ? 0.32 : size === "square" ? 0.30 : 0.22)),
+                    paddingBottom: Math.round(mapDims.height * (size === "square" ? 0.33 : 0.38)),
                     paddingLeft: Math.round(mapDims.width * 0.05),
                     paddingRight: Math.round(mapDims.width * 0.05),
                   },

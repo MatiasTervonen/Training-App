@@ -29,6 +29,7 @@ import ShareWithFriendsButton from "@/features/social-feed/components/ShareWithF
 
 type GymSessionProps = FullGymSession & {
   readOnly?: boolean;
+  embedded?: boolean;
   gymMedia?: GymSessionMedia;
   isLoadingMedia?: boolean;
   mediaError?: unknown;
@@ -128,8 +129,8 @@ export default function GymSession(gym_session: GymSessionProps) {
     setIsHistoryOpen(true);
   };
 
-  return (
-    <ScrollView showsVerticalScrollIndicator={false} onScroll={handleScroll} scrollEventThrottle={16}>
+  const content = (
+    <>
       <PageContainer className="mb-10">
         <View>
           <LinearGradient
@@ -425,6 +426,16 @@ export default function GymSession(gym_session: GymSessionProps) {
         gymSession={gym_session}
         weightUnit={weightUnit}
       />
+    </>
+  );
+
+  if (gym_session.embedded) {
+    return content;
+  }
+
+  return (
+    <ScrollView showsVerticalScrollIndicator={false} onScroll={handleScroll} scrollEventThrottle={16}>
+      {content}
     </ScrollView>
   );
 }

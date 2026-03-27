@@ -5,6 +5,7 @@ import AppText from "@/components/AppText";
 import { LinearGradient } from "expo-linear-gradient";
 import { formatDateShort } from "@/lib/formatDate";
 import { StatItem } from "@/features/activities/lib/activityShareCardUtils";
+import { APP_NAME } from "@/lib/app-config";
 import { useTranslation } from "react-i18next";
 import {
   ShareCardTheme,
@@ -214,16 +215,23 @@ const GPSLayout = forwardRef<View, GPSLayoutProps>(
             </AppText>
           </View>
 
-          {/* Stats overlaid at bottom */}
-          <View className="absolute bottom-[40px] left-[50px] right-[50px]">
-            <FlexibleStatsGrid stats={selectedStats} theme={theme} />
-          </View>
-
-          {/* URL bottom center */}
-          <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
-            <AppText style={{ fontSize: 24, color: noGradientOverride?.textMuted ?? colors.textMuted, opacity: 0.5, ...textShadow }}>
-              kurvi.io
-            </AppText>
+          {/* Logo + Stats overlaid at bottom */}
+          <View
+            className="absolute left-[50px] right-[50px]"
+            style={{ bottom: 40, minHeight: 300, justifyContent: "center" }}
+          >
+            <View style={{ gap: 12 }}>
+              <View className="flex-row items-center gap-3">
+                <Image
+                  source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
+                  style={{ width: 40, height: 40, borderRadius: 6 }}
+                />
+                <AppText style={{ fontSize: 24, color: "#ffffff", ...textShadow }}>
+                  {APP_NAME}
+                </AppText>
+              </View>
+              <FlexibleStatsGrid stats={selectedStats} theme={theme} />
+            </View>
           </View>
         </View>
       );
@@ -258,37 +266,52 @@ const GPSLayout = forwardRef<View, GPSLayoutProps>(
           />
         )}
 
-        {/* Title + Date overlay at top */}
-        <View className="absolute top-[40px] left-[50px] right-[50px]">
+        {/* Title + Date overlay at top — story pushed down to clear Instagram's UI overlay */}
+        <View
+          className="absolute left-[50px] right-[50px]"
+          style={{
+            top: size === "story" ? 200 : 40,
+            backgroundColor: "rgba(0,0,0,0.6)",
+            borderRadius: 16,
+            padding: 24,
+          }}
+        >
           <AppText
-            className="text-[52px]"
-            style={{ color: noGradientOverride?.textPrimary ?? colors.textPrimary, ...textShadow }}
+            className={`${size === "square" ? "text-[44px]" : "text-[52px]"} text-center`}
+            style={{ color: "#ffffff", ...textShadow }}
             numberOfLines={1}
           >
             {title}
           </AppText>
           <AppText
-            className="text-[28px] mt-1"
-            style={{ color: noGradientOverride?.textSecondary ?? colors.textSecondary, ...textShadow }}
+            className={`${size === "square" ? "text-[24px]" : "text-[28px]"} mt-1 text-center`}
+            style={{ color: "#d1d5db", ...textShadow }}
           >
             {displayActivityName && `${displayActivityName}  ·  `}
             {formatDateShort(date)}
           </AppText>
         </View>
 
-        {/* Stats + logo overlaid at bottom */}
+        {/* Stats overlaid at bottom — square uses a taller area so stats center vertically */}
         <View
           className="absolute left-[50px] right-[50px]"
-          style={{ bottom: size === "story" ? 100 : 40 }}
+          style={{
+            bottom: size === "story" ? 260 : 40,
+            ...(size === "square" ? { minHeight: 300, justifyContent: "center" } : {}),
+          }}
         >
-          <FlexibleStatsGrid stats={selectedStats} theme={theme} />
-        </View>
-
-        {/* URL bottom center */}
-        <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
-          <AppText style={{ fontSize: size === "story" ? 28 : 24, color: noGradientOverride?.textMuted ?? colors.textMuted, opacity: 0.5, ...textShadow }}>
-            kurvi.io
-          </AppText>
+          <View style={{ gap: 12 }}>
+            <View className="flex-row items-center gap-3">
+              <Image
+                source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
+                style={{ width: size === "story" ? 56 : 40, height: size === "story" ? 56 : 40, borderRadius: 6 }}
+              />
+              <AppText style={{ fontSize: size === "story" ? 32 : 24, color: "#ffffff", ...textShadow }}>
+                {APP_NAME}
+              </AppText>
+            </View>
+            <FlexibleStatsGrid stats={selectedStats} theme={theme} statSize={size === "square" ? "small" : undefined} />
+          </View>
         </View>
       </View>
     );
@@ -481,7 +504,7 @@ function MapImage({
 // ---------------------------------------------------------------------------
 
 /** Stat box wrapped in flex-1 for use inside flex-row containers */
-function FlexStatBox({ stat, theme, size }: { stat: StatItem; theme: ShareCardTheme; size?: "normal" | "large" }) {
+function FlexStatBox({ stat, theme, size }: { stat: StatItem; theme: ShareCardTheme; size?: "small" | "normal" | "large" }) {
   return (
     <View className="flex-1">
       <ThemedStatBox label={stat.label} value={stat.value} theme={theme} size={size} />
@@ -493,84 +516,30 @@ function FlexStatBox({ stat, theme, size }: { stat: StatItem; theme: ShareCardTh
 function FlexibleStatsGrid({
   stats,
   theme,
+  statSize,
+  minHeight,
 }: {
   stats: StatItem[];
   theme: ShareCardTheme;
+  statSize?: "small" | "normal" | "large";
 }) {
-  if (stats.length <= 3) {
-    return (
-      <View className="flex-row gap-4">
-        {stats.map((s) => (
-          <FlexStatBox key={s.key} stat={s} theme={theme} />
-        ))}
-      </View>
-    );
-  }
+  const rows = (() => {
+    if (stats.length <= 3) return [stats];
+    if (stats.length === 4) return [stats.slice(0, 2), stats.slice(2, 4)];
+    if (stats.length === 5) return [stats.slice(0, 3), stats.slice(3, 5)];
+    if (stats.length === 6) return [stats.slice(0, 3), stats.slice(3, 6)];
+    return [stats.slice(0, 4), stats.slice(4, 7)];
+  })();
 
-  if (stats.length === 4) {
-    return (
-      <View className="gap-4">
-        <View className="flex-row gap-4">
-          {stats.slice(0, 2).map((s) => (
-            <FlexStatBox key={s.key} stat={s} theme={theme} />
-          ))}
-        </View>
-        <View className="flex-row gap-4">
-          {stats.slice(2, 4).map((s) => (
-            <FlexStatBox key={s.key} stat={s} theme={theme} />
-          ))}
-        </View>
-      </View>
-    );
-  }
-
-  if (stats.length === 5) {
-    return (
-      <View className="gap-4">
-        <View className="flex-row gap-4">
-          {stats.slice(0, 3).map((s) => (
-            <FlexStatBox key={s.key} stat={s} theme={theme} />
-          ))}
-        </View>
-        <View className="flex-row gap-4">
-          {stats.slice(3, 5).map((s) => (
-            <FlexStatBox key={s.key} stat={s} theme={theme} />
-          ))}
-        </View>
-      </View>
-    );
-  }
-
-  if (stats.length === 6) {
-    return (
-      <View className="gap-4">
-        <View className="flex-row gap-4">
-          {stats.slice(0, 3).map((s) => (
-            <FlexStatBox key={s.key} stat={s} theme={theme} />
-          ))}
-        </View>
-        <View className="flex-row gap-4">
-          {stats.slice(3, 6).map((s) => (
-            <FlexStatBox key={s.key} stat={s} theme={theme} />
-          ))}
-        </View>
-      </View>
-    );
-  }
-
-  // 7 stats: row of 4 + row of 3
   return (
     <View className="gap-4">
-      <View className="flex-row gap-4">
-        {stats.slice(0, 4).map((s) => (
-          <FlexStatBox key={s.key} stat={s} theme={theme} />
-        ))}
-      </View>
-      <View className="flex-row gap-4">
-        {stats.slice(4, 7).map((s) => (
-          <FlexStatBox key={s.key} stat={s} theme={theme} />
-        ))}
-      </View>
+      {rows.map((row, i) => (
+        <View key={i} className="flex-row gap-4">
+          {row.map((s) => (
+            <FlexStatBox key={s.key} stat={s} theme={theme} size={statSize} />
+          ))}
+        </View>
+      ))}
     </View>
   );
 }
@@ -620,6 +589,25 @@ function chunk<T>(arr: T[], size: number): T[][] {
     result.push(arr.slice(i, i + size));
   }
   return result;
+}
+
+/** Fixed-width grid for square cards — boxes stay the same size regardless of count */
+function FixedWidthStatsGrid({
+  stats,
+  theme,
+}: {
+  stats: StatItem[];
+  theme: ShareCardTheme;
+}) {
+  return (
+    <View className="flex-row flex-wrap" style={{ gap: 12 }}>
+      {stats.map((s) => (
+        <View key={s.key} style={{ width: "23.5%" }}>
+          <ThemedStatBox label={s.label} value={s.value} theme={theme} size="small" />
+        </View>
+      ))}
+    </View>
+  );
 }
 
 export default ActivityShareCard;

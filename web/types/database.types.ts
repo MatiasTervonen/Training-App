@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       activities: {
@@ -171,6 +146,38 @@ export type Database = {
             columns: ["session_id"]
             isOneToOne: false
             referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      activity_level_daily: {
+        Row: {
+          created_at: string
+          day: string
+          id: string
+          level: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          day: string
+          id?: string
+          level?: number
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          id?: string
+          level?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_level_daily_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -933,6 +940,78 @@ export type Database = {
             columns: ["food_id"]
             isOneToOne: false
             referencedRelation: "foods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      food_reports: {
+        Row: {
+          created_at: string | null
+          explanation: string | null
+          food_id: string
+          id: string
+          report_image_url: string | null
+          report_nutrition_label_url: string | null
+          reported_calories_per_100g: number | null
+          reported_carbs_per_100g: number | null
+          reported_fat_per_100g: number | null
+          reported_fiber_per_100g: number | null
+          reported_protein_per_100g: number | null
+          reported_saturated_fat_per_100g: number | null
+          reported_sodium_per_100g: number | null
+          reported_sugar_per_100g: number | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          explanation?: string | null
+          food_id: string
+          id?: string
+          report_image_url?: string | null
+          report_nutrition_label_url?: string | null
+          reported_calories_per_100g?: number | null
+          reported_carbs_per_100g?: number | null
+          reported_fat_per_100g?: number | null
+          reported_fiber_per_100g?: number | null
+          reported_protein_per_100g?: number | null
+          reported_saturated_fat_per_100g?: number | null
+          reported_sodium_per_100g?: number | null
+          reported_sugar_per_100g?: number | null
+          status?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string | null
+          explanation?: string | null
+          food_id?: string
+          id?: string
+          report_image_url?: string | null
+          report_nutrition_label_url?: string | null
+          reported_calories_per_100g?: number | null
+          reported_carbs_per_100g?: number | null
+          reported_fat_per_100g?: number | null
+          reported_fiber_per_100g?: number | null
+          reported_protein_per_100g?: number | null
+          reported_saturated_fat_per_100g?: number | null
+          reported_sodium_per_100g?: number | null
+          reported_sugar_per_100g?: number | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "food_reports_food_id_fkey"
+            columns: ["food_id"]
+            isOneToOne: false
+            referencedRelation: "foods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "food_reports_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -2876,10 +2955,12 @@ export type Database = {
         Row: {
           ban_reason: string | null
           banned_until: string | null
+          birth_date: string | null
           created_at: string
           display_name: string
           distance_unit: string
           email: string | null
+          gender: string | null
           height_cm: number | null
           id: string
           is_tracking_activity: boolean | null
@@ -2892,10 +2973,12 @@ export type Database = {
         Insert: {
           ban_reason?: string | null
           banned_until?: string | null
+          birth_date?: string | null
           created_at?: string
           display_name: string
           distance_unit?: string
           email?: string | null
+          gender?: string | null
           height_cm?: number | null
           id: string
           is_tracking_activity?: boolean | null
@@ -2908,10 +2991,12 @@ export type Database = {
         Update: {
           ban_reason?: string | null
           banned_until?: string | null
+          birth_date?: string | null
           created_at?: string
           display_name?: string
           distance_unit?: string
           email?: string | null
+          gender?: string | null
           height_cm?: number | null
           id?: string
           is_tracking_activity?: boolean | null
@@ -3154,6 +3239,11 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      activity_level_get: { Args: { p_date: string }; Returns: number }
+      activity_level_upsert: {
+        Args: { p_date: string; p_level: number }
+        Returns: undefined
+      }
       add_feed_comment: {
         Args: {
           p_content: string
@@ -3161,6 +3251,59 @@ export type Database = {
           p_parent_id?: string
         }
         Returns: string
+      }
+      admin_get_food_reports: {
+        Args: { p_limit?: number; p_offset?: number; p_status?: string }
+        Returns: {
+          barcode: string
+          brand: string
+          created_at: string
+          current_calories_per_100g: number
+          current_carbs_per_100g: number
+          current_fat_per_100g: number
+          current_fiber_per_100g: number
+          current_protein_per_100g: number
+          current_saturated_fat_per_100g: number
+          current_sodium_per_100g: number
+          current_sugar_per_100g: number
+          display_name: string
+          explanation: string
+          food_id: string
+          food_name: string
+          id: string
+          image_url: string
+          nutrition_label_url: string
+          report_image_url: string
+          report_nutrition_label_url: string
+          reported_calories_per_100g: number
+          reported_carbs_per_100g: number
+          reported_fat_per_100g: number
+          reported_fiber_per_100g: number
+          reported_protein_per_100g: number
+          reported_saturated_fat_per_100g: number
+          reported_sodium_per_100g: number
+          reported_sugar_per_100g: number
+          status: string
+          user_email: string
+          user_id: string
+        }[]
+      }
+      admin_resolve_food_report: {
+        Args: {
+          p_action: string
+          p_calories_per_100g?: number
+          p_carbs_per_100g?: number
+          p_fat_per_100g?: number
+          p_fiber_per_100g?: number
+          p_image_url?: string
+          p_nutrition_label_url?: string
+          p_protein_per_100g?: number
+          p_report_id: string
+          p_saturated_fat_per_100g?: number
+          p_sodium_per_100g?: number
+          p_sugar_per_100g?: number
+        }
+        Returns: undefined
       }
       attach_note_media: {
         Args: {
@@ -3176,6 +3319,15 @@ export type Database = {
           p_images?: Json
           p_recordings?: Json
           p_session_id: string
+          p_videos?: Json
+        }
+        Returns: undefined
+      }
+      attach_todo_task_media: {
+        Args: {
+          p_images?: Json
+          p_recordings?: Json
+          p_task_id: string
           p_videos?: Json
         }
         Returns: undefined
@@ -3200,6 +3352,10 @@ export type Database = {
           media_path: string
           thumbnail_path: string
         }[]
+      }
+      energy_balance_get_daily: {
+        Args: { p_date: string; p_tz?: string }
+        Returns: Json
       }
       feed_delete_session: {
         Args: { p_id: string; p_type: string }
@@ -3533,6 +3689,10 @@ export type Database = {
         Args: { p_meal_id: string }
         Returns: undefined
       }
+      nutrition_get_analytics: {
+        Args: { p_end_date: string; p_start_date: string }
+        Returns: Json
+      }
       nutrition_get_daily_logs: {
         Args: { p_date: string }
         Returns: {
@@ -3601,6 +3761,23 @@ export type Database = {
           p_saved_meal_id: string
         }
         Returns: undefined
+      }
+      nutrition_report_food: {
+        Args: {
+          p_calories_per_100g?: number
+          p_carbs_per_100g?: number
+          p_explanation?: string
+          p_fat_per_100g?: number
+          p_fiber_per_100g?: number
+          p_food_id: string
+          p_protein_per_100g?: number
+          p_report_image_url?: string
+          p_report_nutrition_label_url?: string
+          p_saturated_fat_per_100g?: number
+          p_sodium_per_100g?: number
+          p_sugar_per_100g?: number
+        }
+        Returns: string
       }
       nutrition_save_meal: {
         Args: { p_items?: Json; p_meal_id?: string; p_name?: string }
@@ -3867,26 +4044,7 @@ export type Database = {
           p_title: string
           p_updated_at: string
         }
-        Returns: {
-          activity_at: string | null
-          created_at: string
-          extra_fields: Json
-          hidden_at: string | null
-          id: string
-          occurred_at: string
-          source_id: string
-          title: string
-          type: string
-          updated_at: string | null
-          user_id: string
-          visibility: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "feed_items"
-          isOneToOne: true
-          isSetofReturn: false
-        }
+        Returns: Json
       }
       todo_get_filtered: {
         Args: { p_filter: string; p_limit: number; p_offset: number }
@@ -3913,7 +4071,7 @@ export type Database = {
       }
       todo_save_todo: {
         Args: { p_title: string; p_todo_list: Json }
-        Returns: string
+        Returns: Json
       }
       toggle_feed_like: { Args: { p_feed_item_id: string }; Returns: boolean }
       toggle_reaction: {
@@ -4095,9 +4253,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },

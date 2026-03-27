@@ -7,6 +7,19 @@ import { ChatMessage } from "@/types/chat";
 import { getChatMediaSignedUrl, clearSignedUrlCache, formatDurationMs } from "@/lib/chat/upload-chat-media";
 import ChatVoicePlayer from "@/features/chat/components/ChatVoicePlayer";
 
+const IMG_MAX_WIDTH = 260;
+const IMG_MIN_HEIGHT = 160;
+const IMG_MAX_HEIGHT = 360;
+
+function computeImageSize(naturalWidth: number, naturalHeight: number) {
+  const aspect = naturalHeight / naturalWidth;
+  const height = Math.round(IMG_MAX_WIDTH * aspect);
+  return {
+    width: IMG_MAX_WIDTH,
+    height: Math.min(IMG_MAX_HEIGHT, Math.max(IMG_MIN_HEIGHT, height)),
+  };
+}
+
 type ChatMediaBubbleProps = {
   message: ChatMessage;
   isOwn: boolean;
@@ -18,6 +31,7 @@ export default function ChatMediaBubble({ message, isOwn }: ChatMediaBubbleProps
   const [fetchResult, setFetchResult] = useState<{ path: string; url: string | null; error: boolean } | null>(null);
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [fullscreen, setFullscreen] = useState(false);
+  const [imageSize, setImageSize] = useState({ width: IMG_MAX_WIDTH, height: IMG_MAX_WIDTH });
 
   const currentResult = fetchResult?.path === media_storage_path ? fetchResult : null;
   const mediaUrl = _localPreviewUrl ?? currentResult?.url ?? null;
@@ -97,10 +111,17 @@ export default function ChatMediaBubble({ message, isOwn }: ChatMediaBubbleProps
           <Image
             src={mediaUrl}
             alt=""
-            width={240}
-            height={320}
+            width={imageSize.width}
+            height={imageSize.height}
             unoptimized
-            className="max-w-60 max-h-80 rounded-lg object-cover"
+            className="rounded-lg object-cover"
+            style={{ maxWidth: "100%" }}
+            onLoad={(e) => {
+              const img = e.target as HTMLImageElement;
+              if (img.naturalWidth && img.naturalHeight) {
+                setImageSize(computeImageSize(img.naturalWidth, img.naturalHeight));
+              }
+            }}
           />
           {_isUploading && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">

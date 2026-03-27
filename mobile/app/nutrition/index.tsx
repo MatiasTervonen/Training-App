@@ -12,9 +12,9 @@ import { useDailyLogs } from "@/features/nutrition/hooks/useDailyLogs";
 import { useNutritionGoals } from "@/features/nutrition/hooks/useNutritionGoals";
 import { useDeleteFoodLog } from "@/features/nutrition/hooks/useDeleteFoodLog";
 import { useUpdateMealTime } from "@/features/nutrition/hooks/useUpdateMealTime";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Plus, Settings, ChevronLeft, ChevronRight, Share2 } from "lucide-react-native";
+import { Plus, Settings, ChevronLeft, ChevronRight, Share2, BarChart3 } from "lucide-react-native";
 import FoodDetailSheet from "@/features/nutrition/components/FoodDetailSheet";
 import EnergyBalanceCard from "@/features/energy-balance/components/EnergyBalanceCard";
 import { useLogFood } from "@/features/nutrition/hooks/useLogFood";
@@ -29,7 +29,8 @@ const DEFAULT_MEALS = ["breakfast", "lunch", "dinner", "snack"];
 export default function NutritionScreen() {
   const { t } = useTranslation(["nutrition", "common"]);
   const router = useRouter();
-  const [date, setDate] = useState(() => getTrackingDate());
+  const { date: initialDate } = useLocalSearchParams<{ date?: string }>();
+  const [date, setDate] = useState(() => initialDate || getTrackingDate());
   const setModalPageConfig = useModalPageConfig((s) => s.setModalPageConfig);
 
   useEffect(() => {
@@ -210,6 +211,14 @@ export default function NutritionScreen() {
               >
                 <View className="px-1 py-0.5">
                   <Share2 size={18} color="#94a3b8" />
+                </View>
+              </AnimatedButton>
+              <AnimatedButton
+                onPress={() => router.push("/nutrition/analytics")}
+                className="btn-base"
+              >
+                <View className="px-1 py-0.5">
+                  <BarChart3 size={18} color="#94a3b8" />
                 </View>
               </AnimatedButton>
               <AnimatedButton

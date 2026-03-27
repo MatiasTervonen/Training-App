@@ -74,7 +74,7 @@ function getChartDimensions(size: ShareCardSize): {
 } {
   switch (size) {
     case "square":
-      return { width: 960, height: 620 };
+      return { width: 800, height: 480 };
     case "story":
       return { width: 960, height: 1100 };
     case "wide":
@@ -178,9 +178,9 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
 
     if (size === "wide") {
       return (
-        <ThemedCardWrapper ref={ref} theme={theme} size={size}>
+        <ThemedCardWrapper ref={ref} theme={theme} size={size} className="flex-1 justify-center" contentStyle={{ paddingBottom: 80 }}>
           {/* Header - App branding */}
-          <View className="flex-row items-center gap-4">
+          <View className="flex-row items-center gap-4" style={{ position: "absolute", top: 40, left: 60 }}>
             <Image
               source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
               style={{ width: 64, height: 64, borderRadius: 8 }}
@@ -190,57 +190,52 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
             </AppTextNC>
           </View>
 
-          {/* Title + Date centered */}
-          <View className="items-center gap-3">
-            <AppTextNC
-              className="text-center"
-              style={{ fontSize: 56, color: theme.colors.textPrimary }}
-            >
-              {t("weight.share.title")}
-            </AppTextNC>
-            <AppTextNC style={{ fontSize: 32, color: theme.colors.textMuted }}>
-              {dateRangeText}
-            </AppTextNC>
-          </View>
-
-          {/* Chart + Stats side by side */}
-          <View className="flex-row items-center" style={{ gap: 20 }}>
-            <View className="flex-1 items-center justify-center">
-              <View
-                style={{ width: chartDims.width, height: chartDims.height }}
+          <View style={{ gap: 30 }}>
+            {/* Title + Date centered */}
+            <View className="items-center gap-3" style={{ transform: [{ translateY: -30 }] }}>
+              <AppTextNC
+                className="text-center"
+                style={{ fontSize: 56, color: theme.colors.textPrimary }}
               >
-                {chartImageUri ? (
-                  <Image
-                    source={{ uri: chartImageUri }}
-                    style={{ width: chartDims.width, height: chartDims.height }}
-                    resizeMode="contain"
-                  />
-                ) : null}
+                {t("weight.share.title")}
+              </AppTextNC>
+              <AppTextNC style={{ fontSize: 32, color: theme.colors.textMuted }}>
+                {dateRangeText}
+              </AppTextNC>
+            </View>
+
+            {/* Chart + Stats side by side */}
+            <View className="flex-row items-center" style={{ gap: 20 }}>
+              <View className="flex-1 items-center justify-center">
+                <View
+                  style={{ width: chartDims.width, height: chartDims.height }}
+                >
+                  {chartImageUri ? (
+                    <Image
+                      source={{ uri: chartImageUri }}
+                      style={{ width: chartDims.width, height: chartDims.height }}
+                      resizeMode="contain"
+                    />
+                  ) : null}
+                </View>
+              </View>
+
+              <View
+                className="justify-center"
+                style={{ width: 400, gap: 16, position: "relative", right: 80 }}
+              >
+                <ThemedStatBox
+                  label={t("weight.share.weightChange")}
+                  value={`${weightChange} ${weightUnit}`}
+                  theme={theme}
+                />
+                <ThemedStatBox
+                  label={t("weight.share.currentWeight")}
+                  value={`${currentWeight} ${weightUnit}`}
+                  theme={theme}
+                />
               </View>
             </View>
-
-            <View
-              className="justify-center"
-              style={{ width: 400, gap: 16, position: "relative", right: 80 }}
-            >
-              <ThemedStatBox
-                label={t("weight.share.weightChange")}
-                value={`${weightChange} ${weightUnit}`}
-                theme={theme}
-              />
-              <ThemedStatBox
-                label={t("weight.share.currentWeight")}
-                value={`${currentWeight} ${weightUnit}`}
-                theme={theme}
-              />
-            </View>
-          </View>
-
-          {/* URL bottom center */}
-          <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
-            <AppTextNC style={{ fontSize: 24, color: theme.colors.textMuted, opacity: 0.5 }}>
-              kurvi.io
-            </AppTextNC>
           </View>
         </ThemedCardWrapper>
       );
@@ -248,7 +243,7 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
 
     if (size === "story") {
       return (
-        <ThemedCardWrapper ref={ref} theme={theme} size={size}>
+        <ThemedCardWrapper ref={ref} theme={theme} size={size} contentStyle={{ paddingTop: 200 }}>
           {/* Header - App branding */}
           <View className="flex-row items-center gap-4">
             <Image
@@ -261,7 +256,7 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
           </View>
 
           {/* Title + Date range */}
-          <View className="items-center gap-3">
+          <View className="items-center gap-3" style={{ transform: [{ translateY: -30 }] }}>
             <AppTextNC
               className="text-center"
               style={{ fontSize: 68, color: theme.colors.textPrimary }}
@@ -274,7 +269,7 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
           </View>
 
           {/* Chart as captured image */}
-          <View className="items-center">
+          <View className="items-center" style={{ position: "relative", bottom: 60 }}>
             <View style={{ width: chartDims.width, height: chartDims.height }}>
               {chartImageUri ? (
                 <Image
@@ -289,14 +284,13 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
           {/* Stat Boxes */}
           <View
             className="flex-row"
-            style={{ gap: 16, position: "relative", bottom: 80 }}
+            style={{ gap: 16, position: "relative", bottom: 200 }}
           >
             <View className="flex-1">
               <ThemedStatBox
                 label={t("weight.share.weightChange")}
                 value={`${weightChange} ${weightUnit}`}
                 theme={theme}
-                size="large"
               />
             </View>
             <View className="flex-1">
@@ -304,7 +298,6 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
                 label={t("weight.share.currentWeight")}
                 value={`${currentWeight} ${weightUnit}`}
                 theme={theme}
-                size="large"
               />
             </View>
           </View>
@@ -321,33 +314,33 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
 
     // Square (default)
     return (
-      <ThemedCardWrapper ref={ref} theme={theme} size={size}>
+      <ThemedCardWrapper ref={ref} theme={theme} size={size} contentStyle={{ paddingBottom: 120 }}>
         {/* Header - App branding */}
         <View className="flex-row items-center gap-4">
           <Image
             source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
-            style={{ width: 64, height: 64, borderRadius: 8 }}
+            style={{ width: 48, height: 48, borderRadius: 8 }}
           />
-          <AppTextNC style={{ fontSize: 36, color: theme.colors.accent }}>
+          <AppTextNC style={{ fontSize: 28, color: theme.colors.accent }}>
             {APP_NAME}
           </AppTextNC>
         </View>
 
         {/* Title + Date range */}
-        <View className="items-center gap-3">
+        <View className="items-center gap-3" style={{ transform: [{ translateY: -50 }] }}>
           <AppTextNC
             className="text-center"
-            style={{ fontSize: 52, color: theme.colors.textPrimary }}
+            style={{ fontSize: 42, color: theme.colors.textPrimary }}
           >
             {t("weight.share.title")}
           </AppTextNC>
-          <AppTextNC style={{ fontSize: 28, color: theme.colors.textMuted }}>
+          <AppTextNC style={{ fontSize: 22, color: theme.colors.textMuted }}>
             {dateRangeText}
           </AppTextNC>
         </View>
 
         {/* Chart as captured image */}
-        <View className="items-center">
+        <View className="items-center" style={{ position: "relative", bottom: 40 }}>
           <View style={{ width: chartDims.width, height: chartDims.height }}>
             {chartImageUri ? (
               <Image
@@ -360,12 +353,13 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
         </View>
 
         {/* Stat Boxes */}
-        <View className="flex-row gap-4">
+        <View className="flex-row gap-4" style={{ position: "relative", bottom: 60, paddingHorizontal: 100 }}>
           <View className="flex-1">
             <ThemedStatBox
               label={t("weight.share.weightChange")}
               value={`${weightChange} ${weightUnit}`}
               theme={theme}
+              size="small"
             />
           </View>
           <View className="flex-1">
@@ -373,6 +367,7 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
               label={t("weight.share.currentWeight")}
               value={`${currentWeight} ${weightUnit}`}
               theme={theme}
+              size="small"
             />
           </View>
         </View>

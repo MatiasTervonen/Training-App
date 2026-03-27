@@ -6,7 +6,7 @@ type ThemedStatBoxProps = {
   label: string;
   value: string;
   theme: ShareCardTheme;
-  size?: "normal" | "large";
+  size?: "small" | "normal" | "large";
 };
 
 export default function ThemedStatBox({
@@ -16,7 +16,9 @@ export default function ThemedStatBox({
   size = "normal",
 }: ThemedStatBoxProps) {
   const { colors } = theme;
-  const isLarge = size === "large";
+  const fontSize = size === "large" ? 52 : size === "small" ? 26 : 36;
+  const labelSize = size === "large" ? 32 : size === "small" ? 18 : 24;
+  const py = size === "large" ? 40 : size === "small" ? 18 : 30;
 
   return (
     <View
@@ -24,16 +26,16 @@ export default function ThemedStatBox({
       style={{
         borderColor: colors.statBoxBorder,
         backgroundColor: colors.statBoxBg,
-        paddingVertical: isLarge ? 40 : 30,
+        paddingVertical: py,
       }}
     >
       <AppText
-        style={{ fontSize: isLarge ? 32 : 24, color: colors.textSecondary }}
+        style={{ fontSize: labelSize, color: colors.textSecondary }}
       >
         {label}
       </AppText>
       <AppText
-        style={{ fontSize: isLarge ? 52 : 36, color: colors.textPrimary }}
+        style={{ fontSize, color: colors.textPrimary }}
       >
         {value}
       </AppText>

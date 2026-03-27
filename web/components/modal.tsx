@@ -41,12 +41,14 @@ export default function Modal({
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Refs so native event handlers always see fresh values
-  const showConfirmRef = useRef(false);
-  showConfirmRef.current = showConfirm;
+  const showConfirmRef = useRef(showConfirm);
   const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
   const confirmBeforeCloseRef = useRef(confirmBeforeClose);
-  confirmBeforeCloseRef.current = confirmBeforeClose;
+  useEffect(() => {
+    showConfirmRef.current = showConfirm;
+    onCloseRef.current = onClose;
+    confirmBeforeCloseRef.current = confirmBeforeClose;
+  }, [showConfirm, onClose, confirmBeforeClose]);
 
   const handleClose = useCallback(() => {
     if (confirmBeforeCloseRef.current) {

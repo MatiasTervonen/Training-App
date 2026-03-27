@@ -65,7 +65,7 @@ function getRangeDays(range: "week" | "month" | "3months"): number {
 function getChartDimensions(size: ShareCardSize): { width: number; height: number } {
   switch (size) {
     case "square":
-      return { width: 960, height: 620 };
+      return { width: 800, height: 480 };
     case "story":
       return { width: 960, height: 1100 };
     case "wide":
@@ -175,9 +175,9 @@ const StepsShareCard = forwardRef<View, StepsShareCardProps>(
 
     if (size === "wide") {
       return (
-        <ThemedCardWrapper ref={ref} theme={theme} size={size}>
+        <ThemedCardWrapper ref={ref} theme={theme} size={size} className="flex-1 justify-center" contentStyle={{ paddingBottom: 80 }}>
           {/* Header - App branding */}
-          <View className="flex-row items-center gap-4">
+          <View className="flex-row items-center gap-4" style={{ position: "absolute", top: 40, left: 60 }}>
             <Image
               source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
               style={{ width: 64, height: 64, borderRadius: 8 }}
@@ -187,52 +187,47 @@ const StepsShareCard = forwardRef<View, StepsShareCardProps>(
             </AppText>
           </View>
 
-          {/* Title + Date centered */}
-          <View className="items-center gap-3">
-            <AppText
-              className="text-center"
-              style={{ fontSize: 56, color: colors.textPrimary }}
-            >
-              {t("activities.stepsShare.title")}
-            </AppText>
-            <AppText style={{ fontSize: 32, color: colors.textMuted }}>
-              {dateRangeText}
-            </AppText>
-          </View>
+          <View style={{ gap: 30 }}>
+            {/* Title + Date centered */}
+            <View className="items-center gap-3" style={{ transform: [{ translateY: -30 }] }}>
+              <AppText
+                className="text-center"
+                style={{ fontSize: 56, color: colors.textPrimary }}
+              >
+                {t("activities.stepsShare.title")}
+              </AppText>
+              <AppText style={{ fontSize: 32, color: colors.textMuted }}>
+                {dateRangeText}
+              </AppText>
+            </View>
 
-          {/* Chart + Stats side by side */}
-          <View className="flex-row items-center" style={{ gap: 20 }}>
-            <View className="flex-1 items-center justify-center">
-              <View style={{ width: chartDims.width, height: chartDims.height }}>
-                {chartImageUri ? (
-                  <Image
-                    source={{ uri: chartImageUri }}
-                    style={{ width: chartDims.width, height: chartDims.height }}
-                    resizeMode="contain"
-                  />
-                ) : null}
+            {/* Chart + Stats side by side */}
+            <View className="flex-row items-center" style={{ gap: 20 }}>
+              <View className="flex-1 items-center justify-center">
+                <View style={{ width: chartDims.width, height: chartDims.height }}>
+                  {chartImageUri ? (
+                    <Image
+                      source={{ uri: chartImageUri }}
+                      style={{ width: chartDims.width, height: chartDims.height }}
+                      resizeMode="contain"
+                    />
+                  ) : null}
+                </View>
+              </View>
+
+              <View className="justify-center" style={{ width: 400, gap: 16, position: "relative", right: 80 }}>
+                <ThemedStatBox
+                  label={t("activities.stepsShare.totalSteps")}
+                  value={totalSteps.toLocaleString()}
+                  theme={theme}
+                />
+                <ThemedStatBox
+                  label={t("activities.stepsShare.dailyAvg")}
+                  value={avgSteps.toLocaleString()}
+                  theme={theme}
+                />
               </View>
             </View>
-
-            <View className="justify-center" style={{ width: 400, gap: 16, position: "relative", right: 80 }}>
-              <ThemedStatBox
-                label={t("activities.stepsShare.totalSteps")}
-                value={totalSteps.toLocaleString()}
-                theme={theme}
-              />
-              <ThemedStatBox
-                label={t("activities.stepsShare.dailyAvg")}
-                value={avgSteps.toLocaleString()}
-                theme={theme}
-              />
-            </View>
-          </View>
-
-          {/* URL bottom center */}
-          <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
-            <AppText style={{ fontSize: 24, color: colors.textMuted, opacity: 0.5 }}>
-              kurvi.io
-            </AppText>
           </View>
         </ThemedCardWrapper>
       );
@@ -241,33 +236,33 @@ const StepsShareCard = forwardRef<View, StepsShareCardProps>(
     const isStory = size === "story";
 
     return (
-      <ThemedCardWrapper ref={ref} theme={theme} size={size}>
+      <ThemedCardWrapper ref={ref} theme={theme} size={size} contentStyle={isStory ? { paddingTop: 200 } : { paddingBottom: 120 }}>
         {/* Header - App branding */}
         <View className="flex-row items-center gap-4">
           <Image
             source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
-            style={{ width: isStory ? 80 : 64, height: isStory ? 80 : 64, borderRadius: 8 }}
+            style={{ width: isStory ? 80 : 48, height: isStory ? 80 : 48, borderRadius: 8 }}
           />
-          <AppText style={{ fontSize: isStory ? 44 : 36, color: colors.accent }}>
+          <AppText style={{ fontSize: isStory ? 44 : 28, color: colors.accent }}>
             {APP_NAME}
           </AppText>
         </View>
 
         {/* Title + Date range */}
-        <View className="items-center gap-3">
+        <View className="items-center gap-3" style={!isStory ? { transform: [{ translateY: -50 }] } : undefined}>
           <AppText
             className="text-center"
-            style={{ fontSize: isStory ? 68 : 52, color: colors.textPrimary }}
+            style={{ fontSize: isStory ? 68 : 42, color: colors.textPrimary }}
           >
             {t("activities.stepsShare.title")}
           </AppText>
-          <AppText style={{ fontSize: isStory ? 40 : 28, color: colors.textMuted }}>
+          <AppText style={{ fontSize: isStory ? 40 : 22, color: colors.textMuted }}>
             {dateRangeText}
           </AppText>
         </View>
 
         {/* Chart as captured image */}
-        <View className="items-center">
+        <View className="items-center" style={{ position: "relative", bottom: isStory ? 100 : 40 }}>
           <View style={{ width: chartDims.width, height: chartDims.height }}>
             {chartImageUri ? (
               <Image
@@ -280,13 +275,13 @@ const StepsShareCard = forwardRef<View, StepsShareCardProps>(
         </View>
 
         {/* Stat Boxes */}
-        <View className="flex-row" style={{ gap: isStory ? 16 : 16, position: "relative", bottom: isStory ? 80 : 0 }}>
+        <View className="flex-row self-center" style={{ gap: 16, position: "relative", bottom: isStory ? 200 : 60, width: isStory ? "100%" : "75%" }}>
           <View className="flex-1">
             <ThemedStatBox
               label={t("activities.stepsShare.totalSteps")}
               value={totalSteps.toLocaleString()}
               theme={theme}
-              size={isStory ? "large" : "normal"}
+              size={isStory ? "large" : "small"}
             />
           </View>
           <View className="flex-1">
@@ -294,7 +289,7 @@ const StepsShareCard = forwardRef<View, StepsShareCardProps>(
               label={t("activities.stepsShare.dailyAvg")}
               value={avgSteps.toLocaleString()}
               theme={theme}
-              size={isStory ? "large" : "normal"}
+              size={isStory ? "large" : "small"}
             />
           </View>
         </View>

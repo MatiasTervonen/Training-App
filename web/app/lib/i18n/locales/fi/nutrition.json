@@ -158,5 +158,27 @@
     "error": "Jokin meni pieleen",
     "favoriteAdded": "Lisätty suosikkeihin",
     "favoriteRemoved": "Poistettu suosikeista"
+  },
+  "analytics": {
+    "title": "Ravintoanalyysi",
+    "summary": {
+      "avgCalories": "keskim. kcal/pv",
+      "avgProtein": "keskim. proteiini/pv",
+      "avgCarbs": "keskim. hiilarit/pv",
+      "avgFat": "keskim. rasva/pv"
+    },
+    "charts": {
+      "calories": "Kalorit",
+      "macros": "Makrot",
+      "distribution": "Makrojakauma",
+      "goal": "Tavoite"
+    },
+    "topFoods": {
+      "title": "Suosituimmat ruoat",
+      "times": "kertaa",
+      "kcal": "kcal"
+    },
+    "noData": "Ei ravintotietoja",
+    "noDataDesc": "Aloita aterioiden kirjaaminen nähdäksesi trendejä ja oivalluksia täällä."
   }
 }

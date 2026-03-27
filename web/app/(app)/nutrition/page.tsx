@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   UtensilsCrossed,
+  BarChart3,
 } from "lucide-react";
 import { useDailyLogs } from "@/features/nutrition/hooks/useDailyLogs";
 import { useNutritionGoals } from "@/features/nutrition/hooks/useNutritionGoals";
@@ -195,12 +196,14 @@ export default function NutritionPage() {
           {/* Header */}
           <div className="flex justify-between items-center mb-4">
             <span className="text-xl">{t("title")}</span>
-            <Link
-              href="/nutrition/goals"
-              className="p-2 rounded-full hover:bg-slate-700/50 transition-colors"
-            >
-              <Settings size={22} className="text-slate-400" />
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link href="/nutrition/analytics" className="btn-base">
+                <BarChart3 size={18} className="text-slate-400" />
+              </Link>
+              <Link href="/nutrition/goals" className="btn-base">
+                <Settings size={18} className="text-slate-400" />
+              </Link>
+            </div>
           </div>
 
           {/* Date picker */}

@@ -158,5 +158,27 @@
     "error": "Something went wrong",
     "favoriteAdded": "Added to favorites",
     "favoriteRemoved": "Removed from favorites"
+  },
+  "analytics": {
+    "title": "Nutrition Analytics",
+    "summary": {
+      "avgCalories": "avg kcal/day",
+      "avgProtein": "avg protein/day",
+      "avgCarbs": "avg carbs/day",
+      "avgFat": "avg fat/day"
+    },
+    "charts": {
+      "calories": "Calories",
+      "macros": "Macros",
+      "distribution": "Macro Distribution",
+      "goal": "Goal"
+    },
+    "topFoods": {
+      "title": "Top Foods",
+      "times": "times",
+      "kcal": "kcal"
+    },
+    "noData": "No nutrition data",
+    "noDataDesc": "Start logging your meals to see trends and insights here."
   }
 }

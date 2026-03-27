@@ -219,7 +219,21 @@
       "saturatedFat": "Tyydyttynyt rasva/100g",
       "sugar": "Sokeri/100g",
       "fiber": "Kuitu/100g",
-      "sodium": "Natrium/100g"
+      "sodium": "Natrium/100g",
+      "reportImages": "Käyttäjän lähettämät kuvat",
+      "explanation": "Selitys",
+      "allImages": "Kaikki kuvat (klikkaa suurentaaksesi)",
+      "finalImages": "Lopulliset kuvat (tallennetaan hyväksynnässä)",
+      "productImage": "Tuote",
+      "nutritionLabel": "Arvot",
+      "currentProduct": "Nykyinen tuotekuva",
+      "currentLabel": "Nykyiset ravintoarvot",
+      "reportedProduct": "Raportoitu tuotekuva",
+      "reportedLabel": "Raportoidut ravintoarvot",
+      "setAsProduct": "Aseta tuotekuvaksi",
+      "setAsLabel": "Aseta ravintoarvokuvaksi",
+      "deleted": "Poistettu",
+      "revertToPending": "Palauta odottavaksi"
     },
     "dashboard": {
       "link": "Kojelauta",

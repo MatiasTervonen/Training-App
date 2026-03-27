@@ -1,13 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
-import { View, Keyboard, Pressable } from "react-native";
+import { View, Keyboard, Pressable, TextInput } from "react-native";
 import FullScreenModal from "@/components/FullScreenModal";
 import PageContainer from "@/components/PageContainer";
 import AppText from "@/components/AppText";
-import BodyText from "@/components/BodyText";
 import AppInput from "@/components/AppInput";
 import BodyTextNC from "@/components/BodyTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import Toggle from "@/components/toggle";
+import FoodReportModal from "@/features/nutrition/components/FoodReportModal";
 import NutritionInfo from "@/features/nutrition/components/NutritionInfo";
 import DetailedNutrients from "@/features/nutrition/components/DetailedNutrients";
 import MealTypePicker from "@/features/nutrition/components/MealTypePicker";
@@ -38,7 +37,7 @@ type FoodForDetail = {
   apiSource?: "openfoodfacts" | "usda" | "manual";
 };
 
-type ReportData = {
+type ReportSubmitData = {
   foodId: string;
   caloriesPer100g: number;
   proteinPer100g: number;
@@ -48,6 +47,9 @@ type ReportData = {
   sugarPer100g: number | null;
   fiberPer100g: number | null;
   sodiumPer100g: number | null;
+  imageUri: string | null;
+  nutritionLabelUri: string | null;
+  explanation: string;
 };
 
 type FoodDetailSheetProps = {
@@ -63,8 +65,9 @@ type FoodDetailSheetProps = {
     protein: number;
     carbs: number;
     fat: number;
-    reportData?: ReportData;
   }) => void;
+  onReport?: (data: ReportSubmitData) => void;
+  isReporting?: boolean;
   isFavorite: boolean;
   onToggleFavorite: () => void;
   customMealTypes: string[];
@@ -76,6 +79,8 @@ export default function FoodDetailSheet({
   visible,
   onClose,
   onLog,
+  onReport,
+  isReporting = false,
   isFavorite,
   onToggleFavorite,
   customMealTypes,
@@ -96,7 +101,8 @@ export default function FoodDetailSheet({
   const [editedSugar, setEditedSugar] = useState("");
   const [editedFiber, setEditedFiber] = useState("");
   const [editedSodium, setEditedSodium] = useState("");
-  const [reportToggle, setReportToggle] = useState(false);
+  const [editedSalt, setEditedSalt] = useState("");
+  const [reportModalVisible, setReportModalVisible] = useState(false);
   const [per100gExpanded, setPer100gExpanded] = useState(false);
 
   useEffect(() => {
@@ -112,7 +118,8 @@ export default function FoodDetailSheet({
       setEditedSugar(food.sugar_per_100g != null ? String(food.sugar_per_100g) : "");
       setEditedFiber(food.fiber_per_100g != null ? String(food.fiber_per_100g) : "");
       setEditedSodium(food.sodium_per_100g != null ? String(food.sodium_per_100g) : "");
-      setReportToggle(false);
+      setEditedSalt(food.sodium_per_100g != null ? String(Math.round(food.sodium_per_100g * 2.5 * 1000) / 1000) : "");
+      setReportModalVisible(false);
       setPer100gExpanded(false);
     }
   }, [food, defaultMealType]);
@@ -153,23 +160,22 @@ export default function FoodDetailSheet({
     );
   }, [food, effectiveCalsPer100g, effectiveProteinPer100g, effectiveCarbsPer100g, effectiveFatPer100g, effectiveSatFatPer100g, effectiveSugarPer100g, effectiveFiberPer100g, effectiveSodiumPer100g]);
 
+  const handleSodiumEditChange = (val: string) => {
+    setEditedSodium(val);
+    const g = parseFloat(val.replace(",", "."));
+    // sodium g → salt g: g * 2.5
+    setEditedSalt(!val.trim() || isNaN(g) ? "" : String(Math.round(g * 2.5 * 1000) / 1000));
+  };
+
+  const handleSaltEditChange = (val: string) => {
+    setEditedSalt(val);
+    const g = parseFloat(val.replace(",", "."));
+    // salt g → sodium g: g / 2.5
+    setEditedSodium(!val.trim() || isNaN(g) ? "" : String(Math.round((g / 2.5) * 1000) / 1000));
+  };
+
   const handleLog = () => {
     if (!food) return;
-
-    const reportData =
-      reportToggle && hasModifiedPer100g && food.id && !food.is_custom
-        ? {
-            foodId: food.id,
-            caloriesPer100g: effectiveCalsPer100g,
-            proteinPer100g: effectiveProteinPer100g,
-            carbsPer100g: effectiveCarbsPer100g,
-            fatPer100g: effectiveFatPer100g,
-            saturatedFatPer100g: effectiveSatFatPer100g,
-            sugarPer100g: effectiveSugarPer100g,
-            fiberPer100g: effectiveFiberPer100g,
-            sodiumPer100g: effectiveSodiumPer100g,
-          }
-        : undefined;
 
     onLog({
       food,
@@ -180,8 +186,28 @@ export default function FoodDetailSheet({
       protein: calculatedProtein,
       carbs: calculatedCarbs,
       fat: calculatedFat,
-      reportData,
     });
+  };
+
+  const handleReportSubmit = (data: {
+    imageUri: string | null;
+    nutritionLabelUri: string | null;
+    explanation: string;
+  }) => {
+    if (!food?.id) return;
+    onReport?.({
+      foodId: food.id,
+      caloriesPer100g: effectiveCalsPer100g,
+      proteinPer100g: effectiveProteinPer100g,
+      carbsPer100g: effectiveCarbsPer100g,
+      fatPer100g: effectiveFatPer100g,
+      saturatedFatPer100g: effectiveSatFatPer100g,
+      sugarPer100g: effectiveSugarPer100g,
+      fiberPer100g: effectiveFiberPer100g,
+      sodiumPer100g: effectiveSodiumPer100g,
+      ...data,
+    });
+    setReportModalVisible(false);
   };
 
   const images = useMemo(
@@ -294,71 +320,130 @@ export default function FoodDetailSheet({
             </AnimatedButton>
             {per100gExpanded && (
               <View className="mt-3 gap-3">
-                <AppInput
-                  value={editedCalories}
-                  setValue={setEditedCalories}
-                  label={`${t("daily.calories")} / 100g`}
-                  keyboardType="decimal-pad"
-                />
-                <AppInput
-                  value={editedProtein}
-                  setValue={setEditedProtein}
-                  label={`${t("daily.protein")} / 100g`}
-                  keyboardType="decimal-pad"
-                />
-                <AppInput
-                  value={editedCarbs}
-                  setValue={setEditedCarbs}
-                  label={`${t("daily.carbs")} / 100g`}
-                  keyboardType="decimal-pad"
-                />
-                <AppInput
-                  value={editedFat}
-                  setValue={setEditedFat}
-                  label={`${t("daily.fat")} / 100g`}
-                  keyboardType="decimal-pad"
-                />
-                {food.saturated_fat_per_100g != null && (
-                  <AppInput
-                    value={editedSaturatedFat}
-                    setValue={setEditedSaturatedFat}
-                    label={`${t("daily.saturatedFat")} / 100g`}
+                <View className="gap-1">
+                  <AppText className="text-sm">{t("custom.caloriesPer100g")}</AppText>
+                  <TextInput
+                    value={editedCalories}
+                    onChangeText={setEditedCalories}
                     keyboardType="decimal-pad"
+                    placeholderTextColor="#9ca3af"
+                    placeholder="0 kcal"
+                    className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-gray-100 font-lexend text-sm"
                   />
+                </View>
+                <View className="gap-1">
+                  <AppText className="text-sm">{t("custom.proteinPer100g")}</AppText>
+                  <TextInput
+                    value={editedProtein}
+                    onChangeText={setEditedProtein}
+                    keyboardType="decimal-pad"
+                    placeholderTextColor="#9ca3af"
+                    placeholder="0 g"
+                    className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-gray-100 font-lexend text-sm"
+                  />
+                </View>
+                <View className="gap-1">
+                  <AppText className="text-sm">{t("custom.carbsPer100g")}</AppText>
+                  <TextInput
+                    value={editedCarbs}
+                    onChangeText={setEditedCarbs}
+                    keyboardType="decimal-pad"
+                    placeholderTextColor="#9ca3af"
+                    placeholder="0 g"
+                    className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-gray-100 font-lexend text-sm"
+                  />
+                </View>
+                <View className="gap-1">
+                  <AppText className="text-sm">{t("custom.fatPer100g")}</AppText>
+                  <TextInput
+                    value={editedFat}
+                    onChangeText={setEditedFat}
+                    keyboardType="decimal-pad"
+                    placeholderTextColor="#9ca3af"
+                    placeholder="0 g"
+                    className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-gray-100 font-lexend text-sm"
+                  />
+                </View>
+                {food.saturated_fat_per_100g != null && (
+                  <View className="gap-1">
+                    <AppText className="text-sm">{t("custom.saturatedFatPer100g")}</AppText>
+                    <TextInput
+                      value={editedSaturatedFat}
+                      onChangeText={setEditedSaturatedFat}
+                      keyboardType="decimal-pad"
+                      placeholderTextColor="#9ca3af"
+                      placeholder="0 g"
+                      className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-gray-100 font-lexend text-sm"
+                    />
+                  </View>
                 )}
                 {food.sugar_per_100g != null && (
-                  <AppInput
-                    value={editedSugar}
-                    setValue={setEditedSugar}
-                    label={`${t("daily.sugar")} / 100g`}
-                    keyboardType="decimal-pad"
-                  />
+                  <View className="gap-1">
+                    <AppText className="text-sm">{t("custom.sugarPer100g")}</AppText>
+                    <TextInput
+                      value={editedSugar}
+                      onChangeText={setEditedSugar}
+                      keyboardType="decimal-pad"
+                      placeholderTextColor="#9ca3af"
+                      placeholder="0 g"
+                      className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-gray-100 font-lexend text-sm"
+                    />
+                  </View>
                 )}
                 {food.fiber_per_100g != null && (
-                  <AppInput
-                    value={editedFiber}
-                    setValue={setEditedFiber}
-                    label={`${t("daily.fiber")} / 100g`}
-                    keyboardType="decimal-pad"
-                  />
+                  <View className="gap-1">
+                    <AppText className="text-sm">{t("custom.fiberPer100g")}</AppText>
+                    <TextInput
+                      value={editedFiber}
+                      onChangeText={setEditedFiber}
+                      keyboardType="decimal-pad"
+                      placeholderTextColor="#9ca3af"
+                      placeholder="0 g"
+                      className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-gray-100 font-lexend text-sm"
+                    />
+                  </View>
                 )}
                 {food.sodium_per_100g != null && (
-                  <AppInput
-                    value={editedSodium}
-                    setValue={setEditedSodium}
-                    label={`${t("daily.sodium")} / 100g`}
-                    keyboardType="decimal-pad"
-                  />
+                  <View className="flex-row gap-3 items-end">
+                    <View className="flex-1 gap-1">
+                      <AppText className="text-sm">{t("custom.saltPer100g")}</AppText>
+                      <TextInput
+                        value={editedSalt}
+                        onChangeText={handleSaltEditChange}
+                        keyboardType="decimal-pad"
+                        placeholderTextColor="#9ca3af"
+                        placeholder="0 g"
+                        className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-gray-100 font-lexend text-sm"
+                      />
+                    </View>
+                    <BodyTextNC className="text-slate-500 text-xs pb-3.5">
+                      {t("login:login.or")}
+                    </BodyTextNC>
+                    <View className="flex-1 gap-1">
+                      <AppText className="text-sm">{t("custom.sodiumPer100g")}</AppText>
+                      <TextInput
+                        value={editedSodium}
+                        onChangeText={handleSodiumEditChange}
+                        keyboardType="decimal-pad"
+                        placeholderTextColor="#9ca3af"
+                        placeholder="0 mg"
+                        className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-gray-100 font-lexend text-sm"
+                      />
+                    </View>
+                  </View>
                 )}
               </View>
             )}
           </View>
 
-          {/* Report toggle */}
-          {hasModifiedPer100g && !food.is_custom && (
-            <View className="flex-row items-center justify-between mb-4 px-1">
-              <BodyText className="text-sm">{t("detail.reportIncorrectData")}</BodyText>
-              <Toggle isOn={reportToggle} onToggle={() => setReportToggle((v) => !v)} />
+          {/* Report wrong data button */}
+          {hasModifiedPer100g && !food.is_custom && food.id && (
+            <View className="mb-4">
+              <AnimatedButton
+                onPress={() => setReportModalVisible(true)}
+                className="btn-neutral py-2.5"
+                label={t("detail.reportWrongData")}
+              />
             </View>
           )}
 
@@ -411,6 +496,34 @@ export default function FoodDetailSheet({
           onClose={() => setViewerIndex(-1)}
         />
       )}
+
+      <FoodReportModal
+        visible={reportModalVisible}
+        onClose={() => setReportModalVisible(false)}
+        onSubmit={handleReportSubmit}
+        isSubmitting={isReporting}
+        food={{ name: food.name, brand: food.brand }}
+        editedValues={{
+          calories: effectiveCalsPer100g,
+          protein: effectiveProteinPer100g,
+          carbs: effectiveCarbsPer100g,
+          fat: effectiveFatPer100g,
+          saturatedFat: effectiveSatFatPer100g,
+          sugar: effectiveSugarPer100g,
+          fiber: effectiveFiberPer100g,
+          sodium: effectiveSodiumPer100g,
+        }}
+        originalValues={{
+          calories: food.calories_per_100g,
+          protein: food.protein_per_100g,
+          carbs: food.carbs_per_100g,
+          fat: food.fat_per_100g,
+          saturatedFat: food.saturated_fat_per_100g,
+          sugar: food.sugar_per_100g,
+          fiber: food.fiber_per_100g,
+          sodium: food.sodium_per_100g,
+        }}
+      />
     </FullScreenModal>
   );
 }

@@ -1,4 +1,4 @@
-import { View, ScrollView, TextInput, Keyboard, Pressable } from "react-native";
+import { View, ScrollView, TextInput } from "react-native";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
 import ProfilePicture from "@/components/ProfilePicture";

@@ -17,6 +17,7 @@ export type FoodItem = {
   sodium_per_100g: number | null;
   saturated_fat_per_100g: number | null;
   image_url: string | null;
+  nutrition_label_url: string | null;
   source: string | null;
   created_at: string;
 };

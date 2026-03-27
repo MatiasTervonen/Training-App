@@ -31,10 +31,11 @@ const HabitShareCard = forwardRef<View, HabitShareCardProps>(
           ref={ref}
           theme={theme}
           size={size}
-          contentStyle={{ paddingHorizontal: 160, paddingBottom: 100 }}
+          className="flex-1 justify-center"
+          contentStyle={{ paddingHorizontal: 160 }}
         >
-          {/* Header - App branding */}
-          <View className="flex-row items-center gap-4">
+          {/* Header - App branding (bottom-left) */}
+          <View className="flex-row items-center gap-4" style={{ position: "absolute", bottom: 40, left: 160 }}>
             <Image
               source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
               style={{ width: 64, height: 64, borderRadius: 8 }}
@@ -44,8 +45,8 @@ const HabitShareCard = forwardRef<View, HabitShareCardProps>(
             </AppText>
           </View>
 
-          {/* Title + Date centered */}
-          <View className="items-center gap-3">
+          {/* Title + Date — absolute so it doesn't affect stats position */}
+          <View className="items-center gap-3" style={{ position: "absolute", top: 120, left: 160, right: 160 }}>
             <AppText
               className="text-center"
               style={{ fontSize: 56, color: theme.colors.textPrimary }}
@@ -58,56 +59,49 @@ const HabitShareCard = forwardRef<View, HabitShareCardProps>(
           </View>
 
           {/* Stats 2x2 grid */}
-          <View style={{ gap: 16 }}>
-            <View className="flex-row" style={{ gap: 16 }}>
-              <View className="flex-1">
-                <ThemedStatBox
-                  label={t("stats.currentStreak")}
-                  value={`${stats.current_streak} ${t("stats.days")}`}
-                  theme={theme}
-                />
+          <View style={{ gap: 16, transform: [{ translateY: 40 }] }}>
+              <View className="flex-row" style={{ gap: 16 }}>
+                <View className="flex-1">
+                  <ThemedStatBox
+                    label={t("stats.currentStreak")}
+                    value={`${stats.current_streak} ${t("stats.days")}`}
+                    theme={theme}
+                  />
+                </View>
+                <View className="flex-1">
+                  <ThemedStatBox
+                    label={t("stats.longestStreak")}
+                    value={`${stats.longest_streak} ${t("stats.days")}`}
+                    theme={theme}
+                  />
+                </View>
               </View>
-              <View className="flex-1">
-                <ThemedStatBox
-                  label={t("stats.longestStreak")}
-                  value={`${stats.longest_streak} ${t("stats.days")}`}
-                  theme={theme}
-                />
+              <View className="flex-row" style={{ gap: 16 }}>
+                <View className="flex-1">
+                  <ThemedStatBox
+                    label={t("stats.completionRate")}
+                    value={`${stats.completion_rate}%`}
+                    theme={theme}
+                  />
+                </View>
+                <View className="flex-1">
+                  <ThemedStatBox
+                    label={t("stats.totalCompletions")}
+                    value={`${stats.total}`}
+                    theme={theme}
+                  />
+                </View>
               </View>
             </View>
-            <View className="flex-row" style={{ gap: 16 }}>
-              <View className="flex-1">
-                <ThemedStatBox
-                  label={t("stats.completionRate")}
-                  value={`${stats.completion_rate}%`}
-                  theme={theme}
-                />
-              </View>
-              <View className="flex-1">
-                <ThemedStatBox
-                  label={t("stats.totalCompletions")}
-                  value={`${stats.total}`}
-                  theme={theme}
-                />
-              </View>
-            </View>
-          </View>
-
-          {/* URL bottom center */}
-          <View style={{ position: "absolute", bottom: 30, left: 0, right: 0, alignItems: "center" }}>
-            <AppText style={{ fontSize: 24, color: theme.colors.textMuted, opacity: 0.5 }}>
-              kurvi.io
-            </AppText>
-          </View>
         </ThemedCardWrapper>
       );
     }
 
     if (size === "story") {
       return (
-        <ThemedCardWrapper ref={ref} theme={theme} size={size}>
+        <ThemedCardWrapper ref={ref} theme={theme} size={size} contentStyle={{ paddingTop: 200 }}>
           {/* Top content */}
-          <View style={{ gap: 350 }}>
+          <View style={{ gap: 200 }}>
             {/* Header - App branding */}
             <View className="flex-row items-center gap-4">
               <Image

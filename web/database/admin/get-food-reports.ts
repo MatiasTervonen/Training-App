@@ -23,7 +23,7 @@ export async function getFoodReports(offset: number, status?: string) {
   const { data, error } = await supabase.rpc("admin_get_food_reports", {
     p_limit: PAGE_SIZE,
     p_offset: offset,
-    p_status: status ?? null,
+    p_status: status,
   });
 
   if (error) {
@@ -65,6 +65,9 @@ export type FoodReportItem = {
   current_sodium_per_100g: number | null;
   image_url: string | null;
   nutrition_label_url: string | null;
+  report_image_url: string | null;
+  report_nutrition_label_url: string | null;
+  explanation: string | null;
   user_email: string | null;
   display_name: string | null;
 };

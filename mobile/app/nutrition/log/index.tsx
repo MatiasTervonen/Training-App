@@ -2,7 +2,6 @@ import { useState, useCallback, useMemo } from "react";
 import { View, TextInput, Keyboard, Pressable, Alert } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
-import BodyText from "@/components/BodyText";
 import BodyTextNC from "@/components/BodyTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import PageContainer from "@/components/PageContainer";
@@ -34,6 +33,7 @@ import { Search, ScanLine, Heart, Clock, PenLine, UtensilsCrossed, X } from "luc
 import type { NutritionSearchResult } from "@/features/nutrition/hooks/useFoodSearch";
 import { getTrackingDate } from "@/lib/formatDate";
 import type { SavedMeal } from "@/database/nutrition/get-saved-meals";
+import Toast from "react-native-toast-message";
 
 type Tab = "search" | "scan" | "favorites" | "recent" | "custom" | "meals";
 
@@ -127,6 +127,8 @@ export default function LogFoodScreen() {
     }
   };
 
+  const [isReporting, setIsReporting] = useState(false);
+
   const handleLog = async (params: {
     food: NutritionSearchResult;
     servingSizeG: number;
@@ -136,17 +138,6 @@ export default function LogFoodScreen() {
     protein: number;
     carbs: number;
     fat: number;
-    reportData?: {
-      foodId: string;
-      caloriesPer100g: number;
-      proteinPer100g: number;
-      carbsPer100g: number;
-      fatPer100g: number;
-      saturatedFatPer100g: number | null;
-      sugarPer100g: number | null;
-      fiberPer100g: number | null;
-      sodiumPer100g: number | null;
-    };
   }) => {
     let foodId = params.food.is_custom ? null : params.food.id;
     const customFoodId = params.food.is_custom ? params.food.id : null;
@@ -191,12 +182,30 @@ export default function LogFoodScreen() {
       loggedAt,
     });
 
-    if (params.reportData) {
-      try {
-        await reportFood(params.reportData);
-      } catch {
-        // Silent fail — food log already succeeded
-      }
+  };
+
+  const handleReport = async (data: {
+    foodId: string;
+    caloriesPer100g: number;
+    proteinPer100g: number;
+    carbsPer100g: number;
+    fatPer100g: number;
+    saturatedFatPer100g: number | null;
+    sugarPer100g: number | null;
+    fiberPer100g: number | null;
+    sodiumPer100g: number | null;
+    imageUri: string | null;
+    nutritionLabelUri: string | null;
+    explanation: string;
+  }) => {
+    setIsReporting(true);
+    try {
+      await reportFood(data);
+      Toast.show({ type: "success", text1: t("detail.reportSubmitted") });
+    } catch {
+      Toast.show({ type: "error", text1: tCommon("common.error") });
+    } finally {
+      setIsReporting(false);
     }
   };
 
@@ -335,6 +344,12 @@ export default function LogFoodScreen() {
             />
           </PageContainer>
         </KeyboardAwareScrollView>
+
+        <BarcodeScannerModal
+          visible={showScanner}
+          onClose={() => setShowScanner(false)}
+          onScanned={handleBarcodeScan}
+        />
       </View>
     );
   }
@@ -402,6 +417,8 @@ export default function LogFoodScreen() {
           setSelectedFood(null);
         }}
         onLog={handleLog}
+        onReport={handleReport}
+        isReporting={isReporting}
         isFavorite={selectedFood ? isFavorite(selectedFood) : false}
         onToggleFavorite={handleToggleFavorite}
         customMealTypes={customMealTypes}

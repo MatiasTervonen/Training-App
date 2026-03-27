@@ -21,7 +21,7 @@ export function mapFoodItem(f: FoodItem): NutritionSearchResult {
     serving_size_g: f.serving_size_g,
     serving_description: f.serving_description,
     image_url: f.image_url,
-    image_nutrition_url: null,
+    image_nutrition_url: f.nutrition_label_url,
     barcode: f.barcode,
     is_custom: false,
     source: "local",

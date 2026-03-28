@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 
 interface NavigatorStandalone extends Navigator {
@@ -41,8 +40,6 @@ export default function InstallApp({
   const [showIosPrompt] = useState(
     () => isIosSafari() && !isInStandaloneMode()
   );
-  const pathname = usePathname();
-
   const handleInstallClick = async () => {
     if (promptEvent) {
       promptEvent.prompt();
@@ -53,11 +50,7 @@ export default function InstallApp({
     <>
       {promptEvent && (
         <button
-          className={`${
-            pathname === "/menu"
-              ? "w-full py-2 px-6 rounded-md shadow-xl bg-blue-900 border-[1.5px] border-blue-500 hover:bg-blue-700 hover:scale-105 transition-all duration-200 cursor-pointer"
-              : "w-[183px] bg-linear-to-tr from-slate-950  to-blue-700 py-2 px-4 rounded-xl border-[1.5px] border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer"
-          } `}
+          className="btn-add w-full"
           onClick={handleInstallClick}
         >
           <div className="flex gap-2 items-center justify-center">
@@ -70,11 +63,7 @@ export default function InstallApp({
       {showIosPrompt && (
         <div className="relative inline-block">
           <button
-            className={`${
-              pathname === "/menu"
-                ? "w-full py-2 px-6 rounded-md shadow-xl bg-blue-900 border-[1.5px] border-blue-500 hover:bg-blue-700 hover:scale-105 transition-all duration-200 cursor-pointer"
-                : "w-[183px] bg-linear-to-tr from-slate-950  to-blue-700 py-2 px-4 rounded-xl border-[1.5px] border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer"
-            } `}
+            className="btn-add w-full"
             onClick={() => setExpanded((prev) => !prev)}
           >
             <div className="flex gap-2 justify-center items-center">

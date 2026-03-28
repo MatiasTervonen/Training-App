@@ -246,7 +246,12 @@
       "loading": "Loading history...",
       "loadError": "Could not load exercise history. Please try again.",
       "noHistory": "No history available for this exercise.",
-      "personalBest": "Personal Best",
+      "personalBests": "Personal Bests",
+      "estOneRm": "Est. 1RM",
+      "heaviestWeight": "Heaviest",
+      "bestVolume": "Best Volume",
+      "newPb": "New Personal Best!",
+      "totalVolume": "Total Volume",
       "range1m": "1M",
       "range3m": "3M",
       "range6m": "6M",
@@ -263,7 +268,11 @@
       "title": "Settings",
       "restTimerEnabled": "Enable rest timer",
       "restTimerDuration": "Rest duration (seconds)",
-      "restTimerDescription": "Automatically start a rest timer when you log a set"
+      "restTimerDescription": "Automatically start a rest timer when you log a set",
+      "pbSoundEnabled": "PB sound effect",
+      "pbSoundDescription": "Play a sound when you hit a new personal best",
+      "restTimerSoundEnabled": "Rest timer sound",
+      "restTimerSoundDescription": "Play a sound when the rest timer ends"
     },
     "share": {
       "workoutFinished": "Workout Finished",

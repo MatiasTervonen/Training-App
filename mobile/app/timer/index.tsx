@@ -12,6 +12,7 @@ import {
 import InfoModal from "@/components/InfoModal";
 import { useTranslation } from "react-i18next";
 import { useUserStore } from "@/lib/stores/useUserStore";
+import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import { SESSION_COLORS } from "@/lib/sessionColors";
 import { router } from "expo-router";
 
@@ -23,6 +24,7 @@ export default function TimerScreen() {
   const activeSession = useTimerStore((state) => state.activeSession);
   const pushEnabled = useUserStore((state) => state.settings?.push_enabled);
   const showPushModal = pushEnabled === false;
+  const setModalPageConfig = useModalPageConfig((s) => s.setModalPageConfig);
 
   useEffect(() => {
     const checkPermission = async () => {
@@ -46,6 +48,21 @@ export default function TimerScreen() {
 
     return true;
   };
+
+  useEffect(() => {
+    setModalPageConfig({
+      rightLabel: t("timer.startTimer"),
+      onSwipeLeft: () => {
+        if (handleClick()) router.push("/timer/empty-timer");
+      },
+      topLabel: t("timer.startStopwatch"),
+      onSwipeDown: () => {
+        if (handleClick()) router.push("/timer/start-stopwatch");
+      },
+    });
+    return () => setModalPageConfig(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setModalPageConfig, t, activeSession]);
 
   useEffect(() => {
     const sub = AppState.addEventListener("change", async (state) => {

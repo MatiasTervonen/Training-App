@@ -49,7 +49,7 @@ begin
       v_feed_id := gen_random_uuid();
 
       insert into public.feed_items (id, user_id, title, type, source_id, occurred_at)
-      values (v_feed_id, new.id, 'Welcome to MyTrack!', 'tutorial', v_feed_id, now());
+      values (v_feed_id, new.id, 'Welcome to Kurvi!', 'tutorial', v_feed_id, now());
 
       insert into public.pinned_items (user_id, feed_item_id, type, pinned_context)
       values (new.id, v_feed_id, 'tutorial', 'main');

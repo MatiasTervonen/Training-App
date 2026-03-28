@@ -51,7 +51,7 @@
     "pictureFormatError": "Only JPEG, PNG, and WebP images are supported"
   },
   "aboutYou": {
-    "title": "About you",
+    "title": "About you (1/2)",
     "description": "Your weight is used to estimate calories burned, and your height helps calculate distance from steps. You can update these anytime.",
     "weightTitle": "Weight",
     "heightTitle": "Height",
@@ -66,8 +66,8 @@
     "continue": "Continue"
   },
   "preferences": {
-    "title": "Preferences",
-    "description": "Choose your preferred distance unit for activities.",
+    "title": "About you (2/2)",
+    "description": "Your gender and age are used to calculate more accurate calorie estimates. Distance unit sets the default for activities like running and cycling.",
     "distanceUnit": "Distance unit",
     "continue": "Continue"
   },

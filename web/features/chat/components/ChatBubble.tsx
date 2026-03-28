@@ -16,6 +16,7 @@ type ChatBubbleProps = {
   isOwn: boolean;
   showReadReceipt: boolean;
   onReply: () => void;
+  onEdit: () => void;
   onDelete: () => void;
   onReact: (emoji: string) => void;
   onForward: () => void;
@@ -250,6 +251,7 @@ export default function ChatBubble({
   isOwn,
   showReadReceipt,
   onReply,
+  onEdit,
   onDelete,
   onReact,
   onForward,
@@ -360,6 +362,13 @@ export default function ChatBubble({
       <div
         className={`flex items-center gap-1 px-3 mt-0.5 ${isOwn ? "self-end" : "self-start"}`}
       >
+        {!!message.edited_at && !isDeleted && (
+          <span
+            className={`font-body text-xs italic ${isOwn ? "text-cyan-200/60" : "text-slate-400/70"}`}
+          >
+            {t("chat.messageEdited")}
+          </span>
+        )}
         <span
           className={`font-body text-xs ${isOwn ? "text-cyan-200/60" : "text-slate-400/70"}`}
         >
@@ -386,6 +395,7 @@ export default function ChatBubble({
           onReply={onReply}
           onCopy={handleCopy}
           onForward={onForward}
+          onEdit={onEdit}
           onDelete={onDelete}
           onReact={onReact}
         />

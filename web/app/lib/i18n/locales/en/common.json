@@ -212,6 +212,7 @@
         "accepted": "Accepted",
         "rejected": "Rejected"
       },
+      "servingSize": "Serving size (g)",
       "calories": "Calories/100g",
       "protein": "Protein/100g",
       "carbs": "Carbs/100g",

@@ -18,6 +18,7 @@ import Toast from "react-native-toast-message";
 const MAX_IMAGE_SIZE_MB = 5;
 
 type NutrientValues = {
+  servingSize: number;
   calories: number;
   protein: number;
   carbs: number;
@@ -46,6 +47,7 @@ type FoodReportModalProps = {
 };
 
 const NUTRIENTS = [
+  { key: "servingSize", unit: "g", labelKey: "custom.servingSize" },
   { key: "calories", unit: "kcal" },
   { key: "protein", unit: "g" },
   { key: "carbs", unit: "g" },
@@ -180,15 +182,17 @@ export default function FoodReportModal({
             </BodyTextNC>
           </View>
 
-          {NUTRIENTS.map(({ key, unit }) => {
+          {NUTRIENTS.map((nutrient) => {
+            const { key, unit } = nutrient;
             const original = originalValues[key];
             const edited = editedValues[key];
             if (original == null && edited == null) return null;
             const changed = original !== edited;
+            const label = "labelKey" in nutrient ? t(nutrient.labelKey) : t(`custom.${key}Per100g`);
             return (
               <View key={key} className="flex-row items-center py-0.5">
                 <BodyTextNC className="flex-1 text-xs text-slate-400">
-                  {t(`custom.${key}Per100g`)}
+                  {label}
                 </BodyTextNC>
                 <BodyTextNC className="text-xs text-slate-500 w-16 text-right">
                   {original != null ? `${original} ${unit}` : "—"}

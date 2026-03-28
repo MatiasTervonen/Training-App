@@ -107,7 +107,7 @@ export default function LayoutWrapper({
       try {
         if (!profile || !settings) {
           const [profileData, settingsData] = await Promise.all([
-            fetchUserProfile(session.user.id),
+            fetchUserProfile(),
             fetchUserSettings(),
           ]);
           loginUser(profileData as UserProfile, settingsData as UserSettings);

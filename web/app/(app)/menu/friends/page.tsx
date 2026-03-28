@@ -10,7 +10,7 @@ import { useRejectFriendRequest } from "@/features/menu/friends/hooks/useRejectF
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import EmptyState from "@/components/EmptyState";
-import { Users } from "lucide-react";
+import { Users, UserPlus } from "lucide-react";
 
 export default function FriendsPage() {
   const { t } = useTranslation("menu");
@@ -35,6 +35,11 @@ export default function FriendsPage() {
     } catch {
       toast.error(t("friends.rejectError"));
     }
+  };
+
+  const handleInvite = async () => {
+    await navigator.clipboard.writeText(t("friends.inviteMessage"));
+    toast.success(t("friends.inviteCopied"));
   };
 
   const isLoading = friendsLoading || requestsLoading;
@@ -101,6 +106,25 @@ export default function FriendsPage() {
                 />
               </div>
             )}
+          </div>
+          <div className="mt-5 rounded-md bg-slate-950 border-slate-700 border-[1.5px] p-5 flex flex-col items-center">
+            <div className="w-14 h-14 rounded-full bg-blue-500/10 flex items-center justify-center mb-4">
+              <UserPlus size={28} className="text-blue-500" />
+            </div>
+            <h3 className="text-lg text-center mb-2">
+              {t("friends.inviteTitle")}
+            </h3>
+            <p className="text-sm text-gray-400 text-center leading-5 mb-5 font-body">
+              {t("friends.inviteDesc")}
+            </p>
+            <div className="w-full px-8">
+              <button
+                onClick={handleInvite}
+                className="btn-base w-full"
+              >
+                {t("friends.inviteButton")}
+              </button>
+            </div>
           </div>
         </>
       )}

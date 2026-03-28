@@ -11,7 +11,6 @@ import { useQuery } from "@tanstack/react-query";
 import { getTemplates } from "@/database/gym/templates/get-templates";
 import { getFullTemplate } from "@/database/gym/templates/full-gym-template";
 import useDeleteTemplate from "@/features/gym/hooks/template/useDeleteTemplate";
-import useStartWorkoutTemplate from "@/features/gym/hooks/template/useStartWorkoutTemplate";
 import { useTranslation } from "react-i18next";
 import { FullGymTemplate } from "@/database/gym/templates/full-gym-template";
 import EmptyState from "@/components/EmptyState";
@@ -41,12 +40,6 @@ export default function TemplatesPage() {
     queryFn: getTemplates,
   });
 
-  // useStartWorkoutTemplate hook to start a workout from a template
-
-  const { startWorkout } = useStartWorkoutTemplate();
-
-  // useDeleteTemplate hook to delete a template
-
   const { handleDeleteTemplate } = useDeleteTemplate();
 
   const templateId = expandedItem?.id;
@@ -60,8 +53,6 @@ export default function TemplatesPage() {
     queryFn: () => getFullTemplate(templateId!),
     enabled: !!templateId,
   });
-
-  console.log("templates", TemplateSessionFull);
 
   return (
     <div className="flex flex-col max-w-md mx-auto page-padding">
@@ -116,10 +107,7 @@ export default function TemplatesPage() {
               </p>
             ) : (
               TemplateSessionFull && (
-                <GymTemplate
-                  item={TemplateSessionFull}
-                  onStartWorkout={() => startWorkout(TemplateSessionFull)}
-                />
+                <GymTemplate item={TemplateSessionFull} />
               )
             )}
           </>

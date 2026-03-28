@@ -1,5 +1,4 @@
-import { View, Alert } from "react-native";
-import { Image } from "expo-image";
+import { View, Alert, Image } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -91,8 +90,7 @@ export default function ProfilePicture({
               : require("@/assets/images/default-avatar.png")
           }
           className="w-full h-full rounded-full overflow-hidden"
-          contentFit="cover"
-          alt="Profile Picture"
+          resizeMode="cover"
         />
         {/* Camera overlay */}
         <View className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-blue-500 items-center justify-center border-2 border-slate-900">

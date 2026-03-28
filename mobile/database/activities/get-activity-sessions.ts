@@ -2,22 +2,14 @@ import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
 export async function getActivitySessions(days: number = 90) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
-
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
 
   const { data, error } = await supabase
     .from("sessions")
-    .select("id, created_at, activities(name, slug), session_stats(distance_meters)")
-    .eq("user_id", session.user.id)
+    .select(
+      "id, created_at, activities(name, slug), session_stats(distance_meters)",
+    )
     .gte("created_at", startDate.toISOString())
     .order("created_at", { ascending: false });
 

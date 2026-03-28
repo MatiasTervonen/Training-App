@@ -287,6 +287,7 @@ export type Database = {
           conversation_id: string
           created_at: string
           deleted_at: string | null
+          edited_at: string | null
           id: string
           link_preview: Json | null
           media_duration_ms: number | null
@@ -301,6 +302,7 @@ export type Database = {
           conversation_id: string
           created_at?: string
           deleted_at?: string | null
+          edited_at?: string | null
           id?: string
           link_preview?: Json | null
           media_duration_ms?: number | null
@@ -315,6 +317,7 @@ export type Database = {
           conversation_id?: string
           created_at?: string
           deleted_at?: string | null
+          edited_at?: string | null
           id?: string
           link_preview?: Json | null
           media_duration_ms?: number | null
@@ -947,14 +950,18 @@ export type Database = {
       food_reports: {
         Row: {
           created_at: string | null
+          explanation: string | null
           food_id: string
           id: string
+          report_image_url: string | null
+          report_nutrition_label_url: string | null
           reported_calories_per_100g: number | null
           reported_carbs_per_100g: number | null
           reported_fat_per_100g: number | null
           reported_fiber_per_100g: number | null
           reported_protein_per_100g: number | null
           reported_saturated_fat_per_100g: number | null
+          reported_serving_size_g: number | null
           reported_sodium_per_100g: number | null
           reported_sugar_per_100g: number | null
           status: string
@@ -962,14 +969,18 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          explanation?: string | null
           food_id: string
           id?: string
+          report_image_url?: string | null
+          report_nutrition_label_url?: string | null
           reported_calories_per_100g?: number | null
           reported_carbs_per_100g?: number | null
           reported_fat_per_100g?: number | null
           reported_fiber_per_100g?: number | null
           reported_protein_per_100g?: number | null
           reported_saturated_fat_per_100g?: number | null
+          reported_serving_size_g?: number | null
           reported_sodium_per_100g?: number | null
           reported_sugar_per_100g?: number | null
           status?: string
@@ -977,14 +988,18 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          explanation?: string | null
           food_id?: string
           id?: string
+          report_image_url?: string | null
+          report_nutrition_label_url?: string | null
           reported_calories_per_100g?: number | null
           reported_carbs_per_100g?: number | null
           reported_fat_per_100g?: number | null
           reported_fiber_per_100g?: number | null
           reported_protein_per_100g?: number | null
           reported_saturated_fat_per_100g?: number | null
+          reported_serving_size_g?: number | null
           reported_sodium_per_100g?: number | null
           reported_sugar_per_100g?: number | null
           status?: string
@@ -2910,7 +2925,9 @@ export type Database = {
           gps_tracking_enabled: boolean
           has_completed_onboarding: boolean | null
           language: string
+          pb_sound_enabled: boolean
           push_enabled: boolean
+          rest_timer_sound_enabled: boolean
           updated_at: string
           user_id: string
         }
@@ -2919,7 +2936,9 @@ export type Database = {
           gps_tracking_enabled?: boolean
           has_completed_onboarding?: boolean | null
           language?: string
+          pb_sound_enabled?: boolean
           push_enabled?: boolean
+          rest_timer_sound_enabled?: boolean
           updated_at?: string
           user_id?: string
         }
@@ -2928,7 +2947,9 @@ export type Database = {
           gps_tracking_enabled?: boolean
           has_completed_onboarding?: boolean | null
           language?: string
+          pb_sound_enabled?: boolean
           push_enabled?: boolean
+          rest_timer_sound_enabled?: boolean
           updated_at?: string
           user_id?: string
         }
@@ -3255,20 +3276,25 @@ export type Database = {
           current_fiber_per_100g: number
           current_protein_per_100g: number
           current_saturated_fat_per_100g: number
+          current_serving_size_g: number
           current_sodium_per_100g: number
           current_sugar_per_100g: number
           display_name: string
+          explanation: string
           food_id: string
           food_name: string
           id: string
           image_url: string
           nutrition_label_url: string
+          report_image_url: string
+          report_nutrition_label_url: string
           reported_calories_per_100g: number
           reported_carbs_per_100g: number
           reported_fat_per_100g: number
           reported_fiber_per_100g: number
           reported_protein_per_100g: number
           reported_saturated_fat_per_100g: number
+          reported_serving_size_g: number
           reported_sodium_per_100g: number
           reported_sugar_per_100g: number
           status: string
@@ -3283,9 +3309,12 @@ export type Database = {
           p_carbs_per_100g?: number
           p_fat_per_100g?: number
           p_fiber_per_100g?: number
+          p_image_url?: string
+          p_nutrition_label_url?: string
           p_protein_per_100g?: number
           p_report_id: string
           p_saturated_fat_per_100g?: number
+          p_serving_size_g?: number
           p_sodium_per_100g?: number
           p_sugar_per_100g?: number
         }
@@ -3338,6 +3367,10 @@ export type Database = {
           media_path: string
           thumbnail_path: string
         }[]
+      }
+      edit_message: {
+        Args: { p_content: string; p_message_id: string }
+        Returns: undefined
       }
       energy_balance_get_daily: {
         Args: { p_date: string; p_tz?: string }
@@ -3467,6 +3500,7 @@ export type Database = {
           conversation_id: string
           created_at: string
           deleted_at: string
+          edited_at: string
           id: string
           link_preview: Json
           media_duration_ms: number
@@ -3536,6 +3570,13 @@ export type Database = {
           p_rest_timer_seconds?: number
         }
         Returns: string
+      }
+      gym_get_exercise_best_e1rm: {
+        Args: { exercise_ids: string[] }
+        Returns: {
+          best_e1rm: number
+          exercise_id: string
+        }[]
       }
       gym_latest_history_per_exercise: {
         Args: { exercise_ids: string[] }
@@ -3675,6 +3716,10 @@ export type Database = {
         Args: { p_meal_id: string }
         Returns: undefined
       }
+      nutrition_get_analytics: {
+        Args: { p_end_date: string; p_start_date: string }
+        Returns: Json
+      }
       nutrition_get_daily_logs: {
         Args: { p_date: string }
         Returns: {
@@ -3748,11 +3793,15 @@ export type Database = {
         Args: {
           p_calories_per_100g?: number
           p_carbs_per_100g?: number
+          p_explanation?: string
           p_fat_per_100g?: number
           p_fiber_per_100g?: number
           p_food_id: string
           p_protein_per_100g?: number
+          p_report_image_url?: string
+          p_report_nutrition_label_url?: string
           p_saturated_fat_per_100g?: number
+          p_serving_size_g?: number
           p_sodium_per_100g?: number
           p_sugar_per_100g?: number
         }

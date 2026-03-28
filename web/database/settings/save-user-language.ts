@@ -4,17 +4,7 @@ import { handleError } from "@/utils/handleError";
 export async function saveUserLanguage(language: "en" | "fi") {
   const supabase = createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
-  const { error } = await supabase
-    .from("user_settings")
-    .update({ language })
-    .eq("user_id", user.sub);
+  const { error } = await supabase.from("user_settings").update({ language });
 
   if (error) {
     handleError(error, {

@@ -16,6 +16,7 @@ type FloatingToolbarOverlayProps = {
   onReply: () => void;
   onCopy: () => void;
   onForward: () => void;
+  onEdit: () => void;
   onDelete: () => void;
   onReaction: (emoji: string) => void;
   onDismiss: () => void;
@@ -31,6 +32,7 @@ export default function FloatingToolbarOverlay({
   onReply,
   onCopy,
   onForward,
+  onEdit,
   onDelete,
   onReaction,
   onDismiss,
@@ -81,6 +83,7 @@ export default function FloatingToolbarOverlay({
             onReply={onReply}
             onCopy={onCopy}
             onForward={onForward}
+            onEdit={onEdit}
             onDelete={onDelete}
             onReaction={onReaction}
           />

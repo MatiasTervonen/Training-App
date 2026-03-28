@@ -1,71 +1,58 @@
+"use client";
+
 import { useState, useRef } from "react";
 import Image from "next/image";
+import { Camera } from "lucide-react";
 
-type props = {
+type Props = {
   data: string | null;
   onFileSelected?: (file: File | null, previewUrl: string | null) => void;
+  size?: number;
 };
 
-export default function ProfilePicture({ data, onFileSelected }: props) {
+export default function ProfilePicture({
+  data,
+  onFileSelected,
+  size = 100,
+}: Props) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const imgSrc = previewUrl || data || "/default-avatar.png";
+
   return (
-    <div className="text-gray-100">
-      <label>Profile Picture</label>
-      <div className="border rounded-full w-20 h-20 mt-2 mb-4">
-        {previewUrl ? (
-          <Image
-            src={previewUrl}
-            alt="Profile Preview"
-            width={80}
-            height={80}
-            className="object-cover w-full h-full rounded-full"
-          />
-        ) : data ? (
-          <Image
-            src={data}
-            alt="Profile Picture"
-            width={80}
-            height={80}
-            className="object-cover w-full h-full rounded-full"
-          />
-        ) : (
-          <Image
-            src={"/default-avatar.png"}
-            alt="Profile Picture"
-            width={80}
-            height={80}
-            className="object-cover w-full h-full rounded-full"
-          />
-        )}
-      </div>
-      <div className="flex flex-col cursor-pointer">
-        <div
-          onClick={() => fileInputRef.current?.click()}
-          className="flex items-center gap-2 border-[1.5px] bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] rounded-md p-2 w-full hover:border-blue-500 focus:outline-none focus:border-green-300"
-        >
-          <span className="truncate">
-            {fileName || "Change Profile Picture"}
-          </span>
-        </div>
-        <input
-          type="file"
-          ref={fileInputRef}
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => {
-            const file = e.target.files?.[0] || null;
-            const preview = file ? URL.createObjectURL(file) : null;
-            setPreviewUrl(preview);
-            setFileName(file ? file.name : "");
-            if (onFileSelected) {
-              onFileSelected(file, preview);
-            }
-          }}
+    <div className="flex flex-col items-center">
+      <button
+        type="button"
+        onClick={() => fileInputRef.current?.click()}
+        className="relative group cursor-pointer"
+        style={{ width: size, height: size }}
+      >
+        <Image
+          src={imgSrc}
+          alt="Profile Picture"
+          width={size}
+          height={size}
+          className="object-cover w-full h-full rounded-full border-2 border-slate-700"
         />
-      </div>
+        <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <Camera className="w-6 h-6 text-white" />
+        </div>
+      </button>
+      <input
+        type="file"
+        ref={fileInputRef}
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0] || null;
+          const preview = file ? URL.createObjectURL(file) : null;
+          setPreviewUrl(preview);
+          if (onFileSelected) {
+            onFileSelected(file, preview);
+          }
+        }}
+      />
     </div>
   );
 }

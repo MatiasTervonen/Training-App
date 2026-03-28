@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { Reply, Copy, Forward, Trash2 } from "lucide-react";
+import { Reply, Copy, Forward, Trash2, Pencil } from "lucide-react";
 
 const QUICK_REACTIONS = ["👍", "❤️", "😂", "😮", "😢", "🔥"];
 
@@ -17,6 +17,7 @@ type MessageContextMenuProps = {
   onReply: () => void;
   onCopy: () => void;
   onForward: () => void;
+  onEdit: () => void;
   onDelete: () => void;
   onReact: (emoji: string) => void;
 };
@@ -31,6 +32,7 @@ export default function MessageContextMenu({
   onReply,
   onCopy,
   onForward,
+  onEdit,
   onDelete,
   onReact,
 }: MessageContextMenuProps) {
@@ -119,6 +121,15 @@ export default function MessageContextMenu({
           >
             <Copy size={16} />
             {t("chat.copy")}
+          </button>
+        )}
+        {isOwn && hasTextContent && !isDeleted && (
+          <button
+            onClick={() => { onEdit(); onClose(); }}
+            className="flex items-center gap-3 w-full px-3 py-2 text-sm hover:bg-slate-700 transition-colors"
+          >
+            <Pencil size={16} />
+            {t("chat.edit")}
           </button>
         )}
         {!isDeleted && (

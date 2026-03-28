@@ -12,6 +12,7 @@ import { useMarkRead } from "@/features/chat/hooks/useMarkRead";
 import { useSendMessage } from "@/features/chat/hooks/useSendMessage";
 import { useSendMediaMessage } from "@/features/chat/hooks/useSendMediaMessage";
 import { useDeleteMessage } from "@/features/chat/hooks/useDeleteMessage";
+import { useEditMessage } from "@/features/chat/hooks/useEditMessage";
 import { useToggleReaction } from "@/features/chat/hooks/useToggleReaction";
 import { useForwardMessage } from "@/features/chat/hooks/useForwardMessage";
 import { useOtherLastRead } from "@/features/chat/hooks/useOtherLastRead";
@@ -63,6 +64,8 @@ export default function ChatView({ conversationId, otherUser, isActive, onBack }
   const sendMessage = useSendMessage(conversationId);
   const sendMediaMessage = useSendMediaMessage(conversationId);
   const deleteMsg = useDeleteMessage(conversationId);
+  const editMsg = useEditMessage(conversationId);
+  const [editingMessage, setEditingMessage] = useState<{ id: string; content: string } | null>(null);
   const toggleReaction = useToggleReaction(conversationId);
   const forwardMessage = useForwardMessage();
   const { data: otherLastRead } = useOtherLastRead(conversationId);
@@ -142,6 +145,21 @@ export default function ChatView({ conversationId, otherUser, isActive, onBack }
       deleteMsg.mutate(messageId);
     }
   }, [deleteMsg, t]);
+
+  const handleEdit = useCallback((msg: ChatMessage) => {
+    if (msg.message_type === "text" && msg.content) {
+      setEditingMessage({ id: msg.id, content: msg.content });
+    }
+  }, []);
+
+  const handleSaveEdit = useCallback((messageId: string, content: string) => {
+    editMsg.mutate({ messageId, content });
+    setEditingMessage(null);
+  }, [editMsg]);
+
+  const handleCancelEdit = useCallback(() => {
+    setEditingMessage(null);
+  }, []);
 
   const handleReact = useCallback((messageId: string, emoji: string) => {
     toggleReaction.mutate({ messageId, emoji });
@@ -254,6 +272,7 @@ export default function ChatView({ conversationId, otherUser, isActive, onBack }
                 isOwn={isOwn}
                 showReadReceipt={showRead}
                 onReply={() => setReplyingTo(msg)}
+                onEdit={() => handleEdit(msg)}
                 onDelete={() => handleDelete(msg.id)}
                 onReact={(emoji) => handleReact(msg.id, emoji)}
                 onForward={() => setForwardingMessage(msg)}
@@ -295,6 +314,9 @@ export default function ChatView({ conversationId, otherUser, isActive, onBack }
         onCancelReply={() => setReplyingTo(null)}
         sendTyping={sendTyping}
         stopTyping={stopTyping}
+        editingMessage={editingMessage}
+        onSaveEdit={handleSaveEdit}
+        onCancelEdit={handleCancelEdit}
       />
 
       {/* Forward modal */}

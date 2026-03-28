@@ -18,7 +18,7 @@ export default function TutorialCard({
 
   return (
     <BaseFeedCard
-      item={item}
+      item={{ ...item, title: t("feed.tutorial.title", { appName: APP_NAME }) }}
       pinned={pinned}
       onTogglePin={onTogglePin}
       onDelete={onDelete}

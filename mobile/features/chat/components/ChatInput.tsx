@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { View, TextInput, Keyboard } from "react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import BodyTextNC from "@/components/BodyTextNC";
-import { Send, Plus, X, MapPin } from "lucide-react-native";
+import { Send, Plus, X, MapPin, Check, Pencil } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import MediaToolbar from "@/features/notes/components/MediaToolbar";
 import ChatMediaPreview from "@/features/chat/components/ChatMediaPreview";
@@ -20,6 +20,11 @@ type MediaPayload = {
   durationMs?: number;
 };
 
+type EditingMessage = {
+  id: string;
+  content: string;
+};
+
 type ChatInputProps = {
   onSend: (content: string, preview?: LinkPreview | null) => void;
   onSendMedia: (payload: MediaPayload) => void;
@@ -29,6 +34,9 @@ type ChatInputProps = {
   replyTo?: ChatMessage | null;
   onCancelReply?: () => void;
   onTyping?: () => void;
+  editingMessage?: EditingMessage | null;
+  onSaveEdit?: (messageId: string, content: string) => void;
+  onCancelEdit?: () => void;
 };
 
 export default function ChatInput({
@@ -40,6 +48,9 @@ export default function ChatInput({
   replyTo,
   onCancelReply,
   onTyping,
+  editingMessage,
+  onSaveEdit,
+  onCancelEdit,
 }: ChatInputProps) {
   const { t } = useTranslation("chat");
   const [text, setText] = useState("");
@@ -50,6 +61,18 @@ export default function ChatInput({
   const [previewDismissed, setPreviewDismissed] = useState(false);
   const lastFetchedUrl = useRef<string | null>(null);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Populate text when entering edit mode, clear when leaving
+  const wasEditing = useRef(false);
+  useEffect(() => {
+    if (editingMessage) {
+      setText(editingMessage.content);
+      wasEditing.current = true;
+    } else if (wasEditing.current) {
+      setText("");
+      wasEditing.current = false;
+    }
+  }, [editingMessage]);
 
   // Detect URL in text and fetch preview with debounce
   useEffect(() => {
@@ -79,6 +102,20 @@ export default function ChatInput({
   }, [text, previewDismissed]);
 
   const handleSend = useCallback(() => {
+    // Edit mode: save the edit
+    if (editingMessage && onSaveEdit) {
+      const trimmed = text.trim();
+      if (!trimmed) return;
+      // No change — just dismiss edit mode without saving
+      if (trimmed === editingMessage.content) {
+        return;
+      }
+      onSaveEdit(editingMessage.id, trimmed);
+      setText("");
+      Keyboard.dismiss();
+      return;
+    }
+
     if (pendingMedia) {
       if (isCompressing) return;
       if (!pendingMedia.uri) return;
@@ -96,7 +133,7 @@ export default function ChatInput({
     lastFetchedUrl.current = null;
     setPreviewDismissed(false);
     Keyboard.dismiss();
-  }, [text, disabled, onSend, onSendMedia, pendingMedia, isCompressing, inputPreview]);
+  }, [text, disabled, onSend, onSendMedia, pendingMedia, isCompressing, inputPreview, editingMessage, onSaveEdit, onCancelEdit]);
 
   const handleImageSelected = useCallback(
     (image: { id: string; uri: string; isLoading: boolean }) => {
@@ -179,7 +216,19 @@ export default function ChatInput({
 
   return (
     <View>
-      {replyTo && onCancelReply && (
+      {editingMessage && onCancelEdit && (
+        <View className="flex-row items-center px-4 py-2 bg-slate-900 border-t border-slate-700 gap-2">
+          <Pencil color="#06b6d4" size={16} />
+          <BodyTextNC className="flex-1 text-sm text-cyan-400">
+            {t("chat.editMessage")}
+          </BodyTextNC>
+          <AnimatedButton onPress={onCancelEdit} className="p-1">
+            <X color="#94a3b8" size={16} />
+          </AnimatedButton>
+        </View>
+      )}
+
+      {!editingMessage && replyTo && onCancelReply && (
         <ReplyInputBar message={replyTo} onDismiss={onCancelReply} />
       )}
 
@@ -212,15 +261,17 @@ export default function ChatInput({
       )}
 
       <View className="px-4 py-2 border-t border-slate-700 bg-slate-900 flex-row items-end gap-2">
-        <AnimatedButton
-          onPress={() => {
-            setShowToolbar((prev) => !prev);
-            Keyboard.dismiss();
-          }}
-          className="w-[44px] h-[44px] rounded-full items-center justify-center bg-slate-800"
-        >
-          <Plus color={showToolbar ? "#06b6d4" : "#94a3b8"} size={22} />
-        </AnimatedButton>
+        {!editingMessage && (
+          <AnimatedButton
+            onPress={() => {
+              setShowToolbar((prev) => !prev);
+              Keyboard.dismiss();
+            }}
+            className="w-[44px] h-[44px] rounded-full items-center justify-center bg-slate-800"
+          >
+            <Plus color={showToolbar ? "#06b6d4" : "#94a3b8"} size={22} />
+          </AnimatedButton>
+        )}
 
         <View className="flex-1 bg-slate-800 rounded-2xl px-4 min-h-[44px] justify-center max-h-[120px]">
           <TextInput
@@ -245,11 +296,15 @@ export default function ChatInput({
           className="w-[44px] h-[44px] rounded-full items-center justify-center bg-slate-800 border-[1.5px] border-cyan-500/40"
           disabled={!canSend}
         >
-          <Send color="#06b6d4" size={20} />
+          {editingMessage ? (
+            <Check color="#06b6d4" size={20} />
+          ) : (
+            <Send color="#06b6d4" size={20} />
+          )}
         </AnimatedButton>
       </View>
 
-      {showToolbar && !hasPendingMedia && (
+      {showToolbar && !hasPendingMedia && !editingMessage && (
         <View className="px-4 pb-2 bg-slate-900 gap-2">
           {onSendLocation && (
             <AnimatedButton

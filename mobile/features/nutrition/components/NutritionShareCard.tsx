@@ -14,6 +14,11 @@ type MealSummary = {
   entryCount: number;
 };
 
+type ShareEnergyBalanceData = {
+  tdee: number;
+  balance: number;
+};
+
 type NutritionShareCardProps = {
   date: string;
   calories: number;
@@ -27,6 +32,8 @@ type NutritionShareCardProps = {
   meals: MealSummary[];
   theme: ShareCardTheme;
   size: ShareCardSize;
+  energyBalance?: ShareEnergyBalanceData | null;
+  showMacros?: boolean;
 };
 
 /* ── Skia arc path helper ── */
@@ -180,6 +187,83 @@ function ShareMacroRing({
   );
 }
 
+/* ── Energy balance section (collapsed view — title + bar + value) ── */
+function ShareEnergyBalanceSection({
+  data,
+  contentWidth,
+  titleSize,
+  valueSize,
+  labelSize,
+  barHeight,
+  theme,
+  t,
+}: {
+  data: ShareEnergyBalanceData;
+  contentWidth: number;
+  titleSize: number;
+  valueSize: number;
+  labelSize: number;
+  barHeight: number;
+  theme: ShareCardTheme;
+  t: (key: string) => string;
+}) {
+  const isDeficit = data.balance < 0;
+  const fillColor = isDeficit ? "#22c55e" : "#f59e0b";
+  const balanceLabel = isDeficit ? t("share.deficit") : t("share.surplus");
+  const maxRange = Math.max(data.tdee, 1);
+  const ratio = Math.min(Math.abs(data.balance) / maxRange, 1);
+  const barWidth = contentWidth * 0.75;
+  const fillWidth = ratio * (barWidth / 2);
+  const centerX = barWidth / 2;
+
+  return (
+    <View style={{ alignItems: "center", gap: barHeight * 0.8 }}>
+      {/* Balance bar */}
+      <View style={{ width: barWidth, height: barHeight, borderRadius: barHeight / 2, backgroundColor: theme.colors.statBoxBorder, overflow: "hidden" }}>
+        {isDeficit ? (
+          <View style={{
+            position: "absolute",
+            top: 0,
+            left: centerX - fillWidth,
+            width: fillWidth,
+            height: barHeight,
+            backgroundColor: fillColor,
+            opacity: 0.7,
+          }} />
+        ) : (
+          <View style={{
+            position: "absolute",
+            top: 0,
+            left: centerX,
+            width: fillWidth,
+            height: barHeight,
+            backgroundColor: fillColor,
+            opacity: 0.7,
+          }} />
+        )}
+        <View style={{
+          position: "absolute",
+          top: 0,
+          left: centerX - 1,
+          width: 2,
+          height: barHeight,
+          backgroundColor: theme.colors.textMuted,
+        }} />
+      </View>
+
+      {/* Balance value + label */}
+      <View style={{ flexDirection: "row", alignItems: "baseline", gap: 6 }}>
+        <AppText style={{ fontSize: valueSize, color: fillColor }}>
+          {data.balance > 0 ? "+" : ""}{Math.round(data.balance).toLocaleString()}
+        </AppText>
+        <AppText style={{ fontSize: labelSize, color: theme.colors.textMuted }}>
+          kcal ({balanceLabel})
+        </AppText>
+      </View>
+    </View>
+  );
+}
+
 /* ── Main share card ── */
 const NutritionShareCard = forwardRef<View, NutritionShareCardProps>(
   (
@@ -196,6 +280,8 @@ const NutritionShareCard = forwardRef<View, NutritionShareCardProps>(
       meals,
       theme,
       size,
+      energyBalance,
+      showMacros = true,
     },
     ref,
   ) => {
@@ -248,61 +334,77 @@ const NutritionShareCard = forwardRef<View, NutritionShareCardProps>(
                   theme={theme}
                 />
 
-                <View className="flex-row" style={{ gap: 40 }}>
-                  <ShareMacroRing
-                    value={protein}
-                    progress={proteinPct}
-                    label={`${t("share.protein")} (g)`}
-                    color="#38bdf8"
-                    ringSize={120}
-                    strokeWidth={10}
-                    fontSize={32}
-                    labelSize={22}
-                    theme={theme}
-                  />
-                  <ShareMacroRing
-                    value={carbs}
-                    progress={carbsPct}
-                    label={`${t("share.carbs")} (g)`}
-                    color="#f59e0b"
-                    ringSize={120}
-                    strokeWidth={10}
-                    fontSize={32}
-                    labelSize={22}
-                    theme={theme}
-                  />
-                  <ShareMacroRing
-                    value={fat}
-                    progress={fatPct}
-                    label={`${t("share.fat")} (g)`}
-                    color="#f43f5e"
-                    ringSize={120}
-                    strokeWidth={10}
-                    fontSize={32}
-                    labelSize={22}
-                    theme={theme}
-                  />
-                </View>
+                {showMacros && (
+                  <View className="flex-row" style={{ gap: 40 }}>
+                    <ShareMacroRing
+                      value={protein}
+                      progress={proteinPct}
+                      label={`${t("share.protein")} (g)`}
+                      color="#38bdf8"
+                      ringSize={120}
+                      strokeWidth={10}
+                      fontSize={32}
+                      labelSize={22}
+                      theme={theme}
+                    />
+                    <ShareMacroRing
+                      value={carbs}
+                      progress={carbsPct}
+                      label={`${t("share.carbs")} (g)`}
+                      color="#f59e0b"
+                      ringSize={120}
+                      strokeWidth={10}
+                      fontSize={32}
+                      labelSize={22}
+                      theme={theme}
+                    />
+                    <ShareMacroRing
+                      value={fat}
+                      progress={fatPct}
+                      label={`${t("share.fat")} (g)`}
+                      color="#f43f5e"
+                      ringSize={120}
+                      strokeWidth={10}
+                      fontSize={32}
+                      labelSize={22}
+                      theme={theme}
+                    />
+                  </View>
+                )}
               </View>
 
-              {/* Right: Meal breakdown */}
-              {meals.length > 0 && (
-                <View style={{ gap: 16 }}>
-                  {meals.map((meal, i) => (
-                    <View key={i} className="flex-row justify-between items-center" style={{ width: 400 }}>
-                      <AppText
-                        style={{ fontSize: 32, color: colors.textSecondary }}
-                        numberOfLines={1}
-                      >
-                        {meal.label}
-                      </AppText>
-                      <AppText style={{ fontSize: 32, color: colors.textMuted }}>
-                        {Math.round(meal.calories)} kcal
-                      </AppText>
-                    </View>
-                  ))}
-                </View>
-              )}
+              {/* Right: Energy balance + Meal breakdown */}
+              <View style={{ gap: 30 }}>
+                {energyBalance && (
+                  <ShareEnergyBalanceSection
+                    data={energyBalance}
+                    contentWidth={400}
+                    titleSize={32}
+                    valueSize={36}
+                    labelSize={24}
+                    barHeight={16}
+                    theme={theme}
+                    t={t}
+                  />
+                )}
+                {meals.length > 0 && (
+                  <View style={{ gap: 16 }}>
+                    {meals.map((meal, i) => (
+                      <View key={i} className="flex-row justify-between items-center" style={{ width: 400 }}>
+                        <AppText
+                          style={{ fontSize: 32, color: colors.textSecondary }}
+                          numberOfLines={1}
+                        >
+                          {meal.label}
+                        </AppText>
+                        <AppText style={{ fontSize: 32, color: colors.textMuted }}>
+                          {Math.round(meal.calories)} kcal
+                        </AppText>
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </View>
             </View>
           </View>
 
@@ -356,41 +458,57 @@ const NutritionShareCard = forwardRef<View, NutritionShareCardProps>(
             />
 
             {/* Macro rings */}
-            <View className="flex-row" style={{ gap: 60 }}>
-              <ShareMacroRing
-                value={protein}
-                progress={proteinPct}
-                label={`${t("share.protein")} (g)`}
-                color="#38bdf8"
-                ringSize={170}
-                strokeWidth={14}
-                fontSize={42}
-                labelSize={28}
+            {showMacros && (
+              <View className="flex-row" style={{ gap: 60 }}>
+                <ShareMacroRing
+                  value={protein}
+                  progress={proteinPct}
+                  label={`${t("share.protein")} (g)`}
+                  color="#38bdf8"
+                  ringSize={170}
+                  strokeWidth={14}
+                  fontSize={42}
+                  labelSize={28}
+                  theme={theme}
+                />
+                <ShareMacroRing
+                  value={carbs}
+                  progress={carbsPct}
+                  label={`${t("share.carbs")} (g)`}
+                  color="#f59e0b"
+                  ringSize={170}
+                  strokeWidth={14}
+                  fontSize={42}
+                  labelSize={28}
+                  theme={theme}
+                />
+                <ShareMacroRing
+                  value={fat}
+                  progress={fatPct}
+                  label={`${t("share.fat")} (g)`}
+                  color="#f43f5e"
+                  ringSize={170}
+                  strokeWidth={14}
+                  fontSize={42}
+                  labelSize={28}
+                  theme={theme}
+                />
+              </View>
+            )}
+
+            {/* Energy balance */}
+            {energyBalance && (
+              <ShareEnergyBalanceSection
+                data={energyBalance}
+                contentWidth={600}
+                titleSize={42}
+                valueSize={48}
+                labelSize={32}
+                barHeight={20}
                 theme={theme}
+                t={t}
               />
-              <ShareMacroRing
-                value={carbs}
-                progress={carbsPct}
-                label={`${t("share.carbs")} (g)`}
-                color="#f59e0b"
-                ringSize={170}
-                strokeWidth={14}
-                fontSize={42}
-                labelSize={28}
-                theme={theme}
-              />
-              <ShareMacroRing
-                value={fat}
-                progress={fatPct}
-                label={`${t("share.fat")} (g)`}
-                color="#f43f5e"
-                ringSize={170}
-                strokeWidth={14}
-                fontSize={42}
-                labelSize={28}
-                theme={theme}
-              />
-            </View>
+            )}
 
             {/* Meal breakdown */}
             {meals.length > 0 && (
@@ -462,41 +580,57 @@ const NutritionShareCard = forwardRef<View, NutritionShareCardProps>(
           />
 
           {/* Macro rings */}
-          <View className="flex-row" style={{ gap: 40 }}>
-            <ShareMacroRing
-              value={protein}
-              progress={proteinPct}
-              label={`${t("share.protein")} (g)`}
-              color="#38bdf8"
-              ringSize={100}
-              strokeWidth={9}
-              fontSize={28}
-              labelSize={18}
+          {showMacros && (
+            <View className="flex-row" style={{ gap: 40 }}>
+              <ShareMacroRing
+                value={protein}
+                progress={proteinPct}
+                label={`${t("share.protein")} (g)`}
+                color="#38bdf8"
+                ringSize={100}
+                strokeWidth={9}
+                fontSize={28}
+                labelSize={18}
+                theme={theme}
+              />
+              <ShareMacroRing
+                value={carbs}
+                progress={carbsPct}
+                label={`${t("share.carbs")} (g)`}
+                color="#f59e0b"
+                ringSize={100}
+                strokeWidth={9}
+                fontSize={28}
+                labelSize={18}
+                theme={theme}
+              />
+              <ShareMacroRing
+                value={fat}
+                progress={fatPct}
+                label={`${t("share.fat")} (g)`}
+                color="#f43f5e"
+                ringSize={100}
+                strokeWidth={9}
+                fontSize={28}
+                labelSize={18}
+                theme={theme}
+              />
+            </View>
+          )}
+
+          {/* Energy balance */}
+          {energyBalance && (
+            <ShareEnergyBalanceSection
+              data={energyBalance}
+              contentWidth={420}
+              titleSize={28}
+              valueSize={32}
+              labelSize={22}
+              barHeight={14}
               theme={theme}
+              t={t}
             />
-            <ShareMacroRing
-              value={carbs}
-              progress={carbsPct}
-              label={`${t("share.carbs")} (g)`}
-              color="#f59e0b"
-              ringSize={100}
-              strokeWidth={9}
-              fontSize={28}
-              labelSize={18}
-              theme={theme}
-            />
-            <ShareMacroRing
-              value={fat}
-              progress={fatPct}
-              label={`${t("share.fat")} (g)`}
-              color="#f43f5e"
-              ringSize={100}
-              strokeWidth={9}
-              fontSize={28}
-              labelSize={18}
-              theme={theme}
-            />
-          </View>
+          )}
 
           {/* Meal breakdown */}
           {meals.length > 0 && (

@@ -108,6 +108,7 @@ export function useSendMediaMessage(conversationId: string) {
         media_duration_ms: null,
         link_preview: null,
         deleted_at: null,
+        edited_at: null,
         reply_to_message_id: null,
         reply_to_content: null,
         reply_to_sender_name: null,

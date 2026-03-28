@@ -18,6 +18,7 @@ import { useUpdateMealTime } from "@/features/nutrition/hooks/useUpdateMealTime"
 import { useToggleFavorite } from "@/features/nutrition/hooks/useToggleFavorite";
 import { useFavorites } from "@/features/nutrition/hooks/useFavorites";
 import DailySummary from "@/features/nutrition/components/DailySummary";
+import EnergyBalanceCard from "@/features/energy-balance/components/EnergyBalanceCard";
 import MealSection from "@/features/nutrition/components/MealSection";
 import dynamic from "next/dynamic";
 
@@ -247,6 +248,9 @@ export default function NutritionPage() {
             saturatedFatGoal={saturatedFatGoal}
             visibleNutrients={visibleNutrients}
           />
+
+          {/* Energy balance */}
+          <EnergyBalanceCard date={date} />
 
           {/* Meal sections */}
           {isLoading ? (

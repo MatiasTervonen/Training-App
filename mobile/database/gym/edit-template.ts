@@ -24,14 +24,14 @@ export async function editTemplate({
   exercises: gym_template_exercises[];
   name: string;
   phases?: TemplatePhasePayload[];
-  restTimerSeconds?: number | null;
+  restTimerSeconds?: number | undefined;
 }) {
   const { error } = await supabase.rpc("gym_edit_template", {
     p_id: id,
     p_exercises: exercises,
     p_name: name,
     p_phases: phases,
-    p_rest_timer_seconds: restTimerSeconds ?? null,
+    p_rest_timer_seconds: restTimerSeconds ?? undefined,
   });
 
   if (error) {

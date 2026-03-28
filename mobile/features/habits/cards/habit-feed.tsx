@@ -45,7 +45,7 @@ export default function HabitSummaryCard({
           {payload.current_streak > 0 && (
             <View className="flex-row gap-1 items-center">
               <Flame size={14} color="#f97316" />
-              <BodyText className="text-sm text-slate-400">
+              <BodyText className="text-sm text-slate-400 flex-1">
                 {tHabits("feed.streak", { count: payload.current_streak })}
               </BodyText>
             </View>

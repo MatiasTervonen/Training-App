@@ -52,6 +52,8 @@ import UploadQueueListener from "@/features/layout/UploadQueueListener";
 import AppStatePermissionListener from "@/features/push-notifications/AppStatePermissionListener";
 import GpsTrackingPermission from "@/features/activities/gpsToggle/gpsTrackingPermission";
 import { backfillMissingDaysThrottled } from "@/database/activities/syncStepsToDatabase";
+import { fetchUserProfile } from "@/database/settings/get-user-profile";
+import { useUserStore, UserProfile } from "@/lib/stores/useUserStore";
 import * as Device from "expo-device";
 import { hasStepsPermission } from "@/features/activities/stepToggle/stepPermission";
 import {
@@ -85,6 +87,16 @@ if (__DEV__) {
 async function onAppStateChange(status: AppStateStatus) {
   if (Platform.OS !== "web") {
     focusManager.setFocused(status === "active");
+  }
+
+  // Refresh user profile from server when app comes to foreground
+  if (status === "active") {
+    const { profile, setUserProfile } = useUserStore.getState();
+    if (profile?.id) {
+      fetchUserProfile()
+        .then((fresh) => setUserProfile(fresh as UserProfile))
+        .catch(() => {});
+    }
   }
 
   // Update Steps widget with fresh data and saved config when app comes to foreground

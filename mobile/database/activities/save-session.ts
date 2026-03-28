@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
-import { uploadFileToStorage, getAccessToken } from "@/lib/upload-with-progress";
+import { uploadFileToStorage } from "@/lib/upload-with-progress";
 import { DraftRecording, DraftVideo } from "@/types/session";
 import * as Crypto from "expo-crypto";
 import * as FileSystem from "expo-file-system/legacy";
@@ -67,7 +67,7 @@ export async function saveActivitySession({
     throw new Error("Unauthorized");
   }
 
-  const accessToken = await getAccessToken();
+  const accessToken = session.access_token;
 
   const uploadedRecordings: {
     storage_path: string;

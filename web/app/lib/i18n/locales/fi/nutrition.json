@@ -159,6 +159,29 @@
     "favoriteAdded": "Lisätty suosikkeihin",
     "favoriteRemoved": "Poistettu suosikeista"
   },
+  "energyBalance": {
+    "title": "Energiatasapaino",
+    "deficit": "alijäämä",
+    "surplus": "ylijäämä",
+    "caloriesIn": "Kalorit sisään",
+    "baseBurn": "Peruskulutus",
+    "exercise": "Liikunta",
+    "tef": "Ruoansulatus (TEF)",
+    "totalBurn": "Kokonaiskulutus",
+    "activityLevel": "Aktiivisuus",
+    "activityInfo": "Kuinka aktiivinen päiväsi on treenien ulkopuolella?",
+    "activityLevel1": "Istuva",
+    "activityLevel1Desc": "Toimistotyö, vähän liikettä",
+    "activityLevel2": "Kevyesti aktiivinen",
+    "activityLevel2Desc": "Jonkin verran kävelyä, kevyitä askareita",
+    "activityLevel3": "Kohtalaisesti aktiivinen",
+    "activityLevel3Desc": "Jaloilla suurimman osan päivästä",
+    "activityLevel4": "Hyvin aktiivinen",
+    "activityLevel4Desc": "Fyysinen työ, rakentaminen",
+    "activityLevel5": "Erittäin aktiivinen",
+    "activityLevel5Desc": "Raskasta ruumiillista työtä koko päivän",
+    "completeProfile": "Lisää syntymäpäivä ja sukupuoli profiilissa tarkempaa laskentaa varten"
+  },
   "analytics": {
     "title": "Ravintoanalyysi",
     "summary": {

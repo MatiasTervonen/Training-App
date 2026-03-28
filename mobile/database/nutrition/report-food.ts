@@ -5,6 +5,7 @@ import * as Crypto from "expo-crypto";
 
 type ReportFoodParams = {
   foodId: string;
+  servingSizeG: number;
   caloriesPer100g: number;
   proteinPer100g: number;
   carbsPer100g: number;
@@ -50,20 +51,21 @@ export async function reportFood(params: ReportFoodParams): Promise<string> {
 
   const { data, error } = await supabase.rpc("nutrition_report_food", {
     p_food_id: params.foodId,
+    p_serving_size_g: params.servingSizeG,
     p_calories_per_100g: params.caloriesPer100g,
     p_protein_per_100g: params.proteinPer100g,
     p_carbs_per_100g: params.carbsPer100g,
     p_fat_per_100g: params.fatPer100g,
-    p_saturated_fat_per_100g: params.saturatedFatPer100g ?? null,
-    p_sugar_per_100g: params.sugarPer100g ?? null,
-    p_fiber_per_100g: params.fiberPer100g ?? null,
-    p_sodium_per_100g: params.sodiumPer100g ?? null,
-    p_report_image_url: imageUrl,
-    p_report_nutrition_label_url: nutritionLabelUrl,
-    p_explanation: params.explanation ?? null,
+    p_saturated_fat_per_100g: params.saturatedFatPer100g ?? undefined,
+    p_sugar_per_100g: params.sugarPer100g ?? undefined,
+    p_fiber_per_100g: params.fiberPer100g ?? undefined,
+    p_sodium_per_100g: params.sodiumPer100g ?? undefined,
+    p_report_image_url: imageUrl ?? undefined,
+    p_report_nutrition_label_url: nutritionLabelUrl ?? undefined,
+    p_explanation: params.explanation ?? undefined,
   });
   if (error) {
-    handleError(error, { context: "reportFood" });
+    handleError(error, { message: "reportFood" });
     throw error;
   }
   return data as string;

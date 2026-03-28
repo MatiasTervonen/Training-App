@@ -173,7 +173,13 @@
     "close": "Sulje",
     "saveSuccess": "Kortti tallennettu galleriaan",
     "saveError": "Kortin tallennus epäonnistui",
-    "shareError": "Kortin jakaminen epäonnistui"
+    "shareError": "Kortin jakaminen epäonnistui",
+    "showOnCard": "Näytä kortissa",
+    "macros": "Makrot",
+    "meals": "Ateriat",
+    "balance": "Tasapaino",
+    "deficit": "alijäämä",
+    "surplus": "ylijäämä"
   },
   "energyBalance": {
     "title": "Energiatasapaino",
@@ -226,6 +232,23 @@
       "kcal": "kcal"
     },
     "noData": "Ei ravintotietoja",
-    "noDataDesc": "Aloita aterioiden kirjaaminen nähdäksesi trendejä ja oivalluksia täällä."
+    "noDataDesc": "Aloita aterioiden kirjaaminen nähdäksesi trendejä ja oivalluksia täällä.",
+    "share": {
+      "title": "Ravintoanalyysi",
+      "showOnCard": "Näytä kortissa (maks. 2)",
+      "summary": "Yhteenveto",
+      "calorieTrend": "Kaloritrendi",
+      "macroTrend": "Makrotrendi",
+      "macroDistribution": "Makrojakauma",
+      "topFoods": "Suosituimmat ruoat",
+      "save": "Tallenna",
+      "saving": "Tallennetaan...",
+      "share": "Jaa",
+      "sharing": "Jaetaan...",
+      "close": "Sulje",
+      "saveSuccess": "Kortti tallennettu galleriaan",
+      "saveError": "Kortin tallennus epäonnistui",
+      "shareError": "Kortin jakaminen epäonnistui"
+    }
   }
 }

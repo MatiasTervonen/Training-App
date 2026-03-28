@@ -1,6 +1,7 @@
 import { Pressable, View } from "react-native";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import AppText from "@/components/AppText";
+import AppTextNC from "@/components/AppTextNC";
 import {
   ExerciseEntry,
   ExerciseInput,
@@ -37,6 +38,7 @@ type ExerciseCardProps = {
   mode?: "session";
   disabled?: boolean;
   history?: LatestHistoryPerExercise;
+  bestE1rm?: number;
   isExpanded?: boolean;
   onToggleExpand?: () => void;
 };
@@ -55,6 +57,7 @@ export default function ExerciseCard({
   mode,
   disabled,
   history,
+  bestE1rm,
   isExpanded,
   onToggleExpand,
 }: ExerciseCardProps) {
@@ -66,6 +69,24 @@ export default function ExerciseCard({
   const { t } = useTranslation("gym");
   const showContent = isExpanded !== false;
   const [showRestTimerInput, setShowRestTimerInput] = useState(false);
+
+  const pbSetIndices = useMemo(() => {
+    if (bestE1rm == null || !exercise.sets.length) return new Set<number>();
+    const indices = new Set<number>();
+    let runningBest = bestE1rm;
+    for (let i = 0; i < exercise.sets.length; i++) {
+      const s = exercise.sets[i];
+      const w = s.weight || 0;
+      const r = s.reps || 0;
+      if (w === 0) continue;
+      const e1rm = r <= 1 ? w : w * (1 + r / 30);
+      if (e1rm > runningBest) {
+        runningBest = e1rm;
+        indices.add(i);
+      }
+    }
+    return indices;
+  }, [exercise.sets.length, bestE1rm]);
 
   return (
     <View className="py-2 px-4">
@@ -236,15 +257,23 @@ export default function ExerciseCard({
             <View
               key={setIndex}
               className={`border-b border-gray-300 flex-row items-center ${
-                set.rpe === "Failure"
-                  ? "bg-red-500/15"
-                  : set.rpe === "Warm-up"
-                    ? "bg-blue-500/15"
-                    : ""
+                pbSetIndices.has(setIndex)
+                  ? "bg-yellow-500/15"
+                  : set.rpe === "Failure"
+                    ? "bg-red-500/15"
+                    : set.rpe === "Warm-up"
+                      ? "bg-blue-500/15"
+                      : ""
               }`}
             >
-              <View className="flex-1 items-center">
-                <AppText className="p-2 text-lg">{setIndex + 1}</AppText>
+              <View className="flex-1 items-center flex-row justify-center">
+                {pbSetIndices.has(setIndex) ? (
+                  <AppTextNC className="p-2 text-sm text-yellow-400">
+                    PB
+                  </AppTextNC>
+                ) : (
+                  <AppText className="p-2 text-lg">{setIndex + 1}</AppText>
+                )}
               </View>
               <View className="flex-1 items-center">
                 <AppText className="p-2 text-lg">

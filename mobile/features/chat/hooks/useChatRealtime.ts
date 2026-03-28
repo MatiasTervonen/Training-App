@@ -74,9 +74,10 @@ export default function useChatRealtime(
           const updated = payload.new as {
             id: string;
             sender_id: string;
+            content: string | null;
             link_preview: LinkPreview | null;
             deleted_at: string | null;
-            content: string | null;
+            edited_at: string | null;
           };
 
           // Handle deletion updates from other users
@@ -98,6 +99,31 @@ export default function useChatRealtime(
                             media_duration_ms: null,
                             link_preview: null,
                             deleted_at: updated.deleted_at,
+                          }
+                        : msg,
+                    ),
+                  ),
+                };
+              },
+            );
+            return;
+          }
+
+          // Handle edit updates from other users
+          if (updated.edited_at && updated.sender_id !== currentUserId) {
+            queryClient.setQueryData<InfiniteData<ChatMessage[]>>(
+              ["messages", conversationId],
+              (old) => {
+                if (!old) return old;
+                return {
+                  ...old,
+                  pages: old.pages.map((page) =>
+                    page.map((msg) =>
+                      msg.id === updated.id
+                        ? {
+                            ...msg,
+                            content: updated.content,
+                            edited_at: updated.edited_at,
                           }
                         : msg,
                     ),

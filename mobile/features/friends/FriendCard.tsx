@@ -1,4 +1,4 @@
-import { Image } from "expo-image";
+import { Image } from "react-native";
 import { Trash2 } from "lucide-react-native";
 import Toast from "react-native-toast-message";
 import { Friends } from "@/types/models";

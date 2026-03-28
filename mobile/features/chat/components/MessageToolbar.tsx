@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Reply, Copy, Forward, Trash2 } from "lucide-react-native";
+import { Reply, Copy, Forward, Trash2, Pencil } from "lucide-react-native";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { ChatMessage } from "@/types/chat";
@@ -14,6 +14,7 @@ type MessageToolbarProps = {
   onReply: () => void;
   onCopy: () => void;
   onForward: () => void;
+  onEdit: () => void;
   onDelete: () => void;
   onReaction: (emoji: string) => void;
 };
@@ -24,6 +25,7 @@ function MessageToolbar({
   onReply,
   onCopy,
   onForward,
+  onEdit,
   onDelete,
   onReaction,
 }: MessageToolbarProps) {
@@ -77,6 +79,18 @@ function MessageToolbar({
               <Copy color="#94a3b8" size={22} />
               <AppText className="text-[11px] text-slate-400">
                 {t("chat.copy")}
+              </AppText>
+            </AnimatedButton>
+          )}
+
+          {isOwn && !isDeleted && isText && (
+            <AnimatedButton
+              onPress={onEdit}
+              className="items-center gap-1"
+            >
+              <Pencil color="#94a3b8" size={22} />
+              <AppText className="text-[11px] text-slate-400">
+                {t("chat.edit")}
               </AppText>
             </AnimatedButton>
           )}

@@ -97,7 +97,7 @@ function CommentItem({
           {comment.content}
         </BodyTextNC>
         {!isReply && (
-          <AnimatedButton onPress={onReply} className="mt-1.5" hitSlop={12}>
+          <AnimatedButton onPress={onReply} className="mt-1.5 self-start" hitSlop={12}>
             <AppText className="text-xs text-slate-500">
               {t("social:social.reply")}
             </AppText>

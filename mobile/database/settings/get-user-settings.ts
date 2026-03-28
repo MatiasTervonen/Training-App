@@ -4,7 +4,7 @@ import { handleError } from "@/utils/handleError";
 export async function fetchUserSettings() {
   const { data, error } = await supabase
     .from("user_settings")
-    .select("push_enabled, gps_tracking_enabled, language, has_completed_onboarding, day_reset_hour")
+    .select("push_enabled, gps_tracking_enabled, language, has_completed_onboarding, day_reset_hour, pb_sound_enabled, rest_timer_sound_enabled")
     .single();
 
   if (error) {

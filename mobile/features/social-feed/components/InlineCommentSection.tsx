@@ -28,7 +28,7 @@ export default function InlineCommentSection({
   const commentCount = comments?.length ?? 0;
 
   return (
-    <View className="mt-6 border-t border-slate-700/50">
+    <View className="border-t border-slate-700/50">
       <View className="px-4 py-3">
         <AppText className="text-base">
           {t("social.comments")} {commentCount > 0 && `(${commentCount})`}

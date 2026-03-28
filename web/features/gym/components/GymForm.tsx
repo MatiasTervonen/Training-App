@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import SaveButton from "@/components/buttons/save-button";
 import Timer from "@/components/timer";
@@ -28,6 +28,7 @@ import useSaveSession from "@/features/gym/hooks/useSaveSession";
 import useDraft from "@/features/gym/hooks/useDraftGym";
 import useStartExercise from "@/features/gym/hooks/useStartExercise";
 import useLogSetForExercise from "@/features/gym/hooks/useLogSetForExercise";
+import { getExerciseBestE1rm } from "@/database/gym/getExerciseBestE1rm";
 import { useTranslation } from "react-i18next";
 import { formatDateShort } from "@/lib/formatDate";
 
@@ -111,6 +112,18 @@ export default function GymForm({
     queryKey: ["exerciseHistory", exerciseHistoryId],
     queryFn: () => getLastExerciseHistory({ exerciseId: exerciseHistoryId!, language: i18n.language }),
     enabled: !!exerciseHistoryId,
+  });
+
+  const exerciseIds = exercises.map((ex) => ex.exercise_id!);
+  const sortedExerciseIds = useMemo(
+    () => [...exerciseIds].sort(),
+    [exerciseIds],
+  );
+
+  const { data: bestE1rmMap = {} } = useQuery({
+    queryKey: ["best-e1rm", sortedExerciseIds],
+    queryFn: () => getExerciseBestE1rm(exerciseIds),
+    enabled: exerciseIds.length > 0,
   });
 
   const openHistory = (exerciseId: string) => {
@@ -264,6 +277,7 @@ export default function GymForm({
                     <ExerciseCard
                       mode="session"
                       exercise={exercise}
+                      bestE1rm={bestE1rmMap[exercise.exercise_id!]}
                       lastExerciseHistory={(index) => {
                         const ex = exercises[index];
                         if (ex.exercise_id) {

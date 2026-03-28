@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useCallback, useState, useEffect, ReactNode } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { X, SendHorizonal, Forward } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
@@ -13,7 +12,7 @@ import SocialFeedCardHeader from "@/features/social-feed/components/SocialFeedCa
 import SocialFeedCardFooter from "@/features/social-feed/components/SocialFeedCardFooter";
 import { FeedComment, SocialFeedItem } from "@/types/social-feed";
 import { createClient } from "@/utils/supabase/client";
-import { createPortal } from "react-dom";
+import Modal from "@/components/modal";
 import Spinner from "@/components/spinner";
 import FriendPickerModal from "@/features/chat/components/FriendPickerModal";
 import { sendSessionShareToChat } from "@/database/chat/send-session-share";
@@ -47,7 +46,6 @@ export default function SocialPostModal({
   const { t: tFeed } = useTranslation("feed");
   const commentsRef = useRef<HTMLDivElement>(null);
   const listEndRef = useRef<HTMLDivElement>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const [inputText, setInputText] = useState("");
   const [replyingTo, setReplyingTo] = useState<ReplyState>(null);
@@ -162,30 +160,11 @@ export default function SocialPostModal({
 
   const commentCount = comments?.length ?? 0;
 
-  return createPortal(
-    <AnimatePresence>
-      <div className="fixed inset-0 z-999 bg-black/50">
-        <motion.div
-          className="fixed top-0 left-0 right-0 bottom-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          onDragEnd={(_, info) => {
-            if (Math.abs(info.offset.x) > 200) {
-              onClose();
-            }
-          }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        >
-          {/* Modal */}
-          <div
-            ref={scrollContainerRef}
-            className="relative bg-[#131c2b] md:max-w-2xl mx-auto rounded-xl w-[98%] h-[calc(98dvh)] top-[1dvh] overflow-y-auto touch-pan-y shadow-[0_0_20px_rgba(59,130,246,0.4)] flex flex-col"
-          >
-          {/* Author header with close button */}
-          <SocialFeedCardHeader item={item} onClose={onClose} />
+  return (
+    <>
+      <Modal isOpen onClose={onClose}>
+          {/* Author header */}
+          <SocialFeedCardHeader item={item} />
 
           {/* Full session details */}
           <div className="flex-1">
@@ -299,18 +278,15 @@ export default function SocialPostModal({
               </button>
             </div>
           </div>
-        </div>
-        </motion.div>
+      </Modal>
 
-        {/* Friend picker for share to chat */}
-        <FriendPickerModal
-          isOpen={showSharePicker}
-          onClose={() => setShowSharePicker(false)}
-          onSelect={handleShareToChat}
-          title={t("social.shareToChat")}
-        />
-      </div>
-    </AnimatePresence>,
-    document.body,
+      {/* Friend picker for share to chat */}
+      <FriendPickerModal
+        isOpen={showSharePicker}
+        onClose={() => setShowSharePicker(false)}
+        onSelect={handleShareToChat}
+        title={t("social.shareToChat")}
+      />
+    </>
   );
 }

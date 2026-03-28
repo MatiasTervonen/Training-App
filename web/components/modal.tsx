@@ -1,7 +1,6 @@
 "use client";
 
 import { ReactNode, useRef, useEffect, useState, useCallback } from "react";
-import { X } from "lucide-react";
 import { motion, useMotionValue, animate, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
@@ -211,17 +210,9 @@ export default function Modal({
             className="bg-[#131c2b] relative md:max-w-3xl mx-auto rounded-xl w-[98%] h-[calc(98dvh)] top-[1dvh] grow overflow-y-auto overscroll-y-contain shadow-[0_0_20px_rgba(59,130,246,0.4)]"
           >
             {/* Drag handle indicator */}
-            <div className="sticky top-0 z-10 flex justify-center pt-3 pb-2">
+            <div className="sticky top-0 z-10 flex justify-center pt-3 pb-1">
               <div className="w-12 h-1.5 rounded-full bg-slate-400" />
             </div>
-
-            <button
-              className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-slate-800/80 border border-slate-600 text-slate-400 hover:text-slate-200 hover:bg-slate-700 hover:cursor-pointer hover:scale-105 transition-all"
-              onClick={handleClose}
-              aria-label={t("modal.closeAlt")}
-            >
-              <X size={20} />
-            </button>
 
             {children}
 

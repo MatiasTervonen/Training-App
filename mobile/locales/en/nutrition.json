@@ -173,7 +173,13 @@
     "close": "Close",
     "saveSuccess": "Card saved to gallery",
     "saveError": "Failed to save card",
-    "shareError": "Failed to share card"
+    "shareError": "Failed to share card",
+    "showOnCard": "Show on card",
+    "macros": "Macros",
+    "meals": "Meals",
+    "balance": "Balance",
+    "deficit": "deficit",
+    "surplus": "surplus"
   },
   "energyBalance": {
     "title": "Energy Balance",
@@ -226,6 +232,23 @@
       "kcal": "kcal"
     },
     "noData": "No nutrition data",
-    "noDataDesc": "Start logging your meals to see trends and insights here."
+    "noDataDesc": "Start logging your meals to see trends and insights here.",
+    "share": {
+      "title": "Nutrition Analytics",
+      "showOnCard": "Show on card (max 2)",
+      "summary": "Summary",
+      "calorieTrend": "Calorie Trend",
+      "macroTrend": "Macro Trend",
+      "macroDistribution": "Macro Split",
+      "topFoods": "Top Foods",
+      "save": "Save",
+      "saving": "Saving...",
+      "share": "Share",
+      "sharing": "Sharing...",
+      "close": "Close",
+      "saveSuccess": "Card saved to gallery",
+      "saveError": "Failed to save card",
+      "shareError": "Failed to share card"
+    }
   }
 }

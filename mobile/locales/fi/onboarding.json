@@ -20,7 +20,7 @@
     "openSettings": "Avaa asetukset",
     "notifications": {
       "title": "Ilmoitukset",
-      "description": "Saat muistutuksia treeneistä, ajastimista ja ajoitetuista aktiviteeteista. Ilman tätä muistutukset ja hälytykset eivät toimi sovelluksen ollessa taustalla."
+      "description": "Saat muistutuksia treeneistä, ajastimista ja ajoitetuista muistutuksista. Ilman tätä muistutukset ja hälytykset eivät toimi sovelluksen ollessa taustalla."
     },
     "location": {
       "title": "Sijaintiseuranta",
@@ -51,7 +51,7 @@
     "pictureFormatError": "Vain JPEG-, PNG- ja WebP-kuvat ovat tuettuja"
   },
   "aboutYou": {
-    "title": "Tietoja sinusta",
+    "title": "Tietoja sinusta (1/2)",
     "description": "Painoasi käytetään kalorien arviointiin ja pituuttasi matkan laskemiseen askeleista. Voit päivittää näitä milloin tahansa.",
     "weightTitle": "Paino",
     "heightTitle": "Pituus",
@@ -66,8 +66,8 @@
     "continue": "Jatka"
   },
   "preferences": {
-    "title": "Asetukset",
-    "description": "Valitse haluamasi etäisyyden yksikkö aktiviteeteille.",
+    "title": "Tietoja sinusta (2/2)",
+    "description": "Sukupuoltasi ja ikääsi käytetään tarkempien kaloriestimaattien laskemiseen. Etäisyyden yksikkö määrittää oletuksen aktiviteeteille kuten juoksu ja pyöräily.",
     "distanceUnit": "Etäisyyden yksikkö",
     "continue": "Jatka"
   },

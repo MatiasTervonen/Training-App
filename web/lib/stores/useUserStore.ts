@@ -4,7 +4,11 @@ import { persist, createJSONStorage } from "zustand/middleware";
 interface UserPreferences {
   display_name: string;
   weight_unit: string;
+  distance_unit?: string;
   profile_picture: string | null | undefined;
+  height_cm?: number | null;
+  gender?: string | null;
+  birth_date?: string | null;
   language?: "en" | "fi" | null;
   day_reset_hour?: number;
 }

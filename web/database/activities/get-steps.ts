@@ -1,5 +1,6 @@
 import { handleError } from "@/utils/handleError";
 import { createClient } from "@/utils/supabase/client";
+import { getTrackingDate } from "@/lib/formatDate";
 
 export type StepRecord = {
   id: string;
@@ -13,7 +14,7 @@ export type StepRecord = {
 export async function getStepsData(days: number = 90): Promise<StepRecord[]> {
   const supabase = createClient();
 
-  const today = new Date().toLocaleDateString("en-CA");
+  const today = getTrackingDate();
 
   const { data, error } = await supabase
     .from("steps_daily")

@@ -58,6 +58,7 @@ export type ChatMessage = {
   media_duration_ms: number | null;
   link_preview: LinkPreview | null;
   deleted_at: string | null;
+  edited_at: string | null;
   reply_to_message_id: string | null;
   reply_to_content: string | null;
   reply_to_sender_name: string | null;

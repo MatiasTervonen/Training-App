@@ -40,13 +40,13 @@ type Tab = "search" | "scan" | "favorites" | "recent" | "custom" | "meals";
 export default function LogFoodScreen() {
   const { t } = useTranslation("nutrition");
   const { t: tCommon } = useTranslation();
-  const { date } = useLocalSearchParams<{ date: string }>();
+  const { date, tab } = useLocalSearchParams<{ date: string; tab?: string }>();
   const loggedAt = date || getTrackingDate();
 
   const [activeTab, setActiveTab] = useState<Tab>("search");
   const [query, setQuery] = useState("");
   const [selectedFood, setSelectedFood] = useState<NutritionSearchResult | null>(null);
-  const [showScanner, setShowScanner] = useState(false);
+  const [showScanner, setShowScanner] = useState(tab === "scan");
   const [showDetail, setShowDetail] = useState(false);
   const [notFoundBarcode, setNotFoundBarcode] = useState<string | null>(null);
   const [showCreateMeal, setShowCreateMeal] = useState(false);
@@ -186,6 +186,7 @@ export default function LogFoodScreen() {
 
   const handleReport = async (data: {
     foodId: string;
+    servingSizeG: number;
     caloriesPer100g: number;
     proteinPer100g: number;
     carbsPer100g: number;
@@ -200,9 +201,11 @@ export default function LogFoodScreen() {
   }) => {
     setIsReporting(true);
     try {
+      console.log("[reportFood] payload:", JSON.stringify(data, null, 2));
       await reportFood(data);
       Toast.show({ type: "success", text1: t("detail.reportSubmitted") });
-    } catch {
+    } catch (err) {
+      console.error("[reportFood] error:", err);
       Toast.show({ type: "error", text1: tCommon("common.error") });
     } finally {
       setIsReporting(false);
@@ -313,7 +316,7 @@ export default function LogFoodScreen() {
           </AnimatedButton>
         </View>
         <AnimatedButton onPress={handleContinueDraft} className="btn-base py-2 mt-2">
-          <AppText className="text-xs" numberOfLines={1}>{t("log.continueDraft")}</AppText>
+          <AppText className="text-xs text-center" numberOfLines={1}>{t("log.continueDraft")}</AppText>
         </AnimatedButton>
       </View>
     );

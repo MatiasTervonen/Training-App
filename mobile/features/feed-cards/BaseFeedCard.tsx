@@ -132,8 +132,8 @@ export default function BaseFeedCard({
           className="flex-row items-center gap-2"
           hitSlop={15}
         >
-          <SquareArrowOutUpRight size={18} color="#64748b" />
-          <AppText className="text-slate-500 text-sm">
+          <SquareArrowOutUpRight size={18} color="#94a3b8" />
+          <AppText className="text-slate-400 text-sm">
             {t("feed.card.details")}
           </AppText>
         </AnimatedButton>

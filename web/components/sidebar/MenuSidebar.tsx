@@ -3,6 +3,7 @@
 import LinkButton from "@/components/buttons/LinkButton";
 import MenuContext from "@/features/menu/components/MenuContext";
 import SignOutButton from "@/components/buttons/singOutButton";
+import InstallAppClient from "@/features/menu/components/installAppClient";
 import { ShieldUser, UserPen, ContactRound, Settings, MessageSquareMore } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -38,6 +39,7 @@ export default function MenuSidebar() {
         </div>
       </div>
       <div className="flex flex-col gap-3 items-center">
+        <InstallAppClient />
         <SignOutButton />
       </div>
     </div>

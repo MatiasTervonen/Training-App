@@ -1,7 +1,7 @@
 import { useRef, useMemo, useCallback, useEffect } from "react";
 import { View, Pressable } from "react-native";
 import { BottomSheetModal, BottomSheetFlatList, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
-import { Image } from "expo-image";
+import { Image } from "react-native";
 import AppText from "@/components/AppText";
 import { useFriends } from "@/features/friends/hooks/useFriends";
 import { Friends } from "@/types/models";

@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { View, ScrollView, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator } from "react-native";
+import Animated from "react-native-reanimated";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
 import PageContainer from "@/components/PageContainer";
@@ -22,6 +23,7 @@ import { useToggleFavorite } from "@/features/nutrition/hooks/useToggleFavorite"
 import { useFavorites } from "@/features/nutrition/hooks/useFavorites";
 import { getTrackingDate } from "@/lib/formatDate";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
+import { useModalPageScroll } from "@/components/ModalPageWrapper";
 import type { DailyFoodLog } from "@/database/nutrition/get-daily-logs";
 
 const DEFAULT_MEALS = ["breakfast", "lunch", "dinner", "snack"];
@@ -32,11 +34,14 @@ export default function NutritionScreen() {
   const { date: initialDate } = useLocalSearchParams<{ date?: string }>();
   const [date, setDate] = useState(() => initialDate || getTrackingDate());
   const setModalPageConfig = useModalPageConfig((s) => s.setModalPageConfig);
+  const handleModalScroll = useModalPageScroll();
 
   useEffect(() => {
     setModalPageConfig({
       rightLabel: t("common:navigation.log"),
       onSwipeLeft: () => router.push(`/nutrition/log?date=${date}`),
+      topLabel: t("nutrition:log.scan"),
+      onSwipeDown: () => router.push(`/nutrition/log?date=${date}&tab=scan`),
     });
     return () => setModalPageConfig(null);
   }, [router, setModalPageConfig, t, date]);
@@ -199,7 +204,7 @@ export default function NutritionScreen() {
 
   return (
     <View className="flex-1">
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+      <Animated.ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }} onScroll={handleModalScroll} scrollEventThrottle={16}>
         <PageContainer>
           {/* Header */}
           <View className="flex-row justify-between items-center mb-4">
@@ -299,7 +304,7 @@ export default function NutritionScreen() {
             </View>
           )}
         </PageContainer>
-      </ScrollView>
+      </Animated.ScrollView>
 
       <FloatingActionButton
         onPress={() => router.push(`/nutrition/log?date=${date}`)}

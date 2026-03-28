@@ -3,9 +3,11 @@ import { create } from "zustand";
 type ModalPageConfig = {
   rightLabel?: string;
   leftLabel?: string;
+  topLabel?: string;
   swipeEnabled?: boolean;
   onSwipeLeft?: () => void;
   onSwipeRight?: () => void;
+  onSwipeDown?: () => void;
 };
 
 type Store = {

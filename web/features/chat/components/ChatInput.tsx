@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Send, X, Plus, ImageIcon, Video, Mic, Square } from "lucide-react";
+import { Send, X, Plus, ImageIcon, Video, Mic, Square, Check, Pencil } from "lucide-react";
 import toast from "react-hot-toast";
 import { ChatMessage, LinkPreview } from "@/types/chat";
 import ReplyPreview from "@/features/chat/components/ReplyPreview";
@@ -26,6 +26,11 @@ type PendingMedia = {
   durationMs?: number;
 };
 
+type EditingMessage = {
+  id: string;
+  content: string;
+};
+
 type ChatInputProps = {
   onSend: (content: string, replyToMessageId?: string) => void;
   onSendMedia: (params: { messageType: "image" | "video" | "voice"; file: File; localPreviewUrl: string; durationMs?: number }) => void;
@@ -35,6 +40,9 @@ type ChatInputProps = {
   onCancelReply: () => void;
   sendTyping: () => void;
   stopTyping: () => void;
+  editingMessage?: EditingMessage | null;
+  onSaveEdit?: (messageId: string, content: string) => void;
+  onCancelEdit?: () => void;
 };
 
 export default function ChatInput({
@@ -46,6 +54,9 @@ export default function ChatInput({
   onCancelReply,
   sendTyping,
   stopTyping,
+  editingMessage,
+  onSaveEdit,
+  onCancelEdit,
 }: ChatInputProps) {
   const { t } = useTranslation("chat");
   const [text, setText] = useState("");
@@ -67,6 +78,19 @@ export default function ChatInput({
     });
     setShowMediaToolbar(false);
   });
+
+  // Populate text when entering edit mode, clear when leaving
+  const wasEditing = useRef(false);
+  useEffect(() => {
+    if (editingMessage) {
+      setText(editingMessage.content);
+      wasEditing.current = true;
+      setTimeout(() => textareaRef.current?.focus(), 0);
+    } else if (wasEditing.current) {
+      setText("");
+      wasEditing.current = false;
+    }
+  }, [editingMessage]);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -103,6 +127,19 @@ export default function ChatInput({
   }, [currentUrlMatch, previewDismissed, pendingMedia]);
 
   const handleSend = useCallback(() => {
+    // Edit mode: save the edit
+    if (editingMessage && onSaveEdit) {
+      const trimmed = text.trim();
+      if (!trimmed) return;
+      // No change — just dismiss edit mode without saving
+      if (trimmed === editingMessage.content) {
+        return;
+      }
+      onSaveEdit(editingMessage.id, trimmed);
+      setText("");
+      return;
+    }
+
     if (pendingMedia) {
       onSendMedia({
         messageType: pendingMedia.type,
@@ -123,7 +160,7 @@ export default function ChatInput({
     setPreviewDismissed(false);
     stopTyping();
     onCancelReply();
-  }, [text, isActive, onSend, onSendMedia, replyingTo, stopTyping, onCancelReply, pendingMedia]);
+  }, [text, isActive, onSend, onSendMedia, replyingTo, stopTyping, onCancelReply, pendingMedia, editingMessage, onSaveEdit, onCancelEdit]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -209,8 +246,19 @@ export default function ChatInput({
 
   return (
     <div className="border-t border-slate-700 bg-slate-900">
+      {/* Edit bar */}
+      {editingMessage && onCancelEdit && (
+        <div className="flex items-center gap-2 px-4 pt-3">
+          <Pencil size={16} className="text-cyan-400 shrink-0" />
+          <span className="flex-1 font-body text-sm text-cyan-400">{t("chat.editMessage")}</span>
+          <button onClick={onCancelEdit} className="p-1 hover:bg-slate-700 rounded-full shrink-0">
+            <X size={16} className="text-gray-400" />
+          </button>
+        </div>
+      )}
+
       {/* Reply bar */}
-      {replyingTo && (
+      {!editingMessage && replyingTo && (
         <div className="flex items-center gap-2 px-4 pt-3">
           <div className="flex-1 min-w-0">
             <ReplyPreview
@@ -265,13 +313,15 @@ export default function ChatInput({
       {/* Input area */}
       <div className="flex items-end gap-2 p-3">
         {/* Attach button */}
-        <button
-          onClick={() => setShowMediaToolbar(!showMediaToolbar)}
-          disabled={voice.isRecording || isSendingMedia}
-          className="p-2.5 rounded-full hover:bg-slate-800 text-gray-400 hover:text-gray-300 transition-colors shrink-0 disabled:opacity-40"
-        >
-          <Plus size={18} className={showMediaToolbar ? "rotate-45 transition-transform" : "transition-transform"} />
-        </button>
+        {!editingMessage && (
+          <button
+            onClick={() => setShowMediaToolbar(!showMediaToolbar)}
+            disabled={voice.isRecording || isSendingMedia}
+            className="p-2.5 rounded-full hover:bg-slate-800 text-gray-400 hover:text-gray-300 transition-colors shrink-0 disabled:opacity-40"
+          >
+            <Plus size={18} className={showMediaToolbar ? "rotate-45 transition-transform" : "transition-transform"} />
+          </button>
+        )}
 
         {voice.isRecording ? (
           <div className="flex-1 flex items-center justify-center">
@@ -301,12 +351,12 @@ export default function ChatInput({
           disabled={!canSend}
           className="p-2.5 rounded-full bg-slate-800 border border-cyan-500 text-cyan-400 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
         >
-          <Send size={18} />
+          {editingMessage ? <Check size={18} /> : <Send size={18} />}
         </button>
       </div>
 
       {/* Media toolbar */}
-      {showMediaToolbar && !voice.isRecording && !pendingMedia && (
+      {showMediaToolbar && !voice.isRecording && !pendingMedia && !editingMessage && (
         <div className="flex items-center gap-1 px-3 pb-3">
           <button
             onClick={() => imageInputRef.current?.click()}

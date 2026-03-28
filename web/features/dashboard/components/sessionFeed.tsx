@@ -194,7 +194,7 @@ export default function SessionFeed() {
                   <>
                     {unpinnedFeed.map((feedItem, i) => {
                       return (
-                        <div className={i === 0 && pinnedFeed.length === 0 ? "mt-2" : "mt-8"} key={feedItem.id}>
+                        <div className={i === 0 && pinnedFeed.length === 0 ? "mt-2" : "mt-4"} key={feedItem.id}>
                           <FeedCard
                             item={feedItem}
                             pinned={false}

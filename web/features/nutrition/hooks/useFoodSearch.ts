@@ -136,8 +136,10 @@ export function useFoodSearch(query: string) {
     staleTime: 60 * 1000,
   });
 
+  const trimmedQuery = query.trim();
+
   return {
-    results: data ?? EMPTY_RESULTS,
+    results: trimmedQuery.length >= 2 ? (data ?? EMPTY_RESULTS) : EMPTY_RESULTS,
     isSearching: isFetching,
   };
 }

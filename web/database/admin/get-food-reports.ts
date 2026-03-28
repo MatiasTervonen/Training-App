@@ -44,6 +44,7 @@ export type FoodReportItem = {
   user_id: string;
   status: string;
   created_at: string;
+  reported_serving_size_g: number | null;
   reported_calories_per_100g: number;
   reported_protein_per_100g: number;
   reported_carbs_per_100g: number;
@@ -55,6 +56,7 @@ export type FoodReportItem = {
   food_name: string;
   brand: string | null;
   barcode: string | null;
+  current_serving_size_g: number;
   current_calories_per_100g: number;
   current_protein_per_100g: number;
   current_carbs_per_100g: number;

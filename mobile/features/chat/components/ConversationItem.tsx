@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { View, Pressable } from "react-native";
-import { Image } from "expo-image";
+import { Image } from "react-native";
 import AppText from "@/components/AppText";
 import { Conversation } from "@/types/chat";
 import { useTranslation } from "react-i18next";

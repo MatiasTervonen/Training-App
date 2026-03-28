@@ -70,25 +70,42 @@ function ExerciseHistoryContent({
     return rpeMap[rpe] || rpe;
   };
 
-  // Personal best calculation
-  const personalBest = useMemo(() => {
+  // Personal best calculations
+  const personalBests = useMemo(() => {
     if (!history || history.length === 0) return null;
 
-    let bestWeight = 0;
-    let bestReps = 0;
-    let bestDate = "";
+    let bestWeight = { weight: 0, reps: 0, date: "" };
+    let bestE1rm = { e1rm: 0, weight: 0, reps: 0, date: "" };
+    let bestVolume = { volume: 0, weight: 0, reps: 0, date: "" };
+
     for (const session of history) {
       if (!session) continue;
       for (const set of session.sets) {
-        if (set.weight && set.weight > bestWeight) {
-          bestWeight = set.weight;
-          bestReps = set.reps || 0;
-          bestDate = session.date;
+        const w = set.weight || 0;
+        const r = set.reps || 0;
+        if (w === 0) continue;
+
+        // Heaviest weight
+        if (w > bestWeight.weight) {
+          bestWeight = { weight: w, reps: r, date: session.date };
+        }
+
+        // Best estimated 1RM (Epley formula)
+        const e1rm = r <= 1 ? w : w * (1 + r / 30);
+        if (e1rm > bestE1rm.e1rm) {
+          bestE1rm = { e1rm, weight: w, reps: r, date: session.date };
+        }
+
+        // Best volume set (weight × reps)
+        const volume = w * r;
+        if (volume > bestVolume.volume) {
+          bestVolume = { volume, weight: w, reps: r, date: session.date };
         }
       }
     }
-    if (bestWeight === 0) return null;
-    return { weight: bestWeight, reps: bestReps, date: bestDate };
+
+    if (bestWeight.weight === 0) return null;
+    return { bestWeight, bestE1rm, bestVolume };
   }, [history]);
 
   const formatDateWithYear = (dateString: string) => {
@@ -142,25 +159,69 @@ function ExerciseHistoryContent({
                     valueUnit={weightUnit}
                   />
 
-                  {personalBest && (
-                    <LinearGradient
-                      colors={["#1e3a8a", "#0f172a", "#0f172a"]}
-                      start={{ x: 1, y: 0 }}
-                      end={{ x: 0, y: 1 }}
-                      className="mt-6 rounded-md px-4 py-4 overflow-hidden border-[1.5px] border-gray-700"
-                    >
-                      <BodyTextNC className="text-center text-gray-400 text-sm mb-2">
-                        {t("gym.exerciseHistory.personalBest")}
-                      </BodyTextNC>
-                      <AppTextNC className="text-center text-xl text-cyan-400">
-                        {personalBest.weight} {weightUnit} x{" "}
-                        {personalBest.reps}{" "}
-                        {t("gym.exerciseCard.reps").toLowerCase()}
-                      </AppTextNC>
-                      <BodyTextNC className="text-center text-gray-400 text-sm mt-1">
-                        {formatDateWithYear(personalBest.date)}
-                      </BodyTextNC>
-                    </LinearGradient>
+                  {personalBests && (
+                    <View className="mt-6 gap-3">
+                      <AppText className="text-center text-base">
+                        {t("gym.exerciseHistory.personalBests")}
+                      </AppText>
+                      <View className="flex-row gap-2">
+                        {/* Best Est. 1RM */}
+                        <LinearGradient
+                          colors={["#1e3a8a", "#0f172a", "#0f172a"]}
+                          start={{ x: 1, y: 0 }}
+                          end={{ x: 0, y: 1 }}
+                          className="flex-1 rounded-md px-2 py-3 overflow-hidden border-[1.5px] border-gray-700"
+                        >
+                          <BodyTextNC className="text-center text-gray-400 text-xs mb-1">
+                            {t("gym.exerciseHistory.estOneRm")}
+                          </BodyTextNC>
+                          <AppTextNC className="text-center text-base text-cyan-400">
+                            {Math.round(personalBests.bestE1rm.e1rm)}{" "}
+                            {weightUnit}
+                          </AppTextNC>
+                          <BodyTextNC className="text-center text-gray-500 text-xs mt-1">
+                            {personalBests.bestE1rm.weight} × {personalBests.bestE1rm.reps}
+                          </BodyTextNC>
+                        </LinearGradient>
+
+                        {/* Heaviest Weight */}
+                        <LinearGradient
+                          colors={["#1e3a8a", "#0f172a", "#0f172a"]}
+                          start={{ x: 1, y: 0 }}
+                          end={{ x: 0, y: 1 }}
+                          className="flex-1 rounded-md px-2 py-3 overflow-hidden border-[1.5px] border-gray-700"
+                        >
+                          <BodyTextNC className="text-center text-gray-400 text-xs mb-1">
+                            {t("gym.exerciseHistory.heaviestWeight")}
+                          </BodyTextNC>
+                          <AppTextNC className="text-center text-base text-cyan-400">
+                            {personalBests.bestWeight.weight} {weightUnit}
+                          </AppTextNC>
+                          <BodyTextNC className="text-center text-gray-500 text-xs mt-1">
+                            × {personalBests.bestWeight.reps}{" "}
+                            {t("gym.exerciseCard.reps").toLowerCase()}
+                          </BodyTextNC>
+                        </LinearGradient>
+
+                        {/* Best Volume */}
+                        <LinearGradient
+                          colors={["#1e3a8a", "#0f172a", "#0f172a"]}
+                          start={{ x: 1, y: 0 }}
+                          end={{ x: 0, y: 1 }}
+                          className="flex-1 rounded-md px-2 py-3 overflow-hidden border-[1.5px] border-gray-700"
+                        >
+                          <BodyTextNC className="text-center text-gray-400 text-xs mb-1">
+                            {t("gym.exerciseHistory.bestVolume")}
+                          </BodyTextNC>
+                          <AppTextNC className="text-center text-base text-cyan-400">
+                            {personalBests.bestVolume.volume} {weightUnit}
+                          </AppTextNC>
+                          <BodyTextNC className="text-center text-gray-500 text-xs mt-1">
+                            {personalBests.bestVolume.weight} × {personalBests.bestVolume.reps}
+                          </BodyTextNC>
+                        </LinearGradient>
+                      </View>
+                    </View>
                   )}
                 </View>
               }

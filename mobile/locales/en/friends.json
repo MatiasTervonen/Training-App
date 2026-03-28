@@ -6,7 +6,7 @@
     "noFriendsDesc": "Send a friend request to get started",
     "sendRequest": "Send Request",
     "sendFriendRequest": "Send Friend Request",
-    "placeholder": "Enter friend's display name",
+    "placeholder": "Enter friend's username",
     "requestSentSuccess": "Friend request sent!",
     "cannotSendToSelf": "You cannot send a friend request to yourself",
     "requestAlreadyExists": "Friend request already pending",
@@ -23,6 +23,10 @@
     "acceptSuccess": "Friend request accepted!",
     "acceptError": "Failed to accept request",
     "rejectSuccess": "Friend request declined",
-    "rejectError": "Failed to decline request"
+    "rejectError": "Failed to decline request",
+    "inviteTitle": "Invite Friends",
+    "inviteDesc": "Know someone who'd enjoy Kurvi? Share the app and train together.",
+    "inviteButton": "Share Invite",
+    "inviteMessage": "Join me on Kurvi! Track workouts, nutrition, and stay motivated together.\nhttps://kurvi.io"
   }
 }

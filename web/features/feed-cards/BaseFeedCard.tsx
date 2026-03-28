@@ -120,8 +120,8 @@ export default function BaseFeedCard({
             onClick={onExpand}
             className="flex items-center gap-2 cursor-pointer"
           >
-            <SquareArrowOutUpRight size={18} className="text-slate-500" />
-            <span className="text-slate-500 text-sm">
+            <SquareArrowOutUpRight size={18} className="text-slate-400" />
+            <span className="text-slate-400 text-sm">
               {t("feed.card.details")}
             </span>
           </button>

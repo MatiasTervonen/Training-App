@@ -6,6 +6,7 @@ import {
   stopNativeRestTimer,
 } from "@/native/android/NativeRestTimer";
 import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
+import { useUserStore } from "@/lib/stores/useUserStore";
 
 // Duck other audio (e.g. YouTube) instead of pausing it
 setAudioModeAsync({
@@ -74,7 +75,8 @@ export const useRestTimerStore = create<RestTimerState>()((set, get) => ({
 
         // Only play JS sound if caught in real-time (foreground).
         // If app was backgrounded the native notification already played the sound.
-        if (timeSinceEnd < 2000) {
+        const restTimerSoundEnabled = useUserStore.getState().settings?.rest_timer_sound_enabled ?? true;
+        if (timeSinceEnd < 2000 && restTimerSoundEnabled) {
           setAudioModeAsync({
             interruptionMode: "duckOthers",
             interruptionModeAndroid: "duckOthers",

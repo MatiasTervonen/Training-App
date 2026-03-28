@@ -17,7 +17,7 @@ type SaveMealParams = {
 
 export async function saveMeal(params: SaveMealParams): Promise<string> {
   const { data, error } = await supabase.rpc("nutrition_save_meal", {
-    p_meal_id: params.mealId ?? null,
+    p_meal_id: params.mealId ?? undefined,
     p_name: params.name,
     p_items: params.items,
   });

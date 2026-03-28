@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import DropdownMenu from "@/components/dropdownMenu";
 import { Menu, SquareX } from "lucide-react";
 import SetInput from "@/features/gym/components/SetInput";
@@ -26,6 +27,7 @@ type ExerciseCardProps = {
   onDeleteSet: (exerciseIndex: number, setIndex: number) => void;
   onChangeExercise: (index: number) => void;
   mode?: "session";
+  bestE1rm?: number;
 };
 
 export default function ExerciseCard({
@@ -40,8 +42,27 @@ export default function ExerciseCard({
   lastExerciseHistory,
   onChangeExercise,
   mode,
+  bestE1rm,
 }: ExerciseCardProps) {
   const { t } = useTranslation("gym");
+
+  const pbSetIndices = useMemo(() => {
+    if (bestE1rm == null || !exercise.sets.length) return new Set<number>();
+    const indices = new Set<number>();
+    let runningBest = bestE1rm;
+    for (let i = 0; i < exercise.sets.length; i++) {
+      const s = exercise.sets[i];
+      const w = s.weight || 0;
+      const r = s.reps || 0;
+      if (w === 0) continue;
+      const e1rm = r <= 1 ? w : w * (1 + r / 30);
+      if (e1rm > runningBest) {
+        runningBest = e1rm;
+        indices.add(i);
+      }
+    }
+    return indices;
+  }, [exercise.sets.length, bestE1rm]);
 
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
@@ -104,14 +125,22 @@ export default function ExerciseCard({
                 <tr
                   key={i}
                   className={`border-b border-gray-600 ${
-                    set.rpe === "Failure"
-                      ? "bg-red-500/15"
-                      : set.rpe === "Warm-up"
-                        ? "bg-blue-500/15"
-                        : ""
+                    pbSetIndices.has(i)
+                      ? "bg-yellow-500/15"
+                      : set.rpe === "Failure"
+                        ? "bg-red-500/15"
+                        : set.rpe === "Warm-up"
+                          ? "bg-blue-500/15"
+                          : ""
                   }`}
                 >
-                  <td className="p-2">{i + 1}</td>
+                  <td className="p-2">
+                    {pbSetIndices.has(i) ? (
+                      <span className="text-yellow-400 text-sm font-medium">PB</span>
+                    ) : (
+                      i + 1
+                    )}
+                  </td>
                   <td className="p-2">
                     {set.weight} {weightUnit}
                   </td>

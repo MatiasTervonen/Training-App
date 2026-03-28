@@ -20,6 +20,8 @@ export interface UserSettings {
   language: "en" | "fi" | null;
   has_completed_onboarding: boolean;
   day_reset_hour: number;
+  pb_sound_enabled: boolean;
+  rest_timer_sound_enabled: boolean;
 }
 
 interface UserStore {

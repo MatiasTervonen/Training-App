@@ -61,10 +61,6 @@ export default function ActivityAnalytics() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
-      <h1 className="text-2xl text-center mb-6 text-gray-100">
-        {t("activities.analyticsScreen.title")}
-      </h1>
-
       <div className="flex bg-slate-800 rounded-lg p-1 mb-4">
         {ranges.map((range) => (
           <button

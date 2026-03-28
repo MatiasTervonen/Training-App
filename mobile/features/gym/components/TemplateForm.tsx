@@ -294,7 +294,7 @@ export default function TemplateForm() {
           bottomOffset={80}
           showsVerticalScrollIndicator={false}
         >
-          <PageContainer className="justify-between">
+          <PageContainer>
             <View>
               <AppText className="text-2xl text-center mb-5">
                 {templateId

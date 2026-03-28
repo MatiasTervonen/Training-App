@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getDailyStepsHistory } from "@/native/android/NativeStepCounter";
+import { getTrackingDate } from "@/lib/formatDate";
 
 async function backfillMissingDays() {
   const {
@@ -58,7 +59,7 @@ async function saveBatchDailySteps(daysData: DailyStepsData[]) {
 
 export async function backfillMissingDaysThrottled() {
   const lastCheck = await AsyncStorage.getItem("lastStepsBackfill");
-  const today = new Date().toLocaleDateString("en-CA");
+  const today = getTrackingDate();
 
   // Already ran today, skip
   if (lastCheck === today) {

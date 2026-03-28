@@ -1,6 +1,6 @@
 import { ReactNode, RefObject, useCallback, useEffect, useMemo, useState } from "react";
 import { View, LayoutChangeEvent, FlatList, ActivityIndicator } from "react-native";
-import { Image } from "expo-image";
+import { Image } from "react-native";
 import AppText from "@/components/AppText";
 import BodyTextNC from "@/components/BodyTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";

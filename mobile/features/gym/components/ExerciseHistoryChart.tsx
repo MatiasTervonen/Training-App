@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import AppTextNC from "@/components/AppTextNC";
 
 type RangeType = "1m" | "3m" | "6m" | "1y";
+type MetricType = "weight" | "e1rm";
 
 type ExerciseHistoryChartProps = {
   history: HistoryResult;
@@ -60,6 +61,7 @@ export default function ExerciseHistoryChart({
   const locale = i18n.language;
 
   const [range, setRange] = useState<RangeType>("3m");
+  const [metric, setMetric] = useState<MetricType>("weight");
   const [offset, setOffset] = useState(0);
   const [prevRange, setPrevRange] = useState(range);
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -70,7 +72,7 @@ export default function ExerciseHistoryChart({
     setOffset(0);
   }
 
-  // Chart data - best set per session, sorted chronologically
+  // Chart data - best set per session per metric, sorted chronologically
   const allChartData = useMemo(() => {
     if (!history || history.length === 0) return [];
 
@@ -82,20 +84,36 @@ export default function ExerciseHistoryChart({
 
     return sorted
       .map((session) => {
-        if (!session) return null;
-        const bestSet = session.sets.reduce(
-          (best, s) => ((s.weight || 0) > (best.weight || 0) ? s : best),
-          session.sets[0],
-        );
-        if (!bestSet?.weight) return null;
+        if (!session || session.sets.length === 0) return null;
+
+        let bestValue = 0;
+        let bestWeight = 0;
+        let bestReps = 0;
+
+        for (const s of session.sets) {
+          const w = s.weight || 0;
+          const r = s.reps || 0;
+          if (w === 0) continue;
+
+          const val = metric === "e1rm" ? (r <= 1 ? w : w * (1 + r / 30)) : w;
+
+          if (val > bestValue) {
+            bestValue = val;
+            bestWeight = w;
+            bestReps = r;
+          }
+        }
+
+        if (bestValue === 0) return null;
         return {
           date: session.date,
-          value: bestSet.weight,
-          reps: bestSet.reps || 0,
+          value: metric === "e1rm" ? Math.round(bestValue) : bestValue,
+          reps: bestReps,
+          weight: bestWeight,
         };
       })
-      .filter(Boolean) as { date: string; value: number; reps: number }[];
-  }, [history]);
+      .filter(Boolean) as { date: string; value: number; reps: number; weight: number }[];
+  }, [history, metric]);
 
   // Date boundaries
   const latestDate = useMemo(() => {
@@ -259,10 +277,40 @@ export default function ExerciseHistoryChart({
     { key: "1y", label: t("gym.exerciseHistory.range1y") },
   ];
 
+  const metrics: { key: MetricType; label: string }[] = [
+    { key: "weight", label: t("gym.exerciseHistory.heaviestWeight") },
+    { key: "e1rm", label: t("gym.exerciseHistory.estOneRm") },
+  ];
+
   if (allChartData.length < 2) return null;
 
   return (
     <View className="mt-6">
+      {/* Metric Selector */}
+      <View className="flex-row mb-2">
+        <View className="flex-row flex-1 bg-slate-800 rounded-lg p-1">
+          {metrics.map((opt) => (
+            <AnimatedButton
+              key={opt.key}
+              onPress={() => setMetric(opt.key)}
+              className={`flex-1 px-3 py-1.5 rounded-md ${
+                metric === opt.key ? "bg-slate-700" : ""
+              }`}
+              hitSlop={20}
+            >
+              <AppTextNC
+                className={`text-center text-xs ${
+                  metric === opt.key ? "text-cyan-400" : "text-gray-200"
+                }`}
+                numberOfLines={1}
+              >
+                {opt.label}
+              </AppTextNC>
+            </AnimatedButton>
+          ))}
+        </View>
+      </View>
+
       {/* Range Selector */}
       <View className="flex-row mb-4">
         <View className="flex-row flex-1 bg-slate-800 rounded-lg p-1">

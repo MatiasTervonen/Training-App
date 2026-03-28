@@ -248,7 +248,12 @@
       "loading": "Ladataan historiaa...",
       "loadError": "Historian lataus epäonnistui. Yritä uudelleen.",
       "noHistory": "Tälle liikkeelle ei ole historiaa.",
-      "personalBest": "Ennätys",
+      "personalBests": "Ennätykset",
+      "estOneRm": "Arv. 1RM",
+      "heaviestWeight": "Painavin",
+      "bestVolume": "Paras volyymi",
+      "newPb": "Uusi ennätys!",
+      "totalVolume": "Kokonaisvolyymi",
       "range1m": "1K",
       "range3m": "3K",
       "range6m": "6K",
@@ -265,7 +270,11 @@
       "title": "Asetukset",
       "restTimerEnabled": "Lepoajastin käytössä",
       "restTimerDuration": "Lepoaika (sekuntia)",
-      "restTimerDescription": "Käynnistä lepoajastin automaattisesti kun kirjaat sarjan"
+      "restTimerDescription": "Käynnistä lepoajastin automaattisesti kun kirjaat sarjan",
+      "pbSoundEnabled": "Ennätysääni",
+      "pbSoundDescription": "Toista ääni kun saavutat uuden ennätyksen",
+      "restTimerSoundEnabled": "Lepoajastimen ääni",
+      "restTimerSoundDescription": "Toista ääni kun lepoajastin päättyy"
     },
     "share": {
       "workoutFinished": "Treeni valmis",

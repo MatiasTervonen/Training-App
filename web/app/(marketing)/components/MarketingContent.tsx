@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import Navbar from "./navbar";
@@ -36,6 +36,7 @@ import {
   Search,
   PieChart,
   UtensilsCrossed,
+  ChevronUp,
 } from "lucide-react";
 
 const SUPPORTED_LANGS = ["en", "fi"];
@@ -58,6 +59,16 @@ export default function MarketingContent() {
       }
     }
   }, [i18n]);
+
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const simplicityFeatures = [
     {
@@ -497,6 +508,16 @@ export default function MarketingContent() {
       </div>
 
       <Footer />
+
+      {showScrollTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-6 right-6 z-50 bg-blue-600 hover:bg-blue-500 text-white rounded-full p-3 shadow-lg transition-all"
+          aria-label="Scroll to top"
+        >
+          <ChevronUp size={24} />
+        </button>
+      )}
     </>
   );
 }

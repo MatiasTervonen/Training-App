@@ -4,6 +4,7 @@ import AppText from "@/components/AppText";
 import AppTextNC from "@/components/AppTextNC";
 import { MessageCircle } from "lucide-react-native";
 import { Image } from "expo-image";
+import { Image as RNImage } from "react-native";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import NotificationBell from "@/features/navbar/notificationBell";
 import useTotalUnreadCount from "@/features/chat/hooks/useTotalUnreadCount";
@@ -55,15 +56,14 @@ export default function Navbar() {
               )}
             </Pressable>
           </Link>
-          <Link href="/menu" asChild>
+          <Link href="/menu/profile" asChild>
             <Pressable className="w-[40px] h-[40px] rounded-full border-[1.5px] border-blue-500/50 items-center justify-center">
-              <Image
+              <RNImage
                 source={
                   profilePictureRaw
                     ? { uri: profilePictureRaw }
                     : require("@/assets/images/default-avatar.png")
                 }
-                alt="Profile Picture"
                 className="w-full h-full rounded-full overflow-hidden"
               />
             </Pressable>

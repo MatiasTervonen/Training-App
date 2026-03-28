@@ -16,6 +16,7 @@ import { HistoryResult } from "@/types/session";
 import { useTranslation } from "react-i18next";
 
 type RangeType = "1m" | "3m" | "6m" | "1y";
+type MetricType = "weight" | "e1rm";
 
 type ExerciseHistoryChartProps = {
   history: HistoryResult;
@@ -62,6 +63,7 @@ export default function ExerciseHistoryChart({
   const locale = i18n.language;
 
   const [range, setRange] = useState<RangeType>("3m");
+  const [metric, setMetric] = useState<MetricType>("weight");
   const [offset, setOffset] = useState(0);
   const [prevRange, setPrevRange] = useState(range);
 
@@ -79,20 +81,36 @@ export default function ExerciseHistoryChart({
 
     return sorted
       .map((session) => {
-        const bestSet = session.sets.reduce(
-          (best, s) =>
-            (s.weight || 0) > (best.weight || 0) ? s : best,
-          session.sets[0],
-        );
-        if (!bestSet?.weight) return null;
+        if (session.sets.length === 0) return null;
+
+        let bestValue = 0;
+        let bestWeight = 0;
+        let bestReps = 0;
+
+        for (const s of session.sets) {
+          const w = s.weight || 0;
+          const r = s.reps || 0;
+          if (w === 0) continue;
+
+          const val = metric === "e1rm" ? (r <= 1 ? w : w * (1 + r / 30)) : w;
+
+          if (val > bestValue) {
+            bestValue = val;
+            bestWeight = w;
+            bestReps = r;
+          }
+        }
+
+        if (bestValue === 0) return null;
         return {
           date: session.date,
-          value: bestSet.weight,
-          reps: bestSet.reps || 0,
+          value: metric === "e1rm" ? Math.round(bestValue) : bestValue,
+          reps: bestReps,
+          weight: bestWeight,
         };
       })
-      .filter(Boolean) as { date: string; value: number; reps: number }[];
-  }, [history]);
+      .filter(Boolean) as { date: string; value: number; reps: number; weight: number }[];
+  }, [history, metric]);
 
   const latestDate = useMemo(() => {
     if (allChartData.length === 0) return new Date();
@@ -171,10 +189,35 @@ export default function ExerciseHistoryChart({
     return `${fmt(start)} - ${fmt(end)}`;
   }
 
+  const metrics: { key: MetricType; label: string }[] = [
+    { key: "weight", label: t("gym.exerciseHistory.heaviestWeight") },
+    { key: "e1rm", label: t("gym.exerciseHistory.estOneRm") },
+  ];
+
   if (allChartData.length < 2) return null;
 
   return (
     <div className="mt-6">
+      {/* Metric Selector */}
+      <div className="flex justify-center mb-2">
+        <div className="flex bg-slate-800 rounded-lg p-1">
+          {metrics.map((opt) => (
+            <button
+              key={opt.key}
+              onClick={() => setMetric(opt.key)}
+              className={`px-4 py-1 rounded-md text-xs font-medium transition-colors ${
+                metric === opt.key
+                  ? "bg-slate-700 text-blue-400"
+                  : "text-gray-200 hover:text-gray-100"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Range Selector */}
       <div className="flex justify-center mb-4">
         <div className="flex bg-slate-800 rounded-lg p-1">
           {ranges.map((option) => (
@@ -273,6 +316,10 @@ export default function ExerciseHistoryChart({
                         month: "short",
                         day: "numeric",
                       });
+                      const tooltipValue =
+                        metric === "e1rm"
+                          ? `${data.value} ${valueUnit} (${data.weight} × ${data.reps})`
+                          : `${data.value} ${valueUnit} × ${data.reps} ${t("gym.exerciseCard.reps").toLowerCase()}`;
                       return (
                         <div
                           style={{
@@ -287,7 +334,7 @@ export default function ExerciseHistoryChart({
                             {dateLabel}
                           </p>
                           <p style={{ fontSize: 14 }}>
-                            {`${data.value} ${valueUnit} x ${data.reps} ${t("gym.exerciseCard.reps").toLowerCase()}`}
+                            {tooltipValue}
                           </p>
                         </div>
                       );

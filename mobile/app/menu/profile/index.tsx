@@ -1,4 +1,5 @@
-import { View, ScrollView, TextInput } from "react-native";
+import { View, TextInput } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
 import ProfilePicture from "@/components/ProfilePicture";
@@ -294,10 +295,11 @@ export default function ProfileScreen() {
 
   return (
     <>
-      <ScrollView
-        contentContainerClassName="flex-grow"
+      <KeyboardAwareScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
         keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
+        bottomOffset={50}
       >
         <PageContainer className="justify-between">
           <View>
@@ -462,7 +464,7 @@ export default function ProfileScreen() {
             />
           </View>
         </PageContainer>
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       <DatePicker
         modal

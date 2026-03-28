@@ -6,12 +6,12 @@ export type FoodSearchResult = {
   id: string;
   name: string;
   brand: string | null;
-  serving_size_g: number;
+  serving_size_g: number | null;
   serving_description: string | null;
-  calories_per_100g: number;
-  protein_per_100g: number;
-  carbs_per_100g: number;
-  fat_per_100g: number;
+  calories_per_100g: number | null;
+  protein_per_100g: number | null;
+  carbs_per_100g: number | null;
+  fat_per_100g: number | null;
   fiber_per_100g: number | null;
   sugar_per_100g: number | null;
   sodium_per_100g: number | null;

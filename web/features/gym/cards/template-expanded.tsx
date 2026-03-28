@@ -4,14 +4,12 @@ import { formatDate } from "@/lib/formatDate";
 import { GroupTemplateExercises } from "@/utils/GroupTemplateExercises";
 import { useTranslation } from "react-i18next";
 import { FullGymTemplate } from "@/database/gym/templates/full-gym-template";
-import BaseButton from "@/components/buttons/BaseButton";
 
 type Props = {
   item: FullGymTemplate;
-  onStartWorkout: () => void;
 };
 
-export default function GymTemplate({ item, onStartWorkout }: Props) {
+export default function GymTemplate({ item }: Props) {
   const { t } = useTranslation("gym");
   const groupedExercises = GroupTemplateExercises(
     item.gym_template_exercises || [],
@@ -61,11 +59,6 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
           ))}
         </div>
       ))}
-      <BaseButton
-        onClick={onStartWorkout}
-        label={t("gym.templateForm.startWorkout")}
-        className="mt-10"
-      />
     </div>
   );
 }

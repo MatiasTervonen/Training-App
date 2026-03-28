@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigation, useRouter } from "expo-router";
 import { View, ScrollView, LayoutChangeEvent, FlatList, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
-import { Image, Image as ExpoImage } from "expo-image";
+import { Image } from "react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import ShareCard from "@/features/gym/components/ShareCard";
 import ShareCardPicker from "@/lib/components/share/ShareCardPicker";
@@ -230,7 +230,7 @@ export default function TrainingFinishedScreen() {
                 className="flex-row items-center gap-3 px-4 py-3"
                 disabled={isSendingToChat}
               >
-                <ExpoImage
+                <Image
                   source={item.user.profile_picture ? { uri: item.user.profile_picture } : require("@/assets/images/default-avatar.png")}
                   className="w-10 h-10 rounded-full"
                 />

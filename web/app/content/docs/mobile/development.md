@@ -77,3 +77,21 @@ Both package names must be registered in the Firebase console as separate Androi
 
 After updating `google-services.json` in the project root, you also need to copy it to `android/app/google-services.json` or run `npx expo prebuild` to regenerate it.
 
+## Building for release
+
+### Android AAB (Google Play / Internal Testing)
+
+To build a release Android App Bundle (`.aab`) for uploading to Google Play Console (internal testing, closed testing, or production):
+
+```bash
+cd android && ./gradlew bundleRelease
+```
+
+Run this from the `mobile/` directory. The output bundle will be at:
+
+```
+android/app/build/outputs/bundle/release/app-release.aab
+```
+
+Upload this `.aab` file to Google Play Console under your app's release track.
+

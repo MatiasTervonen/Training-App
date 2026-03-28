@@ -334,7 +334,7 @@ export default function CreateEditMealModal({
   const updateItem = (localId: string, field: "serving_size_g" | "quantity", value: string) => {
     setItems((prev) =>
       prev.map((i) =>
-        i.localId === localId ? { ...i, [field]: parseFloat(value) || 0 } : i,
+        i.localId === localId ? { ...i, [field]: parseFloat(value.replace(",", ".")) || 0 } : i,
       ),
     );
   };

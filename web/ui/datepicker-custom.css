@@ -41,6 +41,7 @@
 
 .react-datepicker__current-month {
   color: rgb(230, 230, 230) !important;
+  margin-bottom: 6px !important;
 }
 
 .react-datepicker-time__header {
@@ -49,4 +50,31 @@
 
 .react-datepicker__triangle {
   fill: #0f1f38 !important; /* your custom dark bg */
+}
+
+.react-datepicker__year-dropdown {
+  background-color: #0f1f38 !important;
+  border: 1px solid #334155;
+}
+
+.react-datepicker__year-option {
+  color: rgb(230, 230, 230) !important;
+}
+
+.react-datepicker__year-option:hover {
+  background-color: #1a345e !important;
+}
+
+.react-datepicker__year-option--selected_year {
+  background-color: #22c55e !important;
+  color: black !important;
+}
+
+.react-datepicker__navigation--years-upcoming,
+.react-datepicker__navigation--years-previous {
+  border-color: rgb(230, 230, 230) !important;
+}
+
+.react-datepicker__year-read-view {
+  color: rgb(230, 230, 230) !important;
 }

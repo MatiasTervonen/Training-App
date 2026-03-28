@@ -44,6 +44,7 @@ import useLogSetForExercise from "@/features/gym/hooks/useLogSetForExercise";
 import useSaveSession from "@/features/gym/hooks/useSaveSession";
 import RestTimerDisplay from "@/features/gym/components/RestTimerDisplay";
 import { getPrefetchedHistoryPerCard } from "@/database/gym/prefetchedHistoryPerCard";
+import { getExerciseBestE1rm } from "@/database/gym/getExerciseBestE1rm";
 import { updateNativeTimerLabel } from "@/native/android/NativeTimer";
 import { useTranslation } from "react-i18next";
 import GymNotesModal from "@/features/gym/components/GymNotesModal";
@@ -366,6 +367,12 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     );
   }, [prefetchedHistory]);
 
+  const { data: bestE1rmMap = {} } = useQuery({
+    queryKey: ["best-e1rm", sortedExerciseIds],
+    queryFn: () => getExerciseBestE1rm(exerciseIds),
+    enabled: exerciseIds.length > 0,
+  });
+
   const openHistory = (exerciseId: string) => {
     setExerciseHistoryId(exerciseId);
     setIsHistoryOpen(true);
@@ -415,6 +422,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     setExerciseInputs,
     setExercises,
     templateRestTimerSeconds,
+    bestE1rmMap,
   });
 
   const resetSession = () => {
@@ -1030,6 +1038,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                           }
                           exercise={exercise}
                           history={historyMap[exercise.exercise_id]}
+                          bestE1rm={bestE1rmMap[exercise.exercise_id]}
                           lastExerciseHistory={(index) => {
                             const ex = exercises[index];
                             if (ex.exercise_id) {

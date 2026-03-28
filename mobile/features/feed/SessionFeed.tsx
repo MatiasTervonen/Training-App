@@ -681,6 +681,7 @@ export default function SessionFeed({
         >
           <SocialExpandedContent
             feedItemId={openSocialItem.item.id}
+            item={openSocialItem.item}
             scrollToComments={openSocialItem.scrollToComments}
             isLoadingSession={
               openSocialItem.item.type === "gym_sessions"

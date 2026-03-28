@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { View, TextInput, Keyboard } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { X, SendHorizonal } from "lucide-react-native";
@@ -17,6 +18,7 @@ type CommentInputBarProps = {
   replyingTo: ReplyState;
   onClearReply: () => void;
   onCommentAdded: () => void;
+  onInputFocus: () => void;
 };
 
 export default function CommentInputBar({
@@ -24,8 +26,10 @@ export default function CommentInputBar({
   replyingTo,
   onClearReply,
   onCommentAdded,
+  onInputFocus,
 }: CommentInputBarProps) {
   const { t } = useTranslation("social");
+  const insets = useSafeAreaInsets();
   const [inputText, setInputText] = useState("");
   const { mutate: addComment } = useAddComment();
 
@@ -48,8 +52,8 @@ export default function CommentInputBar({
   }, [feedItemId, inputText, replyingTo, addComment, onClearReply, onCommentAdded]);
 
   return (
-    <KeyboardStickyView offset={{ opened: 0 }}>
-      <View style={{ backgroundColor: "#0f172a" }}>
+    <KeyboardStickyView offset={{ opened: insets.bottom }}>
+      <View style={{ backgroundColor: "#0f172a", marginHorizontal: -8 }}>
         {replyingTo && (
           <View className="flex-row items-center justify-between px-4 py-2 bg-slate-800/50 border-t border-slate-700/50">
             <AppText className="text-xs text-slate-400">
@@ -64,6 +68,7 @@ export default function CommentInputBar({
           <TextInput
             value={inputText}
             onChangeText={setInputText}
+            onFocus={onInputFocus}
             placeholder={t("social.addComment")}
             placeholderTextColor="#64748b"
             maxLength={500}

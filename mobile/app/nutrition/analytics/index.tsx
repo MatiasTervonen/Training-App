@@ -11,8 +11,9 @@ import MacroTrendChart from "@/features/nutrition/analytics/MacroTrendChart";
 import MacroDistributionChart from "@/features/nutrition/analytics/MacroDistributionChart";
 import TopFoodsList from "@/features/nutrition/analytics/TopFoodsList";
 import { useNutritionAnalytics } from "@/features/nutrition/hooks/useNutritionAnalytics";
+import NutritionAnalyticsShareModal from "@/features/nutrition/analytics/NutritionAnalyticsShareModal";
 import { useTranslation } from "react-i18next";
-import { BarChart3 } from "lucide-react-native";
+import { BarChart3, Share2 } from "lucide-react-native";
 import { getTrackingDate } from "@/lib/formatDate";
 
 type RangeType = "week" | "month" | "3months";
@@ -38,6 +39,7 @@ export default function NutritionAnalytics() {
   const { t } = useTranslation("nutrition");
   const [selectedRange, setSelectedRange] = useState<RangeType>("week");
   const [chartsReady, setChartsReady] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   useEffect(() => {
     const task = InteractionManager.runAfterInteractions(() => {
@@ -98,28 +100,36 @@ export default function NutritionAnalytics() {
   return (
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       <PageContainer>
-        {/* Range Selector */}
-        <View className="flex-row bg-slate-800 rounded-lg p-1">
-          {ranges.map((range) => (
-            <AnimatedButton
-              key={range.key}
-              onPress={() => setSelectedRange(range.key)}
-              className={`flex-1 py-2 rounded-md ${
-                selectedRange === range.key ? "bg-slate-700" : ""
-              }`}
-              hitSlop={10}
-            >
-              <AppTextNC
-                className={`text-center ${
-                  selectedRange === range.key
-                    ? "text-green-400"
-                    : "text-gray-200"
+        {/* Range Selector + Share */}
+        <View className="flex-row items-center gap-3">
+          <View className="flex-1 flex-row bg-slate-800 rounded-lg p-1">
+            {ranges.map((range) => (
+              <AnimatedButton
+                key={range.key}
+                onPress={() => setSelectedRange(range.key)}
+                className={`flex-1 py-2 rounded-md ${
+                  selectedRange === range.key ? "bg-slate-700" : ""
                 }`}
+                hitSlop={10}
               >
-                {range.label}
-              </AppTextNC>
-            </AnimatedButton>
-          ))}
+                <AppTextNC
+                  className={`text-center ${
+                    selectedRange === range.key
+                      ? "text-green-400"
+                      : "text-gray-200"
+                  }`}
+                >
+                  {range.label}
+                </AppTextNC>
+              </AnimatedButton>
+            ))}
+          </View>
+          <AnimatedButton
+            onPress={() => setIsShareModalOpen(true)}
+            className="bg-slate-800 rounded-lg p-2.5"
+          >
+            <Share2 size={20} color="#94a3b8" />
+          </AnimatedButton>
         </View>
 
         {/* Summary Cards */}
@@ -147,6 +157,16 @@ export default function NutritionAnalytics() {
           </View>
         )}
       </PageContainer>
+
+      <NutritionAnalyticsShareModal
+        visible={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        range={selectedRange}
+        startDate={startDate}
+        endDate={endDate}
+        dailyTotals={dailyTotals}
+        topFoods={topFoods}
+      />
     </ScrollView>
   );
 }

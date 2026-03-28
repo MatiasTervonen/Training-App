@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
-import { uploadFileToStorage, getAccessToken } from "@/lib/upload-with-progress";
+import { uploadFileToStorage } from "@/lib/upload-with-progress";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import * as Crypto from "expo-crypto";
 import * as FileSystem from "expo-file-system/legacy";
@@ -65,7 +65,7 @@ export async function saveSession({
     throw new Error("Unauthorized");
   }
 
-  const accessToken = await getAccessToken();
+  const accessToken = session.access_token;
 
   const start_time = new Date(
     useTimerStore.getState().activeSession?.started_at ?? Date.now(),

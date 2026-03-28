@@ -45,7 +45,11 @@ export default function PermissionsScreen() {
   const { skipOnboarding } = useSkipOnboarding();
 
   const [notificationsGranted, setNotificationsGranted] = useState(false);
+  const [notificationsPermanentlyDenied, setNotificationsPermanentlyDenied] =
+    useState(false);
   const [locationGranted, setLocationGranted] = useState(false);
+  const [locationPermanentlyDenied, setLocationPermanentlyDenied] =
+    useState(false);
   const [stepsGranted, setStepsGranted] = useState(false);
   const [stepsPermanentlyDenied, setStepsPermanentlyDenied] = useState(false);
   const [exactAlarmGranted, setExactAlarmGranted] = useState(false);
@@ -58,7 +62,13 @@ export default function PermissionsScreen() {
       Location.getBackgroundPermissionsAsync(),
     ]);
     setNotificationsGranted(notifStatus.status === "granted");
+    setNotificationsPermanentlyDenied(
+      notifStatus.status === "denied" && !notifStatus.canAskAgain,
+    );
     setLocationGranted(fg.status === "granted" && bg.status === "granted");
+    setLocationPermanentlyDenied(
+      fg.status === "denied" && !fg.canAskAgain,
+    );
 
     if (Platform.OS === "android") {
       const [hasSteps, canAlarm, ignoring] = await Promise.all([
@@ -87,9 +97,12 @@ export default function PermissionsScreen() {
   }, [checkPermissions]);
 
   const handleEnableNotifications = async () => {
-    const { status } = await Notifications.requestPermissionsAsync();
-    const granted = status === "granted";
+    const result = await Notifications.requestPermissionsAsync();
+    const granted = result.status === "granted";
     setNotificationsGranted(granted);
+    if (!granted && !result.canAskAgain) {
+      setNotificationsPermanentlyDenied(true);
+    }
 
     if (granted) {
       try {
@@ -107,23 +120,27 @@ export default function PermissionsScreen() {
   };
 
   const handleEnableLocation = async () => {
-    const { status: fgStatus } =
-      await Location.requestForegroundPermissionsAsync();
-    if (fgStatus === "granted") {
-      const { status: bgStatus } =
-        await Location.requestBackgroundPermissionsAsync();
-      const granted = bgStatus === "granted";
-      setLocationGranted(granted);
+    const fgResult = await Location.requestForegroundPermissionsAsync();
+    if (fgResult.status !== "granted") {
+      if (!fgResult.canAskAgain) setLocationPermanentlyDenied(true);
+      return;
+    }
 
-      if (granted) {
-        try {
-          await updateGpsTrackingStatus(true);
-          useUserStore.getState().setUserSettings({
-            gps_tracking_enabled: true,
-          });
-        } catch {
-          // OS permission granted but DB update failed — user can retry in Settings
-        }
+    const bgResult = await Location.requestBackgroundPermissionsAsync();
+    const granted = bgResult.status === "granted";
+    setLocationGranted(granted);
+    if (!granted && !bgResult.canAskAgain) {
+      setLocationPermanentlyDenied(true);
+    }
+
+    if (granted) {
+      try {
+        await updateGpsTrackingStatus(true);
+        useUserStore.getState().setUserSettings({
+          gps_tracking_enabled: true,
+        });
+      } catch {
+        // OS permission granted but DB update failed — user can retry in Settings
       }
     }
   };
@@ -180,6 +197,7 @@ export default function PermissionsScreen() {
             enableLabel={t("permissions.enable")}
             enabledLabel={t("permissions.enabled")}
             openSettingsLabel={t("permissions.openSettings")}
+            isPermanentlyDenied={notificationsPermanentlyDenied}
             onOpenSettings={() => Linking.openSettings()}
           />
 
@@ -192,6 +210,7 @@ export default function PermissionsScreen() {
             enableLabel={t("permissions.enable")}
             enabledLabel={t("permissions.enabled")}
             openSettingsLabel={t("permissions.openSettings")}
+            isPermanentlyDenied={locationPermanentlyDenied}
             onOpenSettings={() => Linking.openSettings()}
           />
 

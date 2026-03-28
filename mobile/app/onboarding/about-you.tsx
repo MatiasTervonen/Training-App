@@ -1,4 +1,4 @@
-import { View, TextInput, Keyboard, Pressable } from "react-native";
+import { View, TextInput, Keyboard } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { Image } from "expo-image";
 import AppText from "@/components/AppText";
@@ -13,7 +13,6 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { supabase } from "@/lib/supabase";
-import DatePicker from "react-native-date-picker";
 
 export default function AboutYouScreen() {
   const router = useRouter();
@@ -28,15 +27,19 @@ export default function AboutYouScreen() {
   const [height, setHeight] = useState("");
   const [heightFt, setHeightFt] = useState("");
   const [heightIn, setHeightIn] = useState("");
+  const [containerHeight, setContainerHeight] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const topPadding =
+    containerHeight > 0 && contentHeight > 0
+      ? Math.max(0, (containerHeight - contentHeight) / 2)
+      : 0;
+
   const [unit, setUnit] = useState<"kg" | "lbs">(
     currentUnit === "lbs" ? "lbs" : "kg",
   );
   const [heightUnit, setHeightUnit] = useState<"cm" | "ft">(
     i18n.language === "fi" ? "cm" : "ft",
   );
-  const [gender, setGender] = useState<"male" | "female" | null>(null);
-  const [birthDate, setBirthDate] = useState<Date | null>(null);
-  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleContinue = async () => {
     const profileUpdates: Record<string, string | number | null> = {
@@ -69,22 +72,25 @@ export default function AboutYouScreen() {
         numWeight >= minWeight &&
         numWeight <= maxWeight
       ) {
-        const { error } = await supabase.rpc("weight_save_weight", {
-          p_title: t("aboutYou.startingWeight"),
-          p_notes: "",
-          p_weight: numWeight,
-        });
-        if (error) {
-          console.error("Failed to save starting weight:", error);
+        const today = new Date().toLocaleDateString("en-CA");
+        const { data: existing } = await supabase
+          .from("weight")
+          .select("id")
+          .gte("created_at", `${today}T00:00:00`)
+          .lt("created_at", `${today}T23:59:59`)
+          .limit(1);
+
+        if (!existing || existing.length === 0) {
+          const { error } = await supabase.rpc("weight_save_weight", {
+            p_title: t("aboutYou.startingWeight"),
+            p_notes: "",
+            p_weight: numWeight,
+          });
+          if (error) {
+            console.error("Failed to save starting weight:", error);
+          }
         }
       }
-    }
-
-    if (gender) {
-      profileUpdates.gender = gender;
-    }
-    if (birthDate) {
-      profileUpdates.birth_date = birthDate.toISOString().split("T")[0];
     }
 
     useUserStore.getState().setUserProfile(profileUpdates);
@@ -92,7 +98,7 @@ export default function AboutYouScreen() {
   };
 
   return (
-    <Pressable className="flex-1" onPress={Keyboard.dismiss}>
+    <View className="flex-1" onTouchStart={Keyboard.dismiss}>
       <View className="flex-1 px-6">
         <OnboardingBackButton />
 
@@ -108,11 +114,14 @@ export default function AboutYouScreen() {
 
         <KeyboardAwareScrollView
           className="flex-1"
-          bottomOffset={16}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+          contentContainerStyle={{ flexGrow: 1 }}
+          onLayout={(e) => setContainerHeight(e.nativeEvent.layout.height)}
         >
-          <View>
+          <View style={{ paddingTop: topPadding, opacity: containerHeight > 0 && contentHeight > 0 ? 1 : 0 }}>
+            <View onLayout={(e) => {
+              if (contentHeight === 0) setContentHeight(e.nativeEvent.layout.height);
+            }}>
             <AppText className="text-2xl text-center mb-2">
               {t("aboutYou.title")}
             </AppText>
@@ -275,78 +284,6 @@ export default function AboutYouScreen() {
               </View>
             )}
 
-            {/* Gender section */}
-            <AppText className="text-lg text-center mb-3">
-              {t("aboutYou.genderTitle")}
-            </AppText>
-            <View className="flex-row justify-center mb-6 gap-3">
-              <AnimatedButton
-                onPress={() => setGender("male")}
-                className={`w-24 py-2 rounded-lg border-[1.5px] items-center ${
-                  gender === "male"
-                    ? "bg-blue-900/40 border-blue-500"
-                    : "bg-slate-800 border-slate-700"
-                }`}
-              >
-                <AppText
-                  className={gender === "male" ? "text-blue-400" : "text-slate-400"}
-                >
-                  {t("aboutYou.genderMale")}
-                </AppText>
-              </AnimatedButton>
-              <AnimatedButton
-                onPress={() => setGender("female")}
-                className={`w-24 py-2 rounded-lg border-[1.5px] items-center ${
-                  gender === "female"
-                    ? "bg-blue-900/40 border-blue-500"
-                    : "bg-slate-800 border-slate-700"
-                }`}
-              >
-                <AppText
-                  className={gender === "female" ? "text-blue-400" : "text-slate-400"}
-                >
-                  {t("aboutYou.genderFemale")}
-                </AppText>
-              </AnimatedButton>
-            </View>
-
-            {/* Birth date section */}
-            <AppText className="text-lg text-center mb-3">
-              {t("aboutYou.birthDateTitle")}
-            </AppText>
-            <View className="items-center mb-6">
-              <AnimatedButton
-                onPress={() => setShowDatePicker(true)}
-                className="bg-slate-800 border-[1.5px] border-slate-700 rounded-lg py-2 px-6"
-              >
-                <AppText className="text-xl text-center">
-                  {birthDate
-                    ? birthDate.toLocaleDateString(i18n.language, {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })
-                    : t("aboutYou.birthDatePlaceholder")}
-                </AppText>
-              </AnimatedButton>
-              <DatePicker
-                modal
-                mode="date"
-                open={showDatePicker}
-                date={birthDate ?? new Date(1995, 0, 1)}
-                maximumDate={new Date()}
-                minimumDate={new Date(1920, 0, 1)}
-                onConfirm={(date) => {
-                  setShowDatePicker(false);
-                  setBirthDate(date);
-                }}
-                onCancel={() => setShowDatePicker(false)}
-                theme="dark"
-                locale={i18n.language}
-                title={t("common:datePicker.selectDate")}
-                confirmText={t("common:datePicker.confirm")}
-                cancelText={t("common:datePicker.cancel")}
-              />
             </View>
           </View>
         </KeyboardAwareScrollView>
@@ -361,6 +298,6 @@ export default function AboutYouScreen() {
           <SkipOnboardingButton onSkip={skipOnboarding} />
         </View>
       </View>
-    </Pressable>
+    </View>
   );
 }

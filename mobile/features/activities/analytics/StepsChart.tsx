@@ -9,6 +9,7 @@ import { BarChart } from "echarts/charts";
 import { GridComponent } from "echarts/components";
 import { SkiaRenderer, SkiaChart } from "@wuba/react-native-echarts";
 import { useTranslation } from "react-i18next";
+import { getTrackingDate } from "@/lib/formatDate";
 
 type StepsChartProps = {
   range: "week" | "month" | "3months";
@@ -101,7 +102,7 @@ export default function StepsChart({
   const [size, setSize] = useState({ width: 0, height: 0 });
   const skiaRef = useRef<any>(null);
 
-  const todayStr = useMemo(() => toLocalDateString(new Date()), []);
+  const todayStr = useMemo(() => getTrackingDate(), []);
   const today = useMemo(() => new Date(), []);
   const [start, end] = addOffsetToDate(today, range, offset);
 

@@ -217,6 +217,15 @@ function ChatBubble({
                   )}
                   {timeString && (
                     <View className="flex-row items-center self-end gap-1 mt-0.5">
+                      {!!message.edited_at && (
+                        <BodyTextNC
+                          className={`text-[10px] italic ${
+                            isOwn ? "text-cyan-200/60" : "text-slate-400/70"
+                          }`}
+                        >
+                          {t("chat.messageEdited")}
+                        </BodyTextNC>
+                      )}
                       <BodyTextNC
                         className={`text-[10px] ${
                           isOwn ? "text-cyan-200/60" : "text-slate-400/70"

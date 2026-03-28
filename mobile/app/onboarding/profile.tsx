@@ -1,5 +1,4 @@
-import { View, Keyboard, Pressable } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { View, Keyboard, Pressable, ScrollView } from "react-native";
 import { Image } from "expo-image";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
@@ -178,9 +177,8 @@ export default function ProfileSetupScreen() {
 
           <OnboardingProgressBar currentStep={3} />
 
-          <KeyboardAwareScrollView
+          <ScrollView
             className="flex-1"
-            bottomOffset={16}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
           >
@@ -213,7 +211,7 @@ export default function ProfileSetupScreen() {
                 <ProfilePicture onFileSelected={setSelectedProfilePic} />
               </View>
             </View>
-          </KeyboardAwareScrollView>
+          </ScrollView>
 
           <View className="pb-6">
             <AnimatedButton

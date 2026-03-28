@@ -7,11 +7,11 @@ export type FavoriteFood = {
   custom_food_id: string | null;
   name: string;
   brand: string | null;
-  calories_per_100g: number;
-  protein_per_100g: number;
-  carbs_per_100g: number;
-  fat_per_100g: number;
-  serving_size_g: number;
+  calories_per_100g: number | null;
+  protein_per_100g: number | null;
+  carbs_per_100g: number | null;
+  fat_per_100g: number | null;
+  serving_size_g: number | null;
   serving_description: string | null;
   image_url: string | null;
   barcode: string | null;
@@ -22,12 +22,12 @@ type FoodJoin = {
   id: string;
   name: string;
   brand: string | null;
-  calories_per_100g: number;
-  protein_per_100g: number;
-  carbs_per_100g: number;
-  fat_per_100g: number;
+  calories_per_100g: number | null;
+  protein_per_100g: number | null;
+  carbs_per_100g: number | null;
+  fat_per_100g: number | null;
   saturated_fat_per_100g: number | null;
-  serving_size_g: number;
+  serving_size_g: number | null;
   serving_description: string | null;
   image_url: string | null;
   barcode: string | null;
@@ -37,12 +37,12 @@ type CustomFoodJoin = {
   id: string;
   name: string;
   brand: string | null;
-  calories_per_100g: number;
-  protein_per_100g: number;
-  carbs_per_100g: number;
-  fat_per_100g: number;
+  calories_per_100g: number | null;
+  protein_per_100g: number | null;
+  carbs_per_100g: number | null;
+  fat_per_100g: number | null;
   saturated_fat_per_100g: number | null;
-  serving_size_g: number;
+  serving_size_g: number | null;
   serving_description: string | null;
 };
 
@@ -74,7 +74,7 @@ export async function getFavorites(): Promise<FavoriteFood[]> {
   if (!data) return [];
 
   return (data as unknown as FavoriteRow[])
-    .map((row) => {
+    .map((row): FavoriteFood | null => {
       const food = row.foods;
       const customFood = row.custom_foods;
 

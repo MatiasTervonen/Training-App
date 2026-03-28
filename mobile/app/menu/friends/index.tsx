@@ -1,4 +1,4 @@
-import { View, ScrollView, ActivityIndicator } from "react-native";
+import { View, ScrollView, ActivityIndicator, Share } from "react-native";
 import AppText from "@/components/AppText";
 import FriendRequestForm from "@/features/friends/FriendRequestForm";
 import FriendCard from "@/features/friends/FriendCard";
@@ -10,7 +10,7 @@ import { useRejectFriendRequest } from "@/features/friends/hooks/useRejectFriend
 import { useTranslation } from "react-i18next";
 import Toast from "react-native-toast-message";
 import { handleError } from "@/utils/handleError";
-import { Users } from "lucide-react-native";
+import { Users, UserPlus } from "lucide-react-native";
 import PageContainer from "@/components/PageContainer";
 import AppTextNC from "@/components/AppTextNC";
 
@@ -59,6 +59,10 @@ export default function FriendsScreen() {
         text1: t("friends.rejectError"),
       });
     }
+  };
+
+  const handleInvite = async () => {
+    await Share.share({ message: t("friends.inviteMessage") });
   };
 
   const isLoading = friendsLoading || requestsLoading;
@@ -137,6 +141,24 @@ export default function FriendsScreen() {
                   </View>
                 </View>
               )}
+            </View>
+            <View className="mt-5 rounded-md bg-slate-950 border-slate-800 border-[1.5px] p-5 items-center">
+              <View className="w-14 h-14 rounded-full bg-blue-500/10 items-center justify-center mb-4">
+                <UserPlus size={28} color="#3b82f6" />
+              </View>
+              <AppText className="text-lg text-center mb-2">
+                {t("friends.inviteTitle")}
+              </AppText>
+              <AppTextNC className="text-sm text-gray-400 text-center leading-5 mb-5">
+                {t("friends.inviteDesc")}
+              </AppTextNC>
+              <View className="w-full px-8">
+                <AnimatedButton
+                  className="btn-base"
+                  label={t("friends.inviteButton")}
+                  onPress={handleInvite}
+                />
+              </View>
             </View>
           </>
         )}

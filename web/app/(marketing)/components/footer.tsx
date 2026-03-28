@@ -12,7 +12,7 @@ export default function Footer() {
           <rect x="10.8" y="0" width="4.8" height="24" fill="#003580" />
         </svg>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center justify-center flex-wrap gap-4">
         <Link href="/privacy" className="text-gray-500 hover:text-gray-300 transition-colors">
           Privacy Policy
         </Link>

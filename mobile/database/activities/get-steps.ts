@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
+import { getTrackingDate } from "@/lib/formatDate";
 
 export type StepRecord = {
   id: string;
@@ -11,21 +12,11 @@ export type StepRecord = {
 };
 
 export async function getStepsData(days: number = 90): Promise<StepRecord[]> {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
-
-  const today = new Date().toLocaleDateString("en-CA");
+  const today = getTrackingDate();
 
   const { data, error } = await supabase
     .from("steps_daily")
     .select("*")
-    .eq("user_id", session.user.id)
     .lt("day", today)
     .order("day", { ascending: false })
     .limit(days);

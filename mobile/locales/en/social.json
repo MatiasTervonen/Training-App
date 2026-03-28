@@ -28,6 +28,7 @@
     "removeFromFriendsMessage": "This session will no longer be visible on the social feed.",
     "shareConfirm": "Post",
     "removeConfirm": "Remove",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "shareToChat": "Share to Chat"
   }
 }

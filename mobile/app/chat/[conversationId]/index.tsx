@@ -4,7 +4,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronLeft } from "lucide-react-native";
 import FullScreenModal from "@/components/FullScreenModal";
-import { Image } from "expo-image";
+import { Image } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import AppText from "@/components/AppText";
 import BodyTextNC from "@/components/BodyTextNC";
@@ -22,6 +22,7 @@ import useMarkRead from "@/features/chat/hooks/useMarkRead";
 import useChatRealtime from "@/features/chat/hooks/useChatRealtime";
 import useConversations from "@/features/chat/hooks/useConversations";
 import useDeleteMessage from "@/features/chat/hooks/useDeleteMessage";
+import useEditMessage from "@/features/chat/hooks/useEditMessage";
 import useToggleReaction from "@/features/chat/hooks/useToggleReaction";
 import useForwardMessage from "@/features/chat/hooks/useForwardMessage";
 import useOtherLastRead from "@/features/chat/hooks/useOtherLastRead";
@@ -119,6 +120,8 @@ export default function ChatScreen() {
   const sendLocation = useSendLocation(conversationId!);
   const markRead = useMarkRead(conversationId!);
   const deleteMessageMutation = useDeleteMessage(conversationId!);
+  const editMessageMutation = useEditMessage(conversationId!);
+  const [editingMessage, setEditingMessage] = useState<{ id: string; content: string } | null>(null);
   const toggleReaction = useToggleReaction(conversationId!);
   const forwardMessage = useForwardMessage();
   const { data: conversations } = useConversations();
@@ -222,6 +225,25 @@ export default function ChatScreen() {
     },
     [forwardMessage],
   );
+
+  const handleEdit = useCallback(() => {
+    if (selectedMessage && selectedMessage.message_type === "text" && selectedMessage.content) {
+      setEditingMessage({ id: selectedMessage.id, content: selectedMessage.content });
+      setSelectedMessage(null);
+    }
+  }, [selectedMessage]);
+
+  const handleSaveEdit = useCallback(
+    (messageId: string, content: string) => {
+      editMessageMutation.mutate({ messageId, content });
+      setEditingMessage(null);
+    },
+    [editMessageMutation],
+  );
+
+  const handleCancelEdit = useCallback(() => {
+    setEditingMessage(null);
+  }, []);
 
   const handleDelete = useCallback(() => {
     if (!selectedMessage) return;
@@ -506,6 +528,9 @@ export default function ChatScreen() {
           replyTo={replyTo}
           onCancelReply={() => setReplyTo(null)}
           onTyping={sendTyping}
+          editingMessage={editingMessage}
+          onSaveEdit={handleSaveEdit}
+          onCancelEdit={handleCancelEdit}
         />
       </KeyboardAvoidingView>
 
@@ -517,6 +542,7 @@ export default function ChatScreen() {
         onReply={handleReply}
         onCopy={handleCopy}
         onForward={handleForward}
+        onEdit={handleEdit}
         onDelete={handleDelete}
         onReaction={handleReaction}
         onDismiss={handleDismissToolbar}

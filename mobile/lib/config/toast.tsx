@@ -82,13 +82,13 @@ export const toastConfig = {
     <View
       style={{
         width: "85%",
+        alignSelf: "center",
         borderWidth: 1,
         borderColor: "#f59e0b",
         borderRadius: 8,
         backgroundColor: "#0f1520",
         paddingVertical: 12,
         paddingHorizontal: 16,
-        alignItems: "center",
       }}
     >
       <Text
@@ -97,6 +97,7 @@ export const toastConfig = {
           fontSize: 18,
           color: "#f3f4f6",
           textAlign: "center",
+          width: "100%",
         }}
       >
         {text1} 🎉

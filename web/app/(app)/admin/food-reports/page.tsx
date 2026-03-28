@@ -19,6 +19,7 @@ const statusColors: Record<string, string> = {
 };
 
 const NUTRIENT_KEYS = [
+  { key: "servingSize", current: "current_serving_size_g", reported: "reported_serving_size_g" },
   { key: "calories", current: "current_calories_per_100g", reported: "reported_calories_per_100g" },
   { key: "protein", current: "current_protein_per_100g", reported: "reported_protein_per_100g" },
   { key: "carbs", current: "current_carbs_per_100g", reported: "reported_carbs_per_100g" },
@@ -98,7 +99,7 @@ function ReportCard({
 
         {/* Nutrient comparison (main 4) */}
         <div className="px-4 py-2">
-          {NUTRIENT_KEYS.slice(0, 4).map(({ key, current, reported }) => (
+          {NUTRIENT_KEYS.slice(0, 5).map(({ key, current, reported }) => (
             <NutrientCompare
               key={key}
               label={t(`admin.foodReports.${key}`)}
@@ -183,6 +184,7 @@ function ReportExpanded({
         action,
         ...(action === "accepted"
           ? {
+              servingSizeG: parseFloat(fields.servingSize) || null,
               caloriesPer100g: parseFloat(fields.calories) || null,
               proteinPer100g: parseFloat(fields.protein) || null,
               carbsPer100g: parseFloat(fields.carbs) || null,

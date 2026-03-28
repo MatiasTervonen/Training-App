@@ -159,6 +159,29 @@
     "favoriteAdded": "Added to favorites",
     "favoriteRemoved": "Removed from favorites"
   },
+  "energyBalance": {
+    "title": "Energy Balance",
+    "deficit": "deficit",
+    "surplus": "surplus",
+    "caloriesIn": "Calories In",
+    "baseBurn": "Base Burn",
+    "exercise": "Exercise",
+    "tef": "Digestion (TEF)",
+    "totalBurn": "Total Burn",
+    "activityLevel": "Activity",
+    "activityInfo": "How active is your day outside of workouts?",
+    "activityLevel1": "Sedentary",
+    "activityLevel1Desc": "Desk work, minimal movement",
+    "activityLevel2": "Lightly active",
+    "activityLevel2Desc": "Some walking, light errands",
+    "activityLevel3": "Moderately active",
+    "activityLevel3Desc": "On feet most of the day",
+    "activityLevel4": "Very active",
+    "activityLevel4Desc": "Physical job, construction",
+    "activityLevel5": "Extra active",
+    "activityLevel5Desc": "Heavy manual labor all day",
+    "completeProfile": "Add birth date & gender in profile for better accuracy"
+  },
   "analytics": {
     "title": "Nutrition Analytics",
     "summary": {

@@ -6,6 +6,7 @@ import { handleError } from "@/utils/handleError";
 type ResolveFoodReportParams = {
   reportId: string;
   action: "accepted" | "rejected" | "pending";
+  servingSizeG?: number | null;
   caloriesPer100g?: number | null;
   proteinPer100g?: number | null;
   carbsPer100g?: number | null;
@@ -36,6 +37,7 @@ export async function resolveFoodReport(params: ResolveFoodReportParams) {
   const { error } = await supabase.rpc("admin_resolve_food_report", {
     p_report_id: params.reportId,
     p_action: params.action,
+    p_serving_size_g: params.servingSizeG ?? undefined,
     p_calories_per_100g: params.caloriesPer100g ?? undefined,
     p_protein_per_100g: params.proteinPer100g ?? undefined,
     p_carbs_per_100g: params.carbsPer100g ?? undefined,

@@ -1,8 +1,12 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { View } from "react-native";
 import NutritionShareCard from "@/features/nutrition/components/NutritionShareCard";
 import { useTranslation } from "react-i18next";
 import ShareModalShell from "@/lib/components/share/ShareModalShell";
 import { DailyFoodLog } from "@/database/nutrition/get-daily-logs";
+import { useEnergyBalance } from "@/features/energy-balance/hooks/useEnergyBalance";
+import AnimatedButton from "@/components/buttons/animatedButton";
+import AppTextNC from "@/components/AppTextNC";
 
 type MealSummary = {
   label: string;
@@ -42,6 +46,16 @@ export default function NutritionShareModal({
   getMealLabel,
 }: NutritionShareModalProps) {
   const { t } = useTranslation("nutrition");
+  const [showMacros, setShowMacros] = useState(true);
+  const [showMeals, setShowMeals] = useState(true);
+  const [showEnergyBalance, setShowEnergyBalance] = useState(false);
+  const { data: energyBalanceData } = useEnergyBalance(date);
+
+  const hasEnergyBalance = energyBalanceData?.has_profile === true;
+
+  const energyBalance = showEnergyBalance && energyBalanceData
+    ? { balance: energyBalanceData.balance, tdee: energyBalanceData.tdee }
+    : null;
 
   const meals = useMemo<MealSummary[]>(() => {
     if (!logs || logs.length === 0) return [];
@@ -73,6 +87,7 @@ export default function NutritionShareModal({
       visible={visible}
       onClose={onClose}
       prefix="nutrition-"
+      scrollable
       labels={{
         save: t("share.save"),
         saving: t("share.saving"),
@@ -96,10 +111,65 @@ export default function NutritionShareModal({
           carbsGoal={carbsGoal}
           fat={fat}
           fatGoal={fatGoal}
-          meals={meals}
+          meals={showMeals ? meals : []}
           theme={theme}
           size={size}
+          energyBalance={energyBalance}
+          showMacros={showMacros}
         />
+      )}
+      middleContent={() => (
+        <View className="w-full mt-4">
+          <AppTextNC className="text-sm text-gray-400 mb-2">
+            {t("share.showOnCard")}
+          </AppTextNC>
+          <View className="flex-row flex-wrap gap-2">
+            <AnimatedButton
+              onPress={() => setShowMacros((prev) => !prev)}
+              className={`px-4 py-2 rounded-full border ${
+                showMacros
+                  ? "bg-blue-700 border-blue-500"
+                  : "bg-transparent border-gray-500"
+              }`}
+            >
+              <AppTextNC
+                className={`text-sm ${showMacros ? "text-gray-100" : "text-gray-400"}`}
+              >
+                {t("share.macros")}
+              </AppTextNC>
+            </AnimatedButton>
+            <AnimatedButton
+              onPress={() => setShowMeals((prev) => !prev)}
+              className={`px-4 py-2 rounded-full border ${
+                showMeals
+                  ? "bg-blue-700 border-blue-500"
+                  : "bg-transparent border-gray-500"
+              }`}
+            >
+              <AppTextNC
+                className={`text-sm ${showMeals ? "text-gray-100" : "text-gray-400"}`}
+              >
+                {t("share.meals")}
+              </AppTextNC>
+            </AnimatedButton>
+            {hasEnergyBalance && (
+              <AnimatedButton
+                onPress={() => setShowEnergyBalance((prev) => !prev)}
+                className={`px-4 py-2 rounded-full border ${
+                  showEnergyBalance
+                    ? "bg-blue-700 border-blue-500"
+                    : "bg-transparent border-gray-500"
+                }`}
+              >
+                <AppTextNC
+                  className={`text-sm ${showEnergyBalance ? "text-gray-100" : "text-gray-400"}`}
+                >
+                  {t("share.balance")}
+                </AppTextNC>
+              </AnimatedButton>
+            )}
+          </View>
+        </View>
       )}
     />
   );

@@ -147,6 +147,7 @@ export default function useSendMediaMessage(conversationId: string) {
         media_duration_ms: durationMs ?? null,
         link_preview: null,
         deleted_at: null,
+        edited_at: null,
         reply_to_message_id: replyToMessageId ?? null,
         reply_to_content: replyToMessage?.content ?? null,
         reply_to_sender_name: replyToMessage?.sender_display_name ?? null,

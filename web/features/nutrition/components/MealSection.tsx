@@ -1,6 +1,7 @@
 "use client";
 
 import { Clock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import TimePicker from "@/components/TimePicker";
 import FoodLogItem from "@/features/nutrition/components/FoodLogItem";
 import type { DailyFoodLog } from "@/types/nutrition";
@@ -29,9 +30,14 @@ export default function MealSection({
   onDelete,
   onUpdateMealTime,
 }: MealSectionProps) {
+  const { t } = useTranslation("nutrition");
+
   if (items.length === 0) return null;
 
   const totalCalories = items.reduce((sum, item) => sum + item.calories, 0);
+  const totalProtein = items.reduce((sum, item) => sum + (item.protein ?? 0), 0);
+  const totalCarbs = items.reduce((sum, item) => sum + (item.carbs ?? 0), 0);
+  const totalFat = items.reduce((sum, item) => sum + (item.fat ?? 0), 0);
   const mealTime = getMealTime(items);
 
   return (
@@ -56,6 +62,17 @@ export default function MealSection({
         </div>
         <span className="font-body text-sm text-slate-400">
           {Math.round(totalCalories)} kcal
+        </span>
+      </div>
+      <div className="flex gap-3">
+        <span className="font-body text-xs text-slate-500">
+          {t("daily.protein")} {Math.round(totalProtein)}g
+        </span>
+        <span className="font-body text-xs text-slate-500">
+          {t("daily.carbs")} {Math.round(totalCarbs)}g
+        </span>
+        <span className="font-body text-xs text-slate-500">
+          {t("daily.fat")} {Math.round(totalFat)}g
         </span>
       </div>
       <div className="bg-slate-800/50 rounded-lg overflow-hidden border border-slate-700/50">

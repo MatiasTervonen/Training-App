@@ -167,7 +167,7 @@ export function useFoodSearch(query: string) {
     !data?.length;
 
   return {
-    results: data ?? EMPTY_RESULTS,
+    results: trimmedQuery.length >= 2 ? (data ?? EMPTY_RESULTS) : EMPTY_RESULTS,
     isSearching: isFetching || isDebouncing,
   };
 }

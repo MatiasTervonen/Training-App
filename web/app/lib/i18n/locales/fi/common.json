@@ -212,6 +212,7 @@
         "accepted": "Hyväksytyt",
         "rejected": "Hylätyt"
       },
+      "servingSize": "Annoskoko (g)",
       "calories": "Kalorit/100g",
       "protein": "Proteiini/100g",
       "carbs": "Hiilihydraatit/100g",

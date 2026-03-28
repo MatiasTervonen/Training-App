@@ -6,7 +6,7 @@
     "noFriendsDesc": "Lähetä kaveripyyntö aloittaaksesi",
     "sendRequest": "Lähetä pyyntö",
     "sendFriendRequest": "Lähetä kaveripyyntö",
-    "placeholder": "Syötä kaverin näyttönimi",
+    "placeholder": "Syötä kaverin käyttäjänimi",
     "requestSentSuccess": "Kaveripyyntö lähetetty!",
     "cannotSendToSelf": "Et voi lähettää kaveripyyntöä itsellesi",
     "requestAlreadyExists": "Kaveripyyntö on jo lähetetty",
@@ -23,6 +23,10 @@
     "acceptSuccess": "Kaveripyyntö hyväksytty!",
     "acceptError": "Pyynnön hyväksyminen epäonnistui",
     "rejectSuccess": "Kaveripyyntö hylätty",
-    "rejectError": "Pyynnön hylkääminen epäonnistui"
+    "rejectError": "Pyynnön hylkääminen epäonnistui",
+    "inviteTitle": "Kutsu kavereita",
+    "inviteDesc": "Tunnetko jonkun, joka pitäisi Kurvista? Jaa sovellus ja treenatkaa yhdessä.",
+    "inviteButton": "Jaa kutsu",
+    "inviteMessage": "Liity Kurviin! Seuraa treenejä, ravintoa ja pysy motivoituneena yhdessä.\nhttps://kurvi.io"
   }
 }

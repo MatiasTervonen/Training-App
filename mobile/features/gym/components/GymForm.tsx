@@ -430,6 +430,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     useRestTimerStore.getState().clearRestTimer();
     AsyncStorage.removeItem("gym_session_draft");
     AsyncStorage.removeItem("startedFromTemplate");
+    AsyncStorage.removeItem("active_plan_id");
     setSupersetExercise([]);
     setExerciseType("Normal");
     setExercises([]);

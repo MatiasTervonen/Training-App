@@ -10,6 +10,8 @@ import { useRestTimerStore } from "@/lib/stores/restTimerStore";
 import { useSessionSummaryStore } from "@/lib/stores/sessionSummaryStore";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { useTranslation } from "react-i18next";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { advancePlan } from "@/database/gym/plans/advance-plan";
 
 type DraftRecording = {
   id: string;
@@ -235,6 +237,26 @@ export default function useSaveSession({
           phases,
           sessionId,
         });
+        // Advance training plan if session was started from one
+        const activePlanId = await AsyncStorage.getItem("active_plan_id");
+        if (activePlanId) {
+          try {
+            const result = await advancePlan(activePlanId);
+            await Promise.all([
+              queryClient.invalidateQueries({ queryKey: ["active-training-plan"], exact: true }),
+              queryClient.invalidateQueries({ queryKey: ["training-plans"], exact: true }),
+            ]);
+            useSessionSummaryStore.getState().setSummary({
+              ...useSessionSummaryStore.getState().summary!,
+              planCompleted: result.completed,
+            });
+          } catch {
+            // Plan advance failed silently - session was still saved
+          } finally {
+            await AsyncStorage.removeItem("active_plan_id");
+          }
+        }
+
         router.replace("/gym/training-finished");
 
         if (hasMedia) {

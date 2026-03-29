@@ -9,8 +9,11 @@ import useShareCardPreferences from "@/lib/hooks/useShareCardPreferences";
 import ShareModalShell from "@/lib/components/share/ShareModalShell";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import AppTextNC from "@/components/AppTextNC";
+import BodyText from "@/components/BodyText";
+import Toggle from "@/components/toggle";
 import type { DailyTotal, TopFood } from "@/database/nutrition/get-analytics";
 import type { AnalyticsSection } from "@/features/nutrition/analytics/NutritionAnalyticsShareCard";
+import type { CalorieChartOptions } from "@/features/nutrition/analytics/useAnalyticsChartImage";
 
 const CHART_SECTIONS: AnalyticsSection[] = ["calorieTrend", "macroTrend", "macroDistribution"];
 
@@ -50,6 +53,13 @@ export default function NutritionAnalyticsShareModal({
   );
 
   const [chartImages, setChartImages] = useState<Record<string, string | null>>({});
+  const [showGoalLine, setShowGoalLine] = useState(true);
+  const [showTdeeLine, setShowTdeeLine] = useState(true);
+
+  const calorieChartOptions: CalorieChartOptions = useMemo(
+    () => ({ showGoalLine, showTdeeLine }),
+    [showGoalLine, showTdeeLine],
+  );
 
   // Reset chart images when modal opens or theme changes
   useEffect(() => {
@@ -61,6 +71,15 @@ export default function NutritionAnalyticsShareModal({
   useEffect(() => {
     setChartImages({});
   }, [themeId]);
+
+  // Re-render calorie chart when options change
+  useEffect(() => {
+    setChartImages((prev) => {
+      if (!prev.calorieTrend) return prev;
+      const { calorieTrend: _, ...rest } = prev;
+      return rest;
+    });
+  }, [showGoalLine, showTdeeLine]);
 
   const macroLabels = useMemo(
     () => ({
@@ -81,7 +100,7 @@ export default function NutritionAnalyticsShareModal({
 
   // Generate HTML for each needed chart
   const calorieTrendHtml = useAnalyticsChartImage(
-    "calorieTrend", dailyTotals, range, startDate, endDate, locale, theme, macroLabels,
+    "calorieTrend", dailyTotals, range, startDate, endDate, locale, theme, macroLabels, calorieChartOptions,
   );
   const macroTrendHtml = useAnalyticsChartImage(
     "macroTrend", dailyTotals, range, startDate, endDate, locale, theme, macroLabels,
@@ -174,6 +193,7 @@ export default function NutritionAnalyticsShareModal({
           chartImages={chartImages}
           theme={cardTheme}
           size={size}
+          calorieChartOptions={calorieChartOptions}
         />
       )}
       middleContent={() => (
@@ -213,6 +233,18 @@ export default function NutritionAnalyticsShareModal({
               );
             })}
           </View>
+          {selectedSections.has("calorieTrend") && (
+            <View className="mt-3 gap-2">
+              <View className="flex-row items-center justify-between">
+                <BodyText className="text-sm">{t("analytics.charts.goal")}</BodyText>
+                <Toggle isOn={showGoalLine} onToggle={() => setShowGoalLine((v) => !v)} />
+              </View>
+              <View className="flex-row items-center justify-between">
+                <BodyText className="text-sm">{t("analytics.charts.tdee")}</BodyText>
+                <Toggle isOn={showTdeeLine} onToggle={() => setShowTdeeLine((v) => !v)} />
+              </View>
+            </View>
+          )}
         </View>
       )}
       outsideContent={

@@ -14,6 +14,7 @@ type NutritionGoalsInput = {
   saturatedFatGoal: number | null;
   visibleNutrients: string[];
   customMealTypes: string[];
+  calorieRingTarget: "goal" | "tdee";
 };
 
 export function useSaveGoals() {

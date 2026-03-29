@@ -1,5 +1,5 @@
 import ExerciseDropdown from "@/features/gym/components/ExerciseDropdown";
-import { CircleX } from "lucide-react-native";
+import { X } from "lucide-react-native";
 import { ExerciseEntry, emptyExerciseEntry } from "@/types/session";
 import { generateUUID } from "@/utils/generateUUID";
 import AppText from "@/components/AppText";
@@ -36,82 +36,75 @@ export default function ExerciseSelectorList({
   onSelectPhase,
 }: Props) {
   const { t } = useTranslation("gym");
+
+  const selectedExercises = draftExercises.filter(
+    (ex, i) => !(i === draftExercises.length - 1 && !ex.name?.trim()),
+  );
+
   return (
     <>
-      {draftExercises.map((exercise, index) => {
-        const isLast = index === draftExercises.length - 1;
-        const isEmpty = !exercise.name?.trim();
-
-        if (isLast && isEmpty) {
-          // Show dropdown only for the last, empty item
-          return (
-            <ExerciseDropdown
-              key="empty-selector"
-              hasWarmup={hasWarmup}
-              hasCooldown={hasCooldown}
-              onSelectPhase={(phaseType) => {
-                setIsExerciseModalOpen(false);
-                onSelectPhase?.(phaseType);
-              }}
-              onSelect={(selected) => {
-                const newExercise: ExerciseEntry = {
-                  exercise_id: String(selected.id),
-                  name: selected.name,
-                  equipment: selected.equipment,
-                  main_group: selected.main_group || "",
-                  sets: [],
-                  notes: "",
-                  superset_id:
-                    exerciseToChangeIndex !== null
-                      ? exercises[exerciseToChangeIndex]?.superset_id ||
-                        generateUUID()
-                      : "",
-                  muscle_group: selected.muscle_group || "",
-                };
-
-                if (exerciseToChangeIndex !== null) {
-                  // Update single exercise in session
-                  const updated = [...exercises];
-                  updated[exerciseToChangeIndex] = newExercise;
-                  setExercises(updated);
-                  setIsExerciseModalOpen(false);
-                  setExerciseToChangeIndex(null);
-                } else {
-                  // Add new exercise to superset draft
-                  setDraftExercises((prev) => {
-                    const updated = [...prev];
-                    updated[updated.length - 1] = newExercise;
-                    return [...updated, emptyExerciseEntry]; // allow adding another
-                  });
-                }
-              }}
-            />
-          );
-        }
-
-        // All others: just show a summary
-        return (
-          <View
-            key={`${exercise.exercise_id}-${index}`}
-            className="bg-slate-700 p-2 my-2 px-4 flex-row justify-between items-center mr-20 ml-0"
-          >
-            <View>
-              <AppText>{exercise.name}</AppText>
-              <BodyText className="text-sm text-gray-400">
-                {t(`gym.equipment.${exercise.equipment?.toLowerCase()}`)} / {t(`gym.muscleGroups.${exercise.muscle_group?.toLowerCase().replace(/ /g, "_")}`)}
-              </BodyText>
-            </View>
-            <Pressable
-              hitSlop={10}
-              onPress={() =>
-                setDraftExercises((prev) => prev.filter((_, i) => i !== index))
-              }
+      {selectedExercises.length > 0 && (
+        <View className="px-4 pt-2">
+          {selectedExercises.map((exercise, index) => (
+            <View
+              key={`${exercise.exercise_id}-${index}`}
+              className="bg-slate-800 border border-slate-600 px-4 py-1.5 mb-1 flex-row items-center justify-between rounded-md"
             >
-              <CircleX color="#f3f4f6" />
-            </Pressable>
-          </View>
-        );
-      })}
+              <BodyText className="text-sm flex-1" numberOfLines={1}>
+                {exercise.name}
+              </BodyText>
+              <Pressable
+                hitSlop={20}
+                onPress={() =>
+                  setDraftExercises((prev) =>
+                    prev.filter((_, i) => i !== index),
+                  )
+                }
+              >
+                <X size={14} color="#9ca3af" />
+              </Pressable>
+            </View>
+          ))}
+        </View>
+      )}
+      <ExerciseDropdown
+        hasWarmup={hasWarmup}
+        hasCooldown={hasCooldown}
+        onSelectPhase={(phaseType) => {
+          setIsExerciseModalOpen(false);
+          onSelectPhase?.(phaseType);
+        }}
+        onSelect={(selected) => {
+          const newExercise: ExerciseEntry = {
+            exercise_id: String(selected.id),
+            name: selected.name,
+            equipment: selected.equipment,
+            main_group: selected.main_group || "",
+            sets: [],
+            notes: "",
+            superset_id:
+              exerciseToChangeIndex !== null
+                ? exercises[exerciseToChangeIndex]?.superset_id ||
+                  generateUUID()
+                : "",
+            muscle_group: selected.muscle_group || "",
+          };
+
+          if (exerciseToChangeIndex !== null) {
+            const updated = [...exercises];
+            updated[exerciseToChangeIndex] = newExercise;
+            setExercises(updated);
+            setIsExerciseModalOpen(false);
+            setExerciseToChangeIndex(null);
+          } else {
+            setDraftExercises((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1] = newExercise;
+              return [...updated, emptyExerciseEntry];
+            });
+          }
+        }}
+      />
     </>
   );
 }

@@ -1,10 +1,9 @@
 import { useEffect, useCallback, useRef, useState } from "react";
-import { View, FlatList, ActivityIndicator, Pressable, Alert, Platform, Linking, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import { View, FlatList, ActivityIndicator, Pressable, Alert, Platform, Linking, NativeSyntheticEvent, NativeScrollEvent, Image } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronLeft } from "lucide-react-native";
 import FullScreenModal from "@/components/FullScreenModal";
-import { Image } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import AppText from "@/components/AppText";
 import BodyTextNC from "@/components/BodyTextNC";

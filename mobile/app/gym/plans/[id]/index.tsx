@@ -120,7 +120,7 @@ export default function PlanDetailPage() {
               { value: "delete", label: t("gym:gym.plans.deletePlan") },
             ]}
             onChange={(value) => {
-              if (value === "edit") router.push(`/gym/plans/${id}/edit`);
+              if (value === "edit") router.push(`/gym/plans/${id}/edit` as any);
               if (value === "delete") handleDelete();
             }}
           />

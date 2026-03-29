@@ -1,5 +1,5 @@
 import AppInput from "@/components/AppInput";
-import { useState, useCallback, useMemo } from "react";
+import { useState } from "react";
 import Toast from "react-native-toast-message";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import {
@@ -15,11 +15,10 @@ import { editExercise } from "@/database/gym/edit-exercise";
 import { deleteExercise } from "@/database/gym/delete-exercise";
 import ExerciseDropdownEdit from "@/features/gym/components/ExerciseDropDownEdit";
 import DeleteButton from "@/components/buttons/DeleteButton";
+import SaveButton from "@/components/buttons/SaveButton";
 import { useQueryClient } from "@tanstack/react-query";
 import PageContainer from "@/components/PageContainer";
 import { useTranslation } from "react-i18next";
-import AutoSaveIndicator from "@/components/AutoSaveIndicator";
-import { useAutoSave } from "@/hooks/useAutoSave";
 
 type Exercise = {
   id: string;
@@ -43,33 +42,35 @@ export default function EditExercises() {
 
   const queryClient = useQueryClient();
 
-  const autoSaveData = useMemo(
-    () => ({ name, equipment, muscle_group, main_group }),
-    [name, equipment, muscle_group, main_group],
-  );
+  const handleSave = async () => {
+    if (!name || !equipment || !muscle_group || !main_group || !selectedExercise) return;
 
-  const handleAutoSave = useCallback(async () => {
-    if (!name || !equipment || !muscle_group || !main_group) {
-      throw new Error("All fields are required");
+    setIsSaving(true);
+    try {
+      await editExercise({
+        id: selectedExercise.id,
+        name,
+        equipment,
+        muscle_group,
+        main_group,
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["userExercises"], exact: true });
+      queryClient.invalidateQueries({ queryKey: ["exercises"] });
+      Toast.show({
+        type: "success",
+        text1: t("gym.editExerciseScreen.updateSuccess"),
+      });
+      setSelectedExercise(null);
+    } catch {
+      Toast.show({
+        type: "error",
+        text1: t("gym.editExerciseScreen.updateError"),
+      });
+    } finally {
+      setIsSaving(false);
     }
-
-    await editExercise({
-      id: selectedExercise!.id,
-      name,
-      equipment,
-      muscle_group,
-      main_group,
-    });
-
-    queryClient.invalidateQueries({ queryKey: ["userExercises"], exact: true });
-    queryClient.invalidateQueries({ queryKey: ["exercises"] });
-  }, [name, equipment, muscle_group, main_group, selectedExercise, queryClient]);
-
-  const { status } = useAutoSave({
-    data: autoSaveData,
-    onSave: handleAutoSave,
-    enabled: !!selectedExercise,
-  });
+  };
 
   const handleDeleteExercise = async (exerciseId: string) => {
     setIsDeleting(true);
@@ -116,7 +117,6 @@ export default function EditExercises() {
 
   return (
     <View className="flex-1">
-      <AutoSaveIndicator status={status} />
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <PageContainer className="justify-between">
@@ -206,11 +206,19 @@ export default function EditExercises() {
               label={t("gym.addExerciseScreen.mainGroup")}
             />
           </View>
-          <View className="mt-20 flex flex-col gap-5">
-            <DeleteButton
-              onPress={() => handleDeleteExercise(selectedExercise.id)}
-              label={t("gym.editExerciseScreen.deleteExercise")}
-            />
+          <View className="mt-20 flex-row gap-4">
+            <View className="flex-1">
+              <DeleteButton
+                onPress={() => handleDeleteExercise(selectedExercise.id)}
+                label={t("gym.editExerciseScreen.deleteExercise")}
+              />
+            </View>
+            <View className="flex-1">
+              <SaveButton
+                onPress={handleSave}
+                disabled={!name || !equipment || !muscle_group || !main_group}
+              />
+            </View>
           </View>
 
           <FullScreenLoader

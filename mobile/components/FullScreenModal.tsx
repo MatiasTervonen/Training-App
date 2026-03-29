@@ -36,6 +36,7 @@ export default function FullScreenModal({
   confirmBeforeClose = false,
   scrollable = true,
   bgClassName = "bg-[#131c2b]",
+  noPadding = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -43,6 +44,7 @@ export default function FullScreenModal({
   confirmBeforeClose?: boolean;
   scrollable?: boolean;
   bgClassName?: string;
+  noPadding?: boolean;
 }) {
   const { t } = useTranslation("common");
   const translateY = useSharedValue(0);
@@ -183,7 +185,7 @@ export default function FullScreenModal({
                     bottomOffset={20}
                   >
                     <View
-                      className="flex-1 max-w-xl px-2 w-full"
+                      className={`flex-1 max-w-xl w-full ${noPadding ? "" : "px-2"}`}
                       style={{ paddingBottom: insets.bottom }}
                     >
                       {children}
@@ -191,7 +193,7 @@ export default function FullScreenModal({
                   </KeyboardAwareScrollView>
                 ) : (
                   <View
-                    className="flex-1 max-w-xl px-2 w-full"
+                    className={`flex-1 max-w-xl w-full ${noPadding ? "" : "px-2"}`}
                     style={{ paddingBottom: insets.bottom }}
                   >
                     {children}

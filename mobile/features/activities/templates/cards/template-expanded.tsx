@@ -71,7 +71,12 @@ export default function ActivityTemplateExpanded({
               {formatDate(item.template.updated_at)}
             </AppText>
           )}
-          <View className="items-center bg-slate-900 p-5 rounded-md shadow-md mt-5">
+          <LinearGradient
+            colors={["#111827", "#0f172a", "#1e3a8a"]}
+            start={{ x: 0, y: 1 }}
+            end={{ x: 1, y: 0 }}
+            className="items-center p-5 rounded-lg overflow-hidden shadow-md mt-5"
+          >
             <View className="flex-row items-center self-stretch mb-5 border-b border-gray-700 pb-2">
               <AppText className="text-xl flex-1 text-center">
                 {item.template.name}
@@ -96,7 +101,7 @@ export default function ActivityTemplateExpanded({
                 {item.template.notes}
               </AppText>
             )}
-          </View>
+          </LinearGradient>
 
           {item.route && (
             <View className="mt-10">

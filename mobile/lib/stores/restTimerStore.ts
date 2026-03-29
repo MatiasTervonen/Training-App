@@ -1,4 +1,4 @@
-import { DeviceEventEmitter } from "react-native";
+import { DeviceEventEmitter, Vibration } from "react-native";
 import { create } from "zustand";
 import { t } from "i18next";
 import {
@@ -76,7 +76,7 @@ export const useRestTimerStore = create<RestTimerState>()((set, get) => ({
         // Only play JS sound if caught in real-time (foreground).
         // If app was backgrounded the native notification already played the sound.
         const restTimerSoundEnabled = useUserStore.getState().settings?.rest_timer_sound_enabled ?? true;
-        if (timeSinceEnd < 2000 && restTimerSoundEnabled) {
+        if (timeSinceEnd < 10000 && restTimerSoundEnabled) {
           setAudioModeAsync({
             interruptionMode: "duckOthers",
             interruptionModeAndroid: "duckOthers",
@@ -86,6 +86,9 @@ export const useRestTimerStore = create<RestTimerState>()((set, get) => ({
             restTimerSound.play();
           });
         }
+
+        // Always vibrate so the user feels the timer end even if sound is quiet
+        Vibration.vibrate([0, 300, 200, 300]);
 
         set({ isRunning: false });
         return;

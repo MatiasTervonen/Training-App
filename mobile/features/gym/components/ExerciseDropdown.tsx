@@ -157,7 +157,7 @@ export default function ExerciseDropdown({
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View className="w-full z-50 flex-1">
-        <View className="mt-10 w-full px-8">
+        <View className="w-full px-6 pb-4 pt-4">
           <AppInput
             value={searchQuery}
             placeholder={t("gym.exerciseDropdown.searchPlaceholder")}
@@ -168,8 +168,7 @@ export default function ExerciseDropdown({
         </View>
 
         <View
-          className="w-full  
-                    bg-slate-900 border border-gray-100 mt-10 flex-1 rounded-md overflow-hidden"
+          className="w-full flex-1"
         >
           {isError ? (
             <ErrorMessage message={t("gym.exerciseDropdown.loadError")} fullPage />

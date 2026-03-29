@@ -65,7 +65,9 @@ interface UploadQueueState {
 
 const MAX_RETRIES = 3;
 
-const RPC_MAP: Record<TargetType, { rpcName: string; idParam: string }> = {
+type AttachMediaRpcName = "attach_session_media" | "attach_note_media" | "attach_weight_media" | "attach_todo_task_media";
+
+const RPC_MAP: Record<TargetType, { rpcName: AttachMediaRpcName; idParam: string }> = {
   session: { rpcName: "attach_session_media", idParam: "p_session_id" },
   note: { rpcName: "attach_note_media", idParam: "p_note_id" },
   weight: { rpcName: "attach_weight_media", idParam: "p_weight_id" },
@@ -324,9 +326,7 @@ export const useUploadQueueStore = create<UploadQueueState>()(
           await AsyncStorage.removeItem(key);
         },
       },
-      partialize: (state) => ({
-        queue: state.queue,
-      }),
+      partialize: (state) => ({ queue: state.queue }) as UploadQueueState,
       onRehydrateStorage: () => (state) => {
         if (!state) return;
 

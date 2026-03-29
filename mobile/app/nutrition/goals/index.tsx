@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { View, TextInput } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
+import AppTextNC from "@/components/AppTextNC";
 import BodyText from "@/components/BodyText";
 import Toggle from "@/components/toggle";
 import PageContainer from "@/components/PageContainer";
@@ -30,6 +31,7 @@ export default function NutritionGoalsScreen() {
   const [visibleNutrients, setVisibleNutrients] = useState<string[]>([]);
   const [customMealTypes, setCustomMealTypes] = useState<string[]>([]);
   const [newMealType, setNewMealType] = useState("");
+  const [calorieRingTarget, setCalorieRingTarget] = useState<"goal" | "tdee">("goal");
 
   // Populate form when goals load (only on initial load to avoid overwriting in-progress edits)
   const hasInitialized = useRef(false);
@@ -46,6 +48,7 @@ export default function NutritionGoalsScreen() {
       setSaturatedFatGoal(goals.saturated_fat_goal ? String(goals.saturated_fat_goal) : "");
       setVisibleNutrients(goals.visible_nutrients ?? []);
       setCustomMealTypes(goals.custom_meal_types ?? []);
+      setCalorieRingTarget(goals.calorie_ring_target ?? "goal");
     }
   }, [goals]);
 
@@ -79,6 +82,7 @@ export default function NutritionGoalsScreen() {
       saturatedFatGoal: saturatedFatGoal ? Number(saturatedFatGoal) : null,
       visibleNutrients,
       customMealTypes,
+      calorieRingTarget,
     });
   };
 
@@ -107,6 +111,35 @@ export default function NutritionGoalsScreen() {
               placeholder="2000"
               className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-gray-100 font-lexend text-sm"
             />
+          </View>
+
+          {/* Calorie ring target */}
+          <View className="mb-5">
+            <AppText className="text-sm mb-2">{t("goals.ringTarget")}</AppText>
+            <View className="flex-row bg-slate-800 rounded-lg p-1">
+              <AnimatedButton
+                onPress={() => setCalorieRingTarget("goal")}
+                className={`flex-1 py-2.5 rounded-md ${calorieRingTarget === "goal" ? "bg-slate-700" : ""}`}
+              >
+                <AppTextNC
+                  className={`text-sm text-center ${calorieRingTarget === "goal" ? "text-green-400" : "text-gray-400"}`}
+                  numberOfLines={1}
+                >
+                  {t("goals.ringGoal")}
+                </AppTextNC>
+              </AnimatedButton>
+              <AnimatedButton
+                onPress={() => setCalorieRingTarget("tdee")}
+                className={`flex-1 py-2.5 rounded-md ${calorieRingTarget === "tdee" ? "bg-slate-700" : ""}`}
+              >
+                <AppTextNC
+                  className={`text-sm text-center ${calorieRingTarget === "tdee" ? "text-green-400" : "text-gray-400"}`}
+                  numberOfLines={1}
+                >
+                  {t("goals.ringTdee")}
+                </AppTextNC>
+              </AnimatedButton>
+            </View>
           </View>
 
           {/* Protein goal */}

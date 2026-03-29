@@ -16,7 +16,7 @@ import { saveSharedFood } from "@/database/nutrition/save-shared-food";
 import { generateUUID } from "@/lib/generateUUID";
 import type { NutritionSearchResult, SavedMeal } from "@/types/nutrition";
 
-type MealBuilderItem = {
+export type MealBuilderItem = {
   localId: string;
   food_id: string | null;
   custom_food_id: string | null;
@@ -34,6 +34,8 @@ type CreateEditMealModalProps = {
   isOpen: boolean;
   onClose: () => void;
   meal?: SavedMeal | null;
+  initialItems?: MealBuilderItem[];
+  initialName?: string;
 };
 
 type NestedSearchTab = "search" | "favorites" | "recent";
@@ -89,6 +91,8 @@ export default function CreateEditMealModal({
   isOpen,
   onClose,
   meal,
+  initialItems,
+  initialName,
 }: CreateEditMealModalProps) {
   const { t } = useTranslation("nutrition");
   const { handleSaveMeal, isSaving } = useSaveMeal();
@@ -147,11 +151,22 @@ export default function CreateEditMealModal({
           quantity: item.quantity,
         })),
       );
+    } else if (initialItems && initialItems.length > 0) {
+      setMealName(initialName ?? "");
+      setItems(initialItems);
     } else {
       const draft = loadDraft();
       setMealName(draft?.name ?? "");
       setItems(draft?.items ?? []);
     }
+  }
+
+  // Populate from initialItems when they change (e.g., "Save as Meal" from daily view)
+  const [prevInitialItems, setPrevInitialItems] = useState<MealBuilderItem[] | undefined>(undefined);
+  if (!meal && initialItems !== prevInitialItems && initialItems && initialItems.length > 0) {
+    setPrevInitialItems(initialItems);
+    setMealName(initialName ?? "");
+    setItems(initialItems);
   }
 
   // Persist draft to localStorage for create mode

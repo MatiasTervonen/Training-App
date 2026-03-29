@@ -20,7 +20,7 @@ import Toast from "react-native-toast-message";
 import type { SavedMeal } from "@/database/nutrition/get-saved-meals";
 import type { NutritionSearchResult } from "@/features/nutrition/hooks/useFoodSearch";
 
-type MealBuilderItem = {
+export type MealBuilderItem = {
   localId: string;
   food_id: string | null;
   custom_food_id: string | null;
@@ -51,6 +51,8 @@ type CreateEditMealModalProps = {
   onDelete?: (mealId: string) => void;
   editingMeal?: SavedMeal | null;
   isSaving: boolean;
+  initialItems?: MealBuilderItem[];
+  initialName?: string;
 };
 
 type AddFoodTab = "search" | "scan" | "favorites" | "recent";
@@ -214,6 +216,8 @@ export default function CreateEditMealModal({
   onDelete,
   editingMeal,
   isSaving,
+  initialItems,
+  initialName,
 }: CreateEditMealModalProps) {
   const { t } = useTranslation("nutrition");
   const { t: tCommon } = useTranslation();
@@ -236,7 +240,7 @@ export default function CreateEditMealModal({
     setItems,
   });
 
-  // Populate when editing (overrides draft)
+  // Populate when editing or prefilling from daily view (overrides draft)
   useEffect(() => {
     if (editingMeal) {
       setName(editingMeal.name);
@@ -255,10 +259,13 @@ export default function CreateEditMealModal({
           quantity: item.quantity,
         })),
       );
+    } else if (initialItems && initialItems.length > 0) {
+      setName(initialName ?? "");
+      setItems(initialItems);
     }
     setShowAddFood(false);
     setSearchQuery("");
-  }, [editingMeal, visible]);
+  }, [editingMeal, visible, initialItems, initialName]);
 
   const handleAddFood = useCallback(async (food: NutritionSearchResult) => {
     let foodId = food.is_custom ? null : food.id;

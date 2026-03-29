@@ -86,7 +86,7 @@ export default function UploadQueueListener() {
           const keys = getInvalidationKeys(targetType, targetId);
 
           for (const queryKey of keys) {
-            queryClient.invalidateQueries({ queryKey: queryKey[0] });
+            queryClient.invalidateQueries({ queryKey: queryKey[0] as string[] });
           }
 
           useUploadQueueStore.getState().clearCompleted(targetId);

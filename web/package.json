@@ -12,6 +12,7 @@
     "email": "email dev --dir features/emails"
   },
   "dependencies": {
+    "@dnd-kit/react": "^0.3.2",
     "@react-email/components": "^1.0.10",
     "@sentry/nextjs": "^10.17.0",
     "@supabase/ssr": "^0.7.0",

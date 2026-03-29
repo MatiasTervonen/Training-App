@@ -1,21 +1,20 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigation, useRouter } from "expo-router";
-import { View, ScrollView, LayoutChangeEvent, ActivityIndicator, PixelRatio, FlatList } from "react-native";
+import { View, ScrollView, LayoutChangeEvent, ActivityIndicator, FlatList, Image } from "react-native";
 import AppText from "@/components/AppText";
-import { Image } from "react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import ActivityShareCard from "@/features/activities/components/share/ActivityShareCard";
 import StatToggleChips from "@/features/activities/components/share/StatToggleChips";
 import useMapSnapshot from "@/features/activities/components/share/useMapSnapshot";
+import useActivityMapConfig from "@/features/activities/components/share/useActivityMapConfig";
+import useActivityShareStats from "@/features/activities/components/share/useActivityShareStats";
+import MapCustomizationControls from "@/features/activities/components/share/MapCustomizationControls";
+import HiddenSnapshotMapView from "@/features/activities/components/share/HiddenSnapshotMapView";
 import useShareCard from "@/lib/hooks/useShareCard";
 import useShareCardPreferences from "@/lib/hooks/useShareCardPreferences";
 import ShareCardPicker from "@/lib/components/share/ShareCardPicker";
-import { getTheme, SHARE_CARD_DIMENSIONS } from "@/lib/share/themes";
+import { getTheme } from "@/lib/share/themes";
 import { useActivitySessionSummaryStore } from "@/lib/stores/activitySessionSummaryStore";
-import {
-  getAvailableStats,
-  getDefaultSelectedKeys,
-} from "@/features/activities/lib/activityShareCardUtils";
 import { Download, Share2, MessageCircle, ChevronDown, ChevronUp, Users } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
@@ -23,24 +22,12 @@ import * as Haptics from "expo-haptics";
 import Toggle from "@/components/toggle";
 import { updateFeedItemVisibility } from "@/database/social-feed/update-visibility";
 import { useQueryClient } from "@tanstack/react-query";
-import Mapbox from "@rnmapbox/maps";
-import { MAP_STYLES, LINE_COLORS } from "@/features/activities/lib/mapConstants";
-import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
 import BodyTextNC from "@/components/BodyTextNC";
-import AppTextNC from "@/components/AppTextNC";
 import ShareTypePicker from "@/lib/components/share/ShareTypePicker";
 import { useFriends } from "@/features/friends/hooks/useFriends";
 import { sendSessionShareToChat } from "@/database/chat/send-session-share";
 import { SessionShareContent } from "@/types/chat";
 import { Friends } from "@/types/models";
-
-const MAP_VIEW_STYLE = { flex: 1 };
-
-const ROUTE_SCALE: Record<string, number> = {
-  square: 1,
-  story: 1.8,
-  wide: 1.3,
-};
 
 export default function ActivityFinishedScreen() {
   const { t } = useTranslation("activities");
@@ -70,34 +57,22 @@ export default function ActivityFinishedScreen() {
     setSize,
   } = useShareCardPreferences();
 
-  // Local-only map style + route color
-  const globalMapStyleIndex = useActivitySettingsStore((s) => {
-    const idx = MAP_STYLES.findIndex((m) => m.url === s.defaultMapStyle);
-    return idx >= 0 ? idx : 0;
-  });
-  const globalLineColorIndex = useActivitySettingsStore(
-    (s) => s.defaultLineColorIndex,
-  );
-
-  const [mapStyleIndex, setMapStyleIndex] = useState(globalMapStyleIndex);
-  const [lineColorIndex, setLineColorIndex] = useState(globalLineColorIndex);
-  const [hideMapDetails, setHideMapDetails] = useState(false);
-  const [showGradient, setShowGradient] = useState(true);
-
-  const lineColor = LINE_COLORS[lineColorIndex];
-  const mapStyleUrl = MAP_STYLES[mapStyleIndex].url;
+  const {
+    mapStyleIndex,
+    setMapStyleIndex,
+    lineColorIndex,
+    setLineColorIndex,
+    hideMapDetails,
+    setHideMapDetails,
+    showGradient,
+    setShowGradient,
+    lineColor,
+    mapStyleUrl,
+    dims,
+    mapDims,
+  } = useActivityMapConfig({ size });
 
   const theme = useMemo(() => getTheme(themeId), [themeId]);
-  const dims = useMemo(() => SHARE_CARD_DIMENSIONS[size], [size]);
-
-  const pixelRatio = PixelRatio.get();
-  const mapDims = useMemo(
-    () => ({
-      width: Math.round(dims.width / pixelRatio),
-      height: Math.round(dims.height / pixelRatio),
-    }),
-    [dims, pixelRatio],
-  );
 
   const {
     mapViewRef,
@@ -118,38 +93,12 @@ export default function ActivityFinishedScreen() {
     mapStyleUrl,
   );
 
-  const availableStats = useMemo(
-    () => (summary ? getAvailableStats(summary, t) : []),
-    [summary, t],
-  );
-
-  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(() =>
-    getDefaultSelectedKeys(availableStats),
-  );
-
-  // Update selected keys when available stats change (initial load)
-  useEffect(() => {
-    if (availableStats.length > 0 && selectedKeys.size === 0) {
-      setSelectedKeys(getDefaultSelectedKeys(availableStats));
-    }
-  }, [availableStats, selectedKeys.size]);
-
-  const selectedStats = useMemo(
-    () => availableStats.filter((s) => selectedKeys.has(s.key)),
-    [availableStats, selectedKeys],
-  );
-
-  const handleToggle = useCallback((key: string) => {
-    setSelectedKeys((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) {
-        next.delete(key);
-      } else {
-        next.add(key);
-      }
-      return next;
-    });
-  }, []);
+  const {
+    availableStats,
+    selectedKeys,
+    selectedStats,
+    handleToggle,
+  } = useActivityShareStats({ summary });
 
   const onContainerLayout = useCallback((e: LayoutChangeEvent) => {
     setContainerWidth(e.nativeEvent.layout.width);
@@ -393,27 +342,29 @@ export default function ActivityFinishedScreen() {
                 }}
               >
                 <ActivityIndicator size="large" color={theme.colors.accent} />
-                <BodyTextNC className="text-sm text-gray-400 mt-3">
+                <AppText className="text-sm text-gray-400 mt-3">
                   {t("activities.share.loadingMap")}
-                </BodyTextNC>
+                </AppText>
               </View>
             ) : (
               <>
                 <View style={cardTransformStyle}>
-                  <ActivityShareCard
-                    key={`${showGradient}`}
-                    ref={cardRef}
-                    title={summary.title}
-                    date={summary.date}
-                    activityName={summary.activityName}
-                    activitySlug={summary.activitySlug}
-                    hasRoute={summary.hasRoute}
-                    mapSnapshotUri={mapSnapshotUri}
-                    selectedStats={selectedStats}
-                    theme={theme}
-                    size={size}
-                    showGradient={showGradient}
-                  />
+                  <View style={{ width: dims.width, height: dims.height }}>
+                    <ActivityShareCard
+                      key={`${showGradient}`}
+                      ref={cardRef}
+                      title={summary.title}
+                      date={summary.date}
+                      activityName={summary.activityName}
+                      activitySlug={summary.activitySlug}
+                      hasRoute={summary.hasRoute}
+                      mapSnapshotUri={mapSnapshotUri}
+                      selectedStats={selectedStats}
+                      theme={theme}
+                      size={size}
+                      showGradient={showGradient}
+                    />
+                  </View>
                 </View>
                 {isLoadingSnapshot && mapSnapshotUri && (
                   <View className="absolute inset-0 items-center justify-center bg-black/40 rounded-lg">
@@ -428,15 +379,15 @@ export default function ActivityFinishedScreen() {
 
       {/* Share / Save buttons - right below preview */}
       {summary && (
-        <View className="mt-6 gap-4">
-          <View className="flex-row gap-4">
+        <View className="mt-6 gap-3">
+          <View className="flex-row gap-3">
             <AnimatedButton
               onPress={handleSave}
-              className="flex-1 btn-neutral flex-row items-center justify-center gap-2"
+              className="flex-1 btn-save flex-row items-center justify-center gap-2"
               disabled={isSaving || isSharing || isLoadingSnapshot}
             >
-              <Download color="#f3f4f6" size={20} />
-              <AppText className="text-base text-center">
+              <Download color="#f3f4f6" size={18} />
+              <AppText className="text-base text-center" numberOfLines={1}>
                 {isSaving
                   ? t("activities.share.saving")
                   : t("activities.share.save")}
@@ -444,11 +395,11 @@ export default function ActivityFinishedScreen() {
             </AnimatedButton>
             <AnimatedButton
               onPress={handleShare}
-              className="flex-1 btn-base flex-row items-center justify-center gap-2"
+              className="flex-1 btn-add flex-row items-center justify-center gap-2"
               disabled={isSharing || isSaving || isLoadingSnapshot}
             >
-              <Share2 color="#f3f4f6" size={20} />
-              <AppText className="text-base text-center">
+              <Share2 color="#f3f4f6" size={18} />
+              <AppText className="text-base text-center" numberOfLines={1}>
                 {isSharing
                   ? t("activities.share.sharing")
                   : t("activities.share.shareActivity")}
@@ -457,11 +408,11 @@ export default function ActivityFinishedScreen() {
           </View>
           <AnimatedButton
             onPress={handleSendToChat}
-            className="btn-neutral flex-row items-center justify-center gap-2"
+            className="btn-base flex-row items-center justify-center gap-2"
             disabled={isSaving || isSharing || isLoadingSnapshot}
           >
-            <MessageCircle color="#f3f4f6" size={20} />
-            <AppText className="text-base text-center">
+            <MessageCircle color="#f3f4f6" size={18} />
+            <AppText className="text-base text-center" numberOfLines={1}>
               {tChat("chat.sendToChat")}
             </AppText>
           </AnimatedButton>
@@ -512,74 +463,14 @@ export default function ActivityFinishedScreen() {
               )}
 
               {summary.hasRoute && (
-                <View className="w-full gap-3">
-                  {/* Map style picker */}
-                  <View className="gap-1">
-                    <BodyTextNC className="text-sm text-gray-400">
-                      {t("activities.share.mapStyle")}
-                    </BodyTextNC>
-                    <View className="flex-row gap-2">
-                      {MAP_STYLES.map((style, i) => (
-                        <AnimatedButton
-                          key={style.labelKey}
-                          onPress={() => setMapStyleIndex(i)}
-                          className={`px-4 py-2 rounded-full border ${
-                            mapStyleIndex === i
-                              ? "bg-blue-700 border-blue-500"
-                              : "bg-transparent border-gray-600"
-                          }`}
-                        >
-                          <AppTextNC
-                            className={`text-sm ${mapStyleIndex === i ? "text-gray-100" : "text-gray-400"}`}
-                          >
-                            {t(`activities.settings.mapStyles.${style.labelKey}`)}
-                          </AppTextNC>
-                        </AnimatedButton>
-                      ))}
-                    </View>
-                  </View>
-
-                  {/* Route color picker */}
-                  <View className="gap-1">
-                    <BodyTextNC className="text-sm text-gray-400">
-                      {t("activities.share.routeColor")}
-                    </BodyTextNC>
-                    <View className="flex-row gap-3">
-                      {LINE_COLORS.map((color, i) => (
-                        <AnimatedButton
-                          key={color.labelKey}
-                          onPress={() => setLineColorIndex(i)}
-                          className="items-center gap-1"
-                        >
-                          <View
-                            className={`w-[32px] h-[32px] rounded-full ${
-                              lineColorIndex === i
-                                ? "border-[1.5px] border-white"
-                                : "border border-gray-600"
-                            }`}
-                            style={{ backgroundColor: color.core }}
-                          />
-                        </AnimatedButton>
-                      ))}
-                    </View>
-                  </View>
-
-                  {/* Toggle button */}
-                  <AnimatedButton
-                    onPress={() => setHideMapDetails((prev) => !prev)}
-                    className={`px-4 py-2 rounded-full border self-start ${
-                      hideMapDetails
-                        ? "bg-blue-700 border-blue-500"
-                        : "bg-transparent border-gray-600"
-                    }`}
-                  >
-                    <AppTextNC
-                      className={`text-sm ${hideMapDetails ? "text-gray-100" : "text-gray-400"}`}
-                    >
-                      {t("activities.share.hideMapDetails")}
-                    </AppTextNC>
-                  </AnimatedButton>
-                </View>
+                <MapCustomizationControls
+                  mapStyleIndex={mapStyleIndex}
+                  onMapStyleChange={setMapStyleIndex}
+                  lineColorIndex={lineColorIndex}
+                  onLineColorChange={setLineColorIndex}
+                  hideMapDetails={hideMapDetails}
+                  onHideMapDetailsChange={() => setHideMapDetails((prev) => !prev)}
+                />
               )}
 
               <ShareCardPicker
@@ -597,111 +488,23 @@ export default function ActivityFinishedScreen() {
 
       {/* Hidden MapView for snapshot */}
       {showHiddenMap && (
-        <View
-          style={{
-            position: "absolute",
-            top: -mapDims.height,
-            left: 0,
-            width: mapDims.width,
-            height: mapDims.height,
-            overflow: "hidden",
-          }}
-          pointerEvents="none"
-        >
-          <Mapbox.MapView
-            ref={mapViewRef}
-            key={`${size}-${hideMapDetails}-${lineColorIndex}-${mapStyleIndex}`}
-            style={MAP_VIEW_STYLE}
-            {...(hideMapDetails && noLabelsStyleJSON
-              ? { styleJSON: noLabelsStyleJSON }
-              : { styleURL: mapStyleUrl })}
-            scaleBarEnabled={false}
-            logoEnabled={false}
-            attributionEnabled={false}
-            onDidFinishLoadingMap={onMapDidFinishLoading}
-            onMapIdle={onMapIdle}
-          >
-            {!hideMapDetails && (
-              <Mapbox.Images
-                images={{
-                  start: require("@/assets/images/start-image.png"),
-                  end: require("@/assets/images/finnish-image.png"),
-                }}
-              />
-            )}
-            <Mapbox.Camera
-              defaultSettings={{
-                bounds: {
-                  ne: bounds.ne,
-                  sw: bounds.sw,
-                  paddingTop: Math.round(mapDims.height * 0.15),
-                  paddingBottom: Math.round(mapDims.height * 0.45),
-                  paddingLeft: Math.round(mapDims.width * 0.05),
-                  paddingRight: Math.round(mapDims.width * 0.05),
-                },
-              }}
-              animationMode="none"
-            />
-            <Mapbox.ShapeSource
-              id="snapshot-track"
-              shape={routeFeature as GeoJSON.Feature}
-            >
-              <Mapbox.LineLayer
-                id="snapshot-glow"
-                style={{
-                  lineColor: lineColor.glow,
-                  lineCap: "round" as const,
-                  lineJoin: "round" as const,
-                  lineWidth: (20 * (ROUTE_SCALE[size] ?? 1)) / pixelRatio,
-                  lineBlur: (8 * (ROUTE_SCALE[size] ?? 1)) / pixelRatio,
-                }}
-              />
-              <Mapbox.LineLayer
-                id="snapshot-core"
-                aboveLayerID="snapshot-glow"
-                style={{
-                  lineColor: lineColor.core,
-                  lineWidth: (9 * (ROUTE_SCALE[size] ?? 1)) / pixelRatio,
-                  lineCap: "round" as const,
-                  lineJoin: "round" as const,
-                }}
-              />
-            </Mapbox.ShapeSource>
-            {!hideMapDetails && startEndGeoJSON && (
-              <Mapbox.ShapeSource
-                id="snapshot-points"
-                shape={startEndGeoJSON as GeoJSON.FeatureCollection}
-              >
-                <Mapbox.SymbolLayer
-                  id="snapshot-points-layer"
-                  style={{
-                    iconImage: [
-                      "case",
-                      ["==", ["get", "type"], "start"],
-                      "start",
-                      "end",
-                    ],
-                    iconSize: (0.12 * (ROUTE_SCALE[size] ?? 1)) / pixelRatio,
-                    iconAnchor: "bottom",
-                    iconAllowOverlap: true,
-                    iconIgnorePlacement: true,
-                    ...(markersClose && {
-                      iconOffset: [
-                        "match",
-                        ["get", "type"],
-                        "start",
-                        ["literal", [-83, 0]],
-                        "end",
-                        ["literal", [83, 0]],
-                        ["literal", [0, 0]],
-                      ],
-                    }),
-                  }}
-                />
-              </Mapbox.ShapeSource>
-            )}
-          </Mapbox.MapView>
-        </View>
+        <HiddenSnapshotMapView
+          mapViewRef={mapViewRef}
+          mapDims={mapDims}
+          size={size}
+          hideMapDetails={hideMapDetails}
+          lineColorIndex={lineColorIndex}
+          mapStyleIndex={mapStyleIndex}
+          lineColor={lineColor}
+          mapStyleUrl={mapStyleUrl}
+          noLabelsStyleJSON={noLabelsStyleJSON}
+          routeFeature={routeFeature as GeoJSON.Feature}
+          bounds={bounds}
+          startEndGeoJSON={startEndGeoJSON}
+          markersClose={markersClose}
+          onMapDidFinishLoading={onMapDidFinishLoading}
+          onMapIdle={onMapIdle}
+        />
       )}
     </ScrollView>
       {/* Done button */}

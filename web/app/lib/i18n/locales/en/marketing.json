@@ -114,6 +114,10 @@
     "description": "Join {{appName}} today and keep everything organized in one place.",
     "button": "Get Started — It's Free"
   },
+  "followUs": {
+    "heading": "Follow Us",
+    "description": "Stay up to date with the latest news, updates, and tips."
+  },
   "navbar": {
     "login": "Log in / Sign up",
     "loginNote": "Same account works on mobile & web"

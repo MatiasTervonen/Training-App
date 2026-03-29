@@ -8,6 +8,7 @@ import { ShareCardTheme, ShareCardSize } from "@/lib/share/themes";
 import ThemedCardWrapper from "@/lib/components/share/ThemedCardWrapper";
 import ThemedStatBox from "@/lib/components/share/ThemedStatBox";
 import type { DailyTotal, TopFood } from "@/database/nutrition/get-analytics";
+import type { CalorieChartOptions } from "@/features/nutrition/analytics/useAnalyticsChartImage";
 
 export type AnalyticsSection =
   | "summary"
@@ -24,6 +25,7 @@ type NutritionAnalyticsShareCardProps = {
   chartImages: Record<string, string | null>;
   theme: ShareCardTheme;
   size: ShareCardSize;
+  calorieChartOptions?: CalorieChartOptions;
 };
 
 function getChartDimensions(
@@ -149,12 +151,14 @@ function ShareChartImage({
   title,
   theme,
   titleSize,
+  extraContent,
 }: {
   uri: string | null;
   chartDims: { width: number; height: number };
   title: string;
   theme: ShareCardTheme;
   titleSize: number;
+  extraContent?: React.ReactNode;
 }) {
   return (
     <View style={{ alignItems: "center", gap: 8 }}>
@@ -170,6 +174,46 @@ function ShareChartImage({
           />
         ) : null}
       </View>
+      {extraContent}
+    </View>
+  );
+}
+
+/* ── Calorie chart legend + balance stats ── */
+function ShareCalorieBalanceStats({
+  dailyTotals,
+  theme,
+  fontSize,
+  showGoalLine,
+  showTdeeLine,
+}: {
+  dailyTotals: DailyTotal[];
+  theme: ShareCardTheme;
+  fontSize: number;
+  showGoalLine: boolean;
+  showTdeeLine: boolean;
+}) {
+  const { t } = useTranslation("nutrition");
+  const calorieGoal = dailyTotals[0]?.calorie_goal ?? 2000;
+
+  return (
+    <View style={{ flexDirection: "row", justifyContent: "center", gap: fontSize * 1.5, marginTop: 4 }}>
+      {showGoalLine && (
+        <View style={{ flexDirection: "row", alignItems: "center", gap: fontSize * 0.4 }}>
+          <View style={{ width: fontSize * 1.2, height: 2, backgroundColor: "#ff00ff", borderStyle: "dashed" }} />
+          <AppText style={{ fontSize: fontSize * 0.9, color: "#ff00ff" }}>
+            {t("analytics.charts.goal")} ({calorieGoal})
+          </AppText>
+        </View>
+      )}
+      {showTdeeLine && (
+        <View style={{ flexDirection: "row", alignItems: "center", gap: fontSize * 0.4 }}>
+          <View style={{ width: fontSize * 1.2, height: 2.5, backgroundColor: "#38bdf8" }} />
+          <AppText style={{ fontSize: fontSize * 0.9, color: "#38bdf8" }}>
+            {t("analytics.charts.tdee")}
+          </AppText>
+        </View>
+      )}
     </View>
   );
 }
@@ -183,6 +227,7 @@ function RenderSection({
   theme,
   size,
   chartDims,
+  calorieChartOptions,
 }: {
   section: AnalyticsSection;
   dailyTotals: DailyTotal[];
@@ -191,6 +236,7 @@ function RenderSection({
   theme: ShareCardTheme;
   size: ShareCardSize;
   chartDims: { width: number; height: number };
+  calorieChartOptions?: CalorieChartOptions;
 }) {
   const { t } = useTranslation("nutrition");
   const titleSize = size === "wide" ? 32 : size === "story" ? 38 : 28;
@@ -199,7 +245,11 @@ function RenderSection({
   switch (section) {
     case "summary":
       return <ShareSummary dailyTotals={dailyTotals} theme={theme} size={size} />;
-    case "calorieTrend":
+    case "calorieTrend": {
+      const balanceFontSize = size === "wide" ? 22 : size === "story" ? 28 : 20;
+      const showGoal = calorieChartOptions?.showGoalLine ?? true;
+      const showTdee = calorieChartOptions?.showTdeeLine ?? true;
+      const hasExtras = showGoal || showTdee;
       return (
         <ShareChartImage
           uri={chartImages.calorieTrend ?? null}
@@ -207,8 +257,20 @@ function RenderSection({
           title={t("analytics.charts.calories")}
           theme={theme}
           titleSize={titleSize}
+          extraContent={
+            hasExtras ? (
+              <ShareCalorieBalanceStats
+                dailyTotals={dailyTotals}
+                theme={theme}
+                fontSize={balanceFontSize}
+                showGoalLine={showGoal}
+                showTdeeLine={showTdee}
+              />
+            ) : undefined
+          }
         />
       );
+    }
     case "macroTrend":
       return (
         <ShareChartImage
@@ -238,7 +300,7 @@ function RenderSection({
 
 /* ── Main share card ── */
 const NutritionAnalyticsShareCard = forwardRef<View, NutritionAnalyticsShareCardProps>(
-  ({ selectedSections, dailyTotals, topFoods, dateRangeText, chartImages, theme, size }, ref) => {
+  ({ selectedSections, dailyTotals, topFoods, dateRangeText, chartImages, theme, size, calorieChartOptions }, ref) => {
     const { t } = useTranslation("nutrition");
     const { colors } = theme;
 
@@ -302,6 +364,7 @@ const NutritionAnalyticsShareCard = forwardRef<View, NutritionAnalyticsShareCard
                     theme={theme}
                     size={size}
                     chartDims={chartDims}
+                    calorieChartOptions={calorieChartOptions}
                   />
                 </View>
               ))}
@@ -317,6 +380,7 @@ const NutritionAnalyticsShareCard = forwardRef<View, NutritionAnalyticsShareCard
                 theme={theme}
                 size={size}
                 chartDims={chartDims}
+                calorieChartOptions={calorieChartOptions}
               />
             ))
           )}

@@ -732,6 +732,12 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
         queryKey: ["fullGymSession", session.id],
         exact: true,
       }),
+      queryClient.invalidateQueries({
+        queryKey: ["prefetched-history"],
+      }),
+      queryClient.invalidateQueries({
+        queryKey: ["best-e1rm"],
+      }),
     ]);
   }, [
     title,

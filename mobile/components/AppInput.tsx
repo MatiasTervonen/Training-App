@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { View, TextInput, TextInputProps } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import AppText from "@/components/AppText";
@@ -10,12 +11,10 @@ type AppInputProps = TextInputProps & {
   label?: string;
 };
 
-export default function AppInput({
-  value,
-  setValue,
-  label,
-  ...props
-}: AppInputProps) {
+const AppInput = forwardRef<TextInput, AppInputProps>(function AppInput(
+  { value, setValue, label, ...props },
+  ref,
+) {
   const { t } = useTranslation("common");
 
   return (
@@ -29,6 +28,7 @@ export default function AppInput({
           className="absolute inset-0"
         />
         <TextInput
+          ref={ref}
           value={value}
           onChangeText={setValue}
           placeholderTextColor="#9ca3af"
@@ -47,4 +47,6 @@ export default function AppInput({
       ) : null}
     </View>
   );
-}
+});
+
+export default AppInput;

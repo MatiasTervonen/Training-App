@@ -114,6 +114,10 @@
     "description": "Liity {{appName}}iin ja pidä kaikki järjestyksessä yhdessä paikassa.",
     "button": "Aloita — Se on ilmaista"
   },
+  "followUs": {
+    "heading": "Seuraa meitä",
+    "description": "Pysy ajan tasalla uusimmista uutisista, päivityksistä ja vinkeistä."
+  },
   "navbar": {
     "login": "Kirjaudu / Rekisteröidy",
     "loginNote": "Sama tili toimii mobiilissa ja webissä"

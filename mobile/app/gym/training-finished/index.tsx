@@ -1,8 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigation, useRouter } from "expo-router";
-import { View, ScrollView, LayoutChangeEvent, FlatList, ActivityIndicator } from "react-native";
+import { View, ScrollView, LayoutChangeEvent, FlatList, ActivityIndicator, Image } from "react-native";
 import AppText from "@/components/AppText";
-import { Image } from "react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import ShareCard from "@/features/gym/components/ShareCard";
 import ShareCardPicker from "@/lib/components/share/ShareCardPicker";

@@ -19,7 +19,10 @@ import { useToggleFavorite } from "@/features/nutrition/hooks/useToggleFavorite"
 import { useFavorites } from "@/features/nutrition/hooks/useFavorites";
 import DailySummary from "@/features/nutrition/components/DailySummary";
 import EnergyBalanceCard from "@/features/energy-balance/components/EnergyBalanceCard";
+import { useEnergyBalance } from "@/features/energy-balance/hooks/useEnergyBalance";
 import MealSection from "@/features/nutrition/components/MealSection";
+import CreateEditMealModal from "@/features/nutrition/components/CreateEditMealModal";
+import type { MealBuilderItem } from "@/features/nutrition/components/CreateEditMealModal";
 import dynamic from "next/dynamic";
 
 const FoodDetailModal = dynamic(() => import("@/features/nutrition/components/FoodDetailModal"), { ssr: false });
@@ -34,6 +37,9 @@ export default function NutritionPage() {
   const { t } = useTranslation("nutrition");
   const [date, setDate] = useState(() => getTrackingDate());
   const [selectedLog, setSelectedLog] = useState<DailyFoodLog | null>(null);
+  const [showSaveAsMeal, setShowSaveAsMeal] = useState(false);
+  const [saveAsMealItems, setSaveAsMealItems] = useState<MealBuilderItem[]>([]);
+  const [saveAsMealName, setSaveAsMealName] = useState("");
 
   const { data: logs, isLoading } = useDailyLogs(date);
   const { data: goals } = useNutritionGoals();
@@ -85,7 +91,10 @@ export default function NutritionPage() {
       )
     : false;
 
+  const calorieRingTarget = goals?.calorie_ring_target ?? "goal";
+  const { data: energyBalance } = useEnergyBalance(calorieRingTarget === "tdee" ? date : "");
   const calorieGoal = goals?.calorie_goal ?? 2000;
+  const ringGoal = calorieRingTarget === "tdee" && energyBalance?.tdee ? energyBalance.tdee : calorieGoal;
   const proteinGoal = goals?.protein_goal ?? null;
   const carbsGoal = goals?.carbs_goal ?? null;
   const fatGoal = goals?.fat_goal ?? null;
@@ -172,6 +181,25 @@ export default function NutritionPage() {
     [t],
   );
 
+  const handleSaveAsMeal = useCallback((mealType: string, items: DailyFoodLog[]) => {
+    const builderItems: MealBuilderItem[] = items.map((log) => ({
+      localId: `${Date.now()}-${Math.random()}`,
+      food_id: log.food_id,
+      custom_food_id: log.custom_food_id,
+      food_name: log.food_name,
+      brand: log.brand,
+      calories_per_100g: Number(log.calories_per_100g ?? 0),
+      protein_per_100g: Number(log.protein_per_100g ?? 0),
+      carbs_per_100g: Number(log.carbs_per_100g ?? 0),
+      fat_per_100g: Number(log.fat_per_100g ?? 0),
+      serving_size_g: Number(log.serving_size_g),
+      quantity: Number(log.quantity),
+    }));
+    setSaveAsMealItems(builderItems);
+    setSaveAsMealName(getMealLabel(mealType));
+    setShowSaveAsMeal(true);
+  }, [getMealLabel]);
+
   const changeDate = (offset: number) => {
     const d = new Date(date);
     d.setDate(d.getDate() + offset);
@@ -234,7 +262,7 @@ export default function NutritionPage() {
             protein={totals.protein}
             carbs={totals.carbs}
             fat={totals.fat}
-            calorieGoal={calorieGoal}
+            calorieGoal={ringGoal}
             proteinGoal={proteinGoal}
             carbsGoal={carbsGoal}
             fatGoal={fatGoal}
@@ -269,6 +297,9 @@ export default function NutritionPage() {
                   onUpdateMealTime={(mealTime) =>
                     updateMealTime({ loggedAt: date, mealType, mealTime })
                   }
+                  onSaveAsMeal={() =>
+                    handleSaveAsMeal(mealType, mealGroups.get(mealType) ?? [])
+                  }
                 />
               ))}
             </div>
@@ -279,6 +310,18 @@ export default function NutritionPage() {
               description={t("daily.noLogsDesc")}
             />
           )}
+
+          {/* Save as Meal Modal */}
+          <CreateEditMealModal
+            isOpen={showSaveAsMeal}
+            onClose={() => {
+              setShowSaveAsMeal(false);
+              setSaveAsMealItems([]);
+              setSaveAsMealName("");
+            }}
+            initialItems={saveAsMealItems}
+            initialName={saveAsMealName}
+          />
 
           {/* Food Detail Modal (read-only view from dashboard) */}
           <FoodDetailModal

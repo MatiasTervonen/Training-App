@@ -70,7 +70,7 @@ export default function useSavePlan({
       ]);
 
       onSuccess?.();
-      router.push("/gym/plans");
+      router.push("/gym/plans" as any);
       Toast.show({
         type: "success",
         text1: t("gym.plans.saveSuccess"),

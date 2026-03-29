@@ -10,6 +10,8 @@ type TodoListEdit = {
 };
 
 type TodoTaskEdit = {
+  id?: string;
+  temp_id?: string;
   task: string;
   notes?: string;
   position: number;
@@ -43,5 +45,10 @@ export async function editTodo({
     throw new Error("Error editing todo list");
   }
 
-  return data;
+  const result = data as {
+    feed_item: Record<string, unknown>;
+    new_task_ids: Record<string, string>;
+  };
+
+  return result;
 }

@@ -80,15 +80,21 @@ export default function ChatInput({
   });
 
   // Populate text when entering edit mode, clear when leaving
-  const wasEditing = useRef(false);
-  useEffect(() => {
+  const [prevEditingId, setPrevEditingId] = useState<string | null>(null);
+  const currentEditingId = editingMessage?.id ?? null;
+  if (currentEditingId !== prevEditingId) {
+    setPrevEditingId(currentEditingId);
     if (editingMessage) {
       setText(editingMessage.content);
-      wasEditing.current = true;
-      setTimeout(() => textareaRef.current?.focus(), 0);
-    } else if (wasEditing.current) {
+    } else if (prevEditingId !== null) {
       setText("");
-      wasEditing.current = false;
+    }
+  }
+
+  // Focus textarea when entering edit mode
+  useEffect(() => {
+    if (editingMessage) {
+      setTimeout(() => textareaRef.current?.focus(), 0);
     }
   }, [editingMessage]);
 
@@ -160,7 +166,7 @@ export default function ChatInput({
     setPreviewDismissed(false);
     stopTyping();
     onCancelReply();
-  }, [text, isActive, onSend, onSendMedia, replyingTo, stopTyping, onCancelReply, pendingMedia, editingMessage, onSaveEdit, onCancelEdit]);
+  }, [text, isActive, onSend, onSendMedia, replyingTo, stopTyping, onCancelReply, pendingMedia, editingMessage, onSaveEdit]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {

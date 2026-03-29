@@ -1,3 +1,6 @@
+// Always filter feed_items by user_id — RLS OR's the "own items" and
+// "friends shared items" policies together, so without an explicit
+// user_id filter, friend's shared sessions leak into personal feeds.
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 import { FeedItemUI } from "@/types/session";
@@ -12,6 +15,12 @@ export async function getGymSessions({
   feed: FeedItemUI[];
   nextPage: number | null;
 }> {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session?.user) throw new Error("Unauthorized");
+  const userId = session.user.id;
+
   const from = pageParam * limit;
   const to = from + limit - 1;
 
@@ -21,6 +30,7 @@ export async function getGymSessions({
           .from("pinned_items")
           .select(`feed_items(*)`)
           .eq("pinned_context", "gym")
+          .eq("user_id", userId)
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [], error: null });
 
@@ -40,6 +50,7 @@ export async function getGymSessions({
 `,
     )
     .eq("type", "gym_sessions")
+    .eq("user_id", userId)
     .order("activity_at", { ascending: false })
     .range(from, to);
 

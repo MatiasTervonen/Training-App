@@ -7,7 +7,7 @@ import Toast from "react-native-toast-message";
 import i18next from "i18next";
 
 const pbSound = createAudioPlayer(
-  require("@/assets/audio/SEP_levelchange.wav"),
+  require("@/assets/audio/freesound_community-success-1-6297.mp3"),
 );
 
 function checkPb(

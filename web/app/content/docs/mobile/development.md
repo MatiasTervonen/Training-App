@@ -52,6 +52,51 @@ npx expo run:android --device Pixel_9
 
 Note: The `--device` flag expects the emulator's AVD name (e.g., `Pixel_9`), **not** the adb device ID (e.g., `emulator-5554`).
 
+## Running on emulator with a physical device connected
+
+The default build only produces an arm64 APK (for physical devices). Emulators use x86_64. To install a debug build on the emulator while both devices are connected:
+
+### 1. Build the x86_64 APK
+
+The ABI splits in `android/app/build.gradle` must include `"x86_64"`. By default it only includes `"arm64-v8a"`:
+
+```groovy
+splits {
+    abi {
+        enable true
+        reset()
+        include "arm64-v8a", "x86_64"
+        universalApk false
+    }
+}
+```
+
+Then build:
+
+```bash
+cd android && ./gradlew assembleDebug && cd ..
+```
+
+This produces both APKs in `android/app/build/outputs/apk/debug/`.
+
+### 2. Install on the emulator
+
+Use `adb -s` with the emulator's adb ID (e.g., `emulator-5554`):
+
+```bash
+adb -s emulator-5554 install android/app/build/outputs/apk/debug/app-x86_64-debug.apk
+```
+
+### 3. Launch the app
+
+Expo's `shift + a` device picker looks for `com.layer100crypto.MyTrack`, but the debug build uses `com.layer100crypto.MyTrack.dev` (due to `applicationIdSuffix`). So the picker won't find it. Instead, launch the app manually on the emulator:
+
+```bash
+adb -s emulator-5554 shell am start -n com.layer100crypto.MyTrack.dev/.MainActivity
+```
+
+The app will connect to the running Metro dev server automatically.
+
 ## Manual APK install
 
 If `npx expo run:android` builds successfully but fails to install the APK on the emulator, you can install it manually with adb:

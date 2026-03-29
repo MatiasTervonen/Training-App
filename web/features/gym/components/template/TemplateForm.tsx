@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { ChevronDown, Plus } from "lucide-react";
 import Modal from "@/components/modal";
 import SaveButton from "@/components/buttons/save-button";
@@ -19,6 +19,8 @@ import useAddExercise from "@/features/gym/hooks/template/useAddExercise";
 import useSaveTemplate from "@/features/gym/hooks/template/useSaveTemplate";
 import { useTranslation } from "react-i18next";
 import { FullGymTemplate } from "@/database/gym/templates/full-gym-template";
+import { DragDropProvider, DragOverlay } from "@dnd-kit/react";
+import { useSortable, isSortable, isSortableOperation } from "@dnd-kit/react/sortable";
 
 export default function TemplateForm({
   initialData,
@@ -119,6 +121,30 @@ export default function TemplateForm({
     template: session,
   });
 
+  const groupEntries = Object.entries(groupedExercises);
+
+  const handleDragEnd = useCallback(
+    (event: { canceled: boolean; operation: Parameters<typeof isSortableOperation>[0] }) => {
+      if (event.canceled) return;
+      if (!isSortableOperation(event.operation)) return;
+
+      const { source } = event.operation;
+      if (!source) return;
+      const fromIndex = source.initialIndex;
+      const toIndex = source.index;
+      if (fromIndex === toIndex) return;
+
+      setExercises((prev) => {
+        const currentEntries = Object.entries(GroupGymExercises(prev));
+        const reordered = [...currentEntries];
+        const [moved] = reordered.splice(fromIndex, 1);
+        reordered.splice(toIndex, 0, moved);
+        return reordered.flatMap(([, group]) => group.map((g) => g.exercise));
+      });
+    },
+    [],
+  );
+
   if (!hasLoadedDraft) return null;
 
   const hasError = Boolean(errorMessage);
@@ -153,69 +179,46 @@ export default function TemplateForm({
         </div>
       )}
 
-      <div>
-        {Object.entries(groupedExercises).map(([superset_id, group]) => (
-          <div
-            key={superset_id}
-            className={`mt-5 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900  rounded-md mx-2 ${
-              group.length > 1
-                ? "border-[1.5px] border-blue-700"
-                : "border-[1.5px] border-gray-600"
-            }`}
-          >
-            {group.length > 1 && (
-              <h2 className="text-lg text-gray-100 my-2 text-center">
-                {t("gym.templateForm.superSetLabel")}
-              </h2>
-            )}
-            {group.map(({ exercise, index }) => {
-              return (
-                <div key={index}>
-                  <TemplateCard
-                    exercise={exercise}
-                    lastExerciseHistory={(index) => {
-                      const ex = exercises[index];
-                      if (ex.exercise_id) {
-                        openHistory(ex.exercise_id);
-                      }
-                    }}
-                    onChangeExercise={(index) => {
-                      setExerciseToChangeIndex(index);
-                      setSupersetExercise([emptyExerciseEntry]);
-                      setNormalExercises([emptyExerciseEntry]);
-                      setIsExerciseModalOpen(true);
-                    }}
-                    index={index}
-                    onUpdateExercise={(index, updatedExercise) => {
-                      const updated = [...exercises];
-                      updated[index] = updatedExercise;
-                      setExercises(updated);
-                    }}
-                    onDeleteExercise={(index) => {
-                      const confirmDelete = confirm(
-                        t("gym.templateForm.deleteExerciseConfirm.message"),
-                      );
-                      if (!confirmDelete) return;
-
-                      const updated = exercises.filter((_, i) => i !== index);
-                      setExercises(updated);
-
-                      const sessionDraft = {
-                        title: workoutName,
-                        exercises: updated,
-                      };
-                      localStorage.setItem(
-                        "template_draft",
-                        JSON.stringify(sessionDraft),
-                      );
-                    }}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
+      <DragDropProvider onDragEnd={handleDragEnd}>
+        <div>
+          {groupEntries.map(([superset_id, group], groupIndex) => (
+            <SortableExerciseGroup
+              key={superset_id}
+              id={superset_id}
+              index={groupIndex}
+              group={group}
+              exercises={exercises}
+              setExercises={setExercises}
+              workoutName={workoutName}
+              openHistory={openHistory}
+              setExerciseToChangeIndex={setExerciseToChangeIndex}
+              setSupersetExercise={setSupersetExercise}
+              setNormalExercises={setNormalExercises}
+              setIsExerciseModalOpen={setIsExerciseModalOpen}
+              t={t}
+            />
+          ))}
+        </div>
+        <DragOverlay>
+          {(source) => {
+            if (!isSortable(source)) return null;
+            const group = groupEntries[source.index];
+            if (!group) return null;
+            const [, items] = group;
+            return (
+              <div className="mt-5 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 rounded-md mx-2 border-[1.5px] border-blue-500 shadow-lg shadow-blue-500/20 scale-[1.02] opacity-90">
+                {items.map(({ exercise, index }) => (
+                  <div key={index} className="py-2 px-4">
+                    <span className="text-gray-100 text-lg">
+                      {index + 1}. {exercise.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            );
+          }}
+        </DragOverlay>
+      </DragDropProvider>
       <Modal
         isOpen={isExerciseModalOpen}
         onClose={() => {
@@ -240,7 +243,7 @@ export default function TemplateForm({
         <div className="flex gap-3 w-full px-2 my-5">
           <div className="relative w-full">
             <select
-              className="appearance-none w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-[1.5px] border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
+              className="appearance-none w-full px-10 btn-add text-lg [&>option]:bg-slate-900 [&>option]:text-gray-100"
               value={exerciseType}
               onChange={(e) => {
                 const type = e.target.value;
@@ -270,7 +273,7 @@ export default function TemplateForm({
               handleAddExercise();
               setIsExerciseModalOpen(false);
             }}
-            className="w-full px-2 bg-blue-800 py-2 rounded-md shadow-xl border-[1.5px] border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
+            className="w-full btn-add text-lg"
           >
             {exerciseType === "Super-Set"
               ? t("gym.templateForm.addSuperSet")
@@ -295,7 +298,8 @@ export default function TemplateForm({
             setNormalExercises([emptyExerciseEntry]);
             setIsExerciseModalOpen(true);
           }}
-          className="px-10 bg-blue-800 py-2 rounded-md shadow-md border-[1.5px] border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
+          className="btn-add text-lg"
+          style={{ paddingLeft: 64, paddingRight: 64 }}
         >
           {t("gym.templateForm.addExercise")}
           <Plus className=" inline ml-2" size={20} />
@@ -308,6 +312,96 @@ export default function TemplateForm({
       {isSaving && (
         <FullScreenLoader message={t("gym.templateForm.savingTemplate")} />
       )}
+    </div>
+  );
+}
+
+function SortableExerciseGroup({
+  id,
+  index,
+  group,
+  exercises,
+  setExercises,
+  workoutName,
+  openHistory,
+  setExerciseToChangeIndex,
+  setSupersetExercise,
+  setNormalExercises,
+  setIsExerciseModalOpen,
+  t,
+}: {
+  id: string;
+  index: number;
+  group: { exercise: ExerciseEntry; index: number }[];
+  exercises: ExerciseEntry[];
+  setExercises: React.Dispatch<React.SetStateAction<ExerciseEntry[]>>;
+  workoutName: string;
+  openHistory: (exerciseId: string) => void;
+  setExerciseToChangeIndex: React.Dispatch<React.SetStateAction<number | null>>;
+  setSupersetExercise: React.Dispatch<React.SetStateAction<ExerciseEntry[]>>;
+  setNormalExercises: React.Dispatch<React.SetStateAction<ExerciseEntry[]>>;
+  setIsExerciseModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  t: (key: string) => string;
+}) {
+  const { ref, isDragSource } = useSortable({ id, index });
+
+  return (
+    <div
+      ref={ref}
+      className={`mt-5 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 rounded-md mx-2 cursor-grab active:cursor-grabbing transition-opacity duration-200 ${
+        group.length > 1
+          ? "border-[1.5px] border-blue-700"
+          : "border-[1.5px] border-gray-600"
+      } ${isDragSource ? "opacity-40" : ""}`}
+    >
+      {group.length > 1 && (
+        <h2 className="text-lg text-gray-100 my-2 text-center">
+          {t("gym.templateForm.superSetLabel")}
+        </h2>
+      )}
+      {group.map(({ exercise, index: exIndex }) => (
+        <div key={exIndex}>
+          <TemplateCard
+            exercise={exercise}
+            lastExerciseHistory={(i) => {
+              const ex = exercises[i];
+              if (ex.exercise_id) {
+                openHistory(ex.exercise_id);
+              }
+            }}
+            onChangeExercise={(i) => {
+              setExerciseToChangeIndex(i);
+              setSupersetExercise([emptyExerciseEntry]);
+              setNormalExercises([emptyExerciseEntry]);
+              setIsExerciseModalOpen(true);
+            }}
+            index={exIndex}
+            onUpdateExercise={(i, updatedExercise) => {
+              const updated = [...exercises];
+              updated[i] = updatedExercise;
+              setExercises(updated);
+            }}
+            onDeleteExercise={(i) => {
+              const confirmDelete = confirm(
+                t("gym.templateForm.deleteExerciseConfirm.message"),
+              );
+              if (!confirmDelete) return;
+
+              const updated = exercises.filter((_, idx) => idx !== i);
+              setExercises(updated);
+
+              const sessionDraft = {
+                title: workoutName,
+                exercises: updated,
+              };
+              localStorage.setItem(
+                "template_draft",
+                JSON.stringify(sessionDraft),
+              );
+            }}
+          />
+        </div>
+      ))}
     </div>
   );
 }

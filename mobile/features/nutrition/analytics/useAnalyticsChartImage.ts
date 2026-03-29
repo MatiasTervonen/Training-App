@@ -41,6 +41,11 @@ function generateDateRange(start: string, end: string): string[] {
   return dates;
 }
 
+export type CalorieChartOptions = {
+  showGoalLine: boolean;
+  showTdeeLine: boolean;
+};
+
 function buildCalorieTrendOption(
   dailyTotals: DailyTotal[],
   range: RangeType,
@@ -49,9 +54,13 @@ function buildCalorieTrendOption(
   locale: string,
   labelColor: string,
   gridColor: string,
+  chartOptions: CalorieChartOptions = { showGoalLine: true, showTdeeLine: true },
 ) {
   const dataMap = new Map<string, number>();
   dailyTotals.forEach((d) => dataMap.set(d.date, d.calories));
+
+  const tdeeMap = new Map<string, number>();
+  dailyTotals.forEach((d) => tdeeMap.set(d.date, d.tdee));
 
   const fullRange = generateDateRange(startDate, endDate);
   const calorieGoal = dailyTotals[0]?.calorie_goal ?? 2000;
@@ -60,9 +69,15 @@ function buildCalorieTrendOption(
     label: formatDateLabel(date, range, locale),
     value: dataMap.get(date) ?? 0,
     hasData: dataMap.has(date),
+    tdee: tdeeMap.get(date) ?? null,
   }));
 
-  const maxCal = Math.max(...chartData.map((d) => d.value), calorieGoal, 500);
+  const maxCal = Math.max(
+    ...chartData.map((d) => d.value),
+    ...chartData.map((d) => d.tdee ?? 0),
+    calorieGoal,
+    500,
+  );
 
   return {
     backgroundColor: "transparent",
@@ -73,7 +88,7 @@ function buildCalorieTrendOption(
       axisLabel: {
         color: labelColor,
         fontSize: 22,
-        interval: range === "month" ? 4 : range === "3months" ? 6 : 0,
+        interval: range === "month" ? 4 : range === "3months" ? 13 : 0,
       },
       axisTick: { show: false },
       axisLine: { show: false },
@@ -101,21 +116,38 @@ function buildCalorieTrendOption(
             color:
               !d.hasData
                 ? "transparent"
-                : d.value <= calorieGoal * 1.05
+                : !chartOptions.showGoalLine || d.value <= calorieGoal * 1.05
                   ? "#22c55e"
                   : "#f59e0b",
             borderRadius: [4, 4, 0, 0],
           },
         })),
         barWidth: range === "week" ? "60%" : range === "month" ? "70%" : "50%",
-        markLine: {
-          silent: true,
-          symbol: "none",
-          lineStyle: { color: "#ff00ff", type: "dashed", width: 2 },
-          label: { show: false },
-          data: [{ yAxis: calorieGoal }],
-        },
+        ...(chartOptions.showGoalLine
+          ? {
+              markLine: {
+                silent: true,
+                symbol: "none",
+                lineStyle: { color: "#ff00ff", type: "dashed", width: 2 },
+                label: { show: false },
+                data: [{ yAxis: calorieGoal }],
+              },
+            }
+          : {}),
       },
+      ...(chartOptions.showTdeeLine
+        ? [
+            {
+              type: "line",
+              data: chartData.map((d) => (d.tdee !== null ? d.tdee : null)),
+              connectNulls: false,
+              symbol: "circle",
+              symbolSize: 6,
+              lineStyle: { color: "#38bdf8", width: 2.5 },
+              itemStyle: { color: "#38bdf8" },
+            },
+          ]
+        : []),
     ],
     grid: { top: 20, right: 20, bottom: 40, left: 60 },
   };
@@ -195,7 +227,7 @@ function buildMacroTrendOption(
         itemStyle: { color: FAT_COLOR, borderRadius: [4, 4, 0, 0] },
       },
     ],
-    grid: { top: 20, right: 20, bottom: 60, left: 60 },
+    grid: { top: 20, right: 20, bottom: 75, left: 60 },
   };
 }
 
@@ -267,6 +299,7 @@ export default function useAnalyticsChartImage(
   locale: string,
   theme: ShareCardTheme,
   macroLabels: { protein: string; carbs: string; fat: string },
+  calorieChartOptions?: CalorieChartOptions,
 ) {
   const isLightTheme = theme.id === "clean";
   const labelColor = isLightTheme ? theme.colors.textPrimary : "#f3f4f6";
@@ -278,7 +311,7 @@ export default function useAnalyticsChartImage(
     switch (chartType) {
       case "calorieTrend":
         option = buildCalorieTrendOption(
-          dailyTotals, range, startDate, endDate, locale, labelColor, gridColor,
+          dailyTotals, range, startDate, endDate, locale, labelColor, gridColor, calorieChartOptions,
         );
         break;
       case "macroTrend":
@@ -314,7 +347,7 @@ setTimeout(function(){
 <\/script>
 </body>
 </html>`;
-  }, [chartType, dailyTotals, range, startDate, endDate, locale, labelColor, gridColor, macroLabels]);
+  }, [chartType, dailyTotals, range, startDate, endDate, locale, labelColor, gridColor, macroLabels, calorieChartOptions]);
 
   return html;
 }

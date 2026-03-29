@@ -202,6 +202,12 @@ export default function useSaveSession({
             queryKey: ["myGymSessions"],
             exact: true,
           }),
+          queryClient.invalidateQueries({
+            queryKey: ["prefetched-history"],
+          }),
+          queryClient.invalidateQueries({
+            queryKey: ["best-e1rm"],
+          }),
         ]);
 
         router.push("/dashboard");

@@ -95,6 +95,9 @@
     "customMeals": "Custom Meal Types",
     "addMealType": "Add meal type",
     "mealTypePlaceholder": "e.g. Pre-workout",
+    "ringTarget": "Calorie Ring Target",
+    "ringGoal": "Goal",
+    "ringTdee": "TDEE",
     "saved": "Goals saved",
     "noGoal": "Not set"
   },
@@ -148,7 +151,8 @@
     "mealSaved": "Meal saved",
     "mealDeleted": "Meal deleted",
     "mealLogged": "Meal logged",
-    "emptyMeal": "Add at least one food to this meal"
+    "emptyMeal": "Add at least one food to this meal",
+    "saveAsMeal": "Save as Meal"
   },
   "feed": {
     "kcal": "kcal",
@@ -224,7 +228,11 @@
       "calories": "Calories",
       "macros": "Macros",
       "distribution": "Macro Distribution",
-      "goal": "Goal"
+      "goal": "Goal",
+      "tdee": "TDEE",
+      "overDays": "{{count}} days over",
+      "underDays": "{{count}} days under",
+      "avgBalance": "Avg: {{value}} kcal/day"
     },
     "topFoods": {
       "title": "Top Foods",

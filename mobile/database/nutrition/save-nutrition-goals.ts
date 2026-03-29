@@ -12,6 +12,7 @@ type SaveNutritionGoalsParams = {
   saturatedFatGoal: number | null;
   visibleNutrients: string[];
   customMealTypes: string[];
+  calorieRingTarget: "goal" | "tdee";
 };
 
 export async function saveNutritionGoals(params: SaveNutritionGoalsParams) {
@@ -27,6 +28,7 @@ export async function saveNutritionGoals(params: SaveNutritionGoalsParams) {
       saturated_fat_goal: params.saturatedFatGoal,
       visible_nutrients: params.visibleNutrients,
       custom_meal_types: params.customMealTypes,
+      calorie_ring_target: params.calorieRingTarget,
       updated_at: new Date().toISOString(),
     },
     { onConflict: "user_id" },

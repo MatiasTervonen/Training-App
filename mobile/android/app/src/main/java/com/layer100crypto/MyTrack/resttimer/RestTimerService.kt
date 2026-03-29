@@ -115,20 +115,27 @@ class RestTimerService : Service() {
         val nm = notificationManager ?: getSystemService(NotificationManager::class.java) ?: return
 
         // Create a high-importance channel with the rest timer sound
+        // Use USAGE_ALARM so the sound plays at alarm volume and ducks media audio
+        val soundUri = Uri.parse("android.resource://$packageName/${R.raw.mixkit_alert_bells_echo_765}")
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_ALARM)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
         val channel = NotificationChannel(
-            "rest_timer_end",
+            "rest_timer_end_v2",
             "Rest Timer End",
             NotificationManager.IMPORTANCE_HIGH,
         ).apply {
-            val soundUri = Uri.parse("android.resource://$packageName/${R.raw.mixkit_alert_bells_echo_765}")
-            setSound(soundUri, AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .build())
+            setSound(soundUri, audioAttributes)
+            enableVibration(true)
+            vibrationPattern = longArrayOf(0, 300, 200, 300)
         }
         nm.createNotificationChannel(channel)
 
-        val notification = NotificationCompat.Builder(this, "rest_timer_end")
+        // Delete old channel that used USAGE_NOTIFICATION (too quiet)
+        nm.deleteNotificationChannel("rest_timer_end")
+
+        val notification = NotificationCompat.Builder(this, "rest_timer_end_v2")
             .setSmallIcon(R.drawable.ic_stat_kurvi_icon_ice_blue_transparent)
             .setContentTitle(finishedText)
             .setPriority(NotificationCompat.PRIORITY_HIGH)

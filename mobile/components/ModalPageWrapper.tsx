@@ -257,12 +257,12 @@ export default function ModalPageWrapper({
 
   const leftLabelStyle = useAnimatedStyle(() => ({
     opacity: Math.max(0, swipeProgress.value),
-    width: Math.max(0, translateX.value),
+    width: Math.max(0, translateX.value * 0.75),
   }));
 
   const rightLabelStyle = useAnimatedStyle(() => ({
     opacity: Math.max(0, -swipeProgress.value),
-    width: Math.max(0, -translateX.value),
+    width: Math.max(0, -translateX.value * 0.75),
   }));
 
   const topLabelStyle = useAnimatedStyle(() => ({

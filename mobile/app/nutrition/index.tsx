@@ -9,20 +9,25 @@ import FloatingActionButton from "@/components/buttons/FloatingActionButton";
 import DailySummary from "@/features/nutrition/components/DailySummary";
 import MealSection from "@/features/nutrition/components/MealSection";
 import NutritionShareModal from "@/features/nutrition/components/NutritionShareModal";
+import CreateEditMealModal from "@/features/nutrition/components/CreateEditMealModal";
+import type { MealBuilderItem } from "@/features/nutrition/components/CreateEditMealModal";
 import { useDailyLogs } from "@/features/nutrition/hooks/useDailyLogs";
 import { useNutritionGoals } from "@/features/nutrition/hooks/useNutritionGoals";
 import { useDeleteFoodLog } from "@/features/nutrition/hooks/useDeleteFoodLog";
 import { useUpdateMealTime } from "@/features/nutrition/hooks/useUpdateMealTime";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useSaveMeal } from "@/features/nutrition/hooks/useSaveMeal";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Plus, Settings, ChevronLeft, ChevronRight, Share2, BarChart3 } from "lucide-react-native";
 import FoodDetailSheet from "@/features/nutrition/components/FoodDetailSheet";
 import EnergyBalanceCard from "@/features/energy-balance/components/EnergyBalanceCard";
+import { useEnergyBalance } from "@/features/energy-balance/hooks/useEnergyBalance";
 import { useLogFood } from "@/features/nutrition/hooks/useLogFood";
 import { useToggleFavorite } from "@/features/nutrition/hooks/useToggleFavorite";
 import { useFavorites } from "@/features/nutrition/hooks/useFavorites";
 import { getTrackingDate } from "@/lib/formatDate";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
+import { useNutritionDateStore } from "@/lib/stores/nutritionDateStore";
 import { useModalPageScroll } from "@/components/ModalPageWrapper";
 import type { DailyFoodLog } from "@/database/nutrition/get-daily-logs";
 
@@ -31,8 +36,8 @@ const DEFAULT_MEALS = ["breakfast", "lunch", "dinner", "snack"];
 export default function NutritionScreen() {
   const { t } = useTranslation(["nutrition", "common"]);
   const router = useRouter();
-  const { date: initialDate } = useLocalSearchParams<{ date?: string }>();
-  const [date, setDate] = useState(() => initialDate || getTrackingDate());
+  const date = useNutritionDateStore((s) => s.date);
+  const setDate = useNutritionDateStore((s) => s.setDate);
   const setModalPageConfig = useModalPageConfig((s) => s.setModalPageConfig);
   const handleModalScroll = useModalPageScroll();
 
@@ -47,6 +52,9 @@ export default function NutritionScreen() {
   }, [router, setModalPageConfig, t, date]);
   const [selectedLog, setSelectedLog] = useState<DailyFoodLog | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [showSaveAsMeal, setShowSaveAsMeal] = useState(false);
+  const [saveAsMealItems, setSaveAsMealItems] = useState<MealBuilderItem[]>([]);
+  const [saveAsMealName, setSaveAsMealName] = useState("");
 
   const { data: logs } = useDailyLogs(date);
   const { data: goals } = useNutritionGoals();
@@ -55,6 +63,7 @@ export default function NutritionScreen() {
   const { handleLogFood } = useLogFood({ skipBack: true });
   const { handleToggle } = useToggleFavorite();
   const { data: favorites } = useFavorites();
+  const { handleSaveMeal, isSaving: isSavingMeal } = useSaveMeal();
 
   const selectedFood = selectedLog
     ? {
@@ -99,7 +108,10 @@ export default function NutritionScreen() {
       )
     : false;
 
+  const calorieRingTarget = goals?.calorie_ring_target ?? "goal";
+  const { data: energyBalance } = useEnergyBalance(calorieRingTarget === "tdee" ? date : "");
   const calorieGoal = goals?.calorie_goal ?? 2000;
+  const ringGoal = calorieRingTarget === "tdee" && energyBalance?.tdee ? energyBalance.tdee : calorieGoal;
   const proteinGoal = goals?.protein_goal ?? null;
   const carbsGoal = goals?.carbs_goal ?? null;
   const fatGoal = goals?.fat_goal ?? null;
@@ -183,6 +195,25 @@ export default function NutritionScreen() {
     return type;
   }, [t]);
 
+  const handleSaveAsMeal = useCallback((mealType: string, items: DailyFoodLog[]) => {
+    const builderItems: MealBuilderItem[] = items.map((log) => ({
+      localId: `${Date.now()}-${Math.random()}`,
+      food_id: log.food_id,
+      custom_food_id: log.custom_food_id,
+      food_name: log.food_name,
+      brand: log.brand,
+      calories_per_100g: Number(log.calories_per_100g ?? 0),
+      protein_per_100g: Number(log.protein_per_100g ?? 0),
+      carbs_per_100g: Number(log.carbs_per_100g ?? 0),
+      fat_per_100g: Number(log.fat_per_100g ?? 0),
+      serving_size_g: Number(log.serving_size_g),
+      quantity: Number(log.quantity),
+    }));
+    setSaveAsMealItems(builderItems);
+    setSaveAsMealName(getMealLabel(mealType));
+    setShowSaveAsMeal(true);
+  }, [getMealLabel]);
+
   const changeDate = (offset: number) => {
     const d = new Date(date);
     d.setDate(d.getDate() + offset);
@@ -259,7 +290,7 @@ export default function NutritionScreen() {
             protein={totals.protein}
             carbs={totals.carbs}
             fat={totals.fat}
-            calorieGoal={calorieGoal}
+            calorieGoal={ringGoal}
             proteinGoal={proteinGoal}
             carbsGoal={carbsGoal}
             fatGoal={fatGoal}
@@ -291,6 +322,9 @@ export default function NutritionScreen() {
                   onDelete={(id) => handleDelete(id, date)}
                   onUpdateMealTime={(mealTime) =>
                     updateMealTime({ loggedAt: date, mealType, mealTime })
+                  }
+                  onSaveAsMeal={() =>
+                    handleSaveAsMeal(mealType, mealGroups.get(mealType) ?? [])
                   }
                 />
               ))}
@@ -345,6 +379,25 @@ export default function NutritionScreen() {
           });
         }}
         customMealTypes={customMealTypes}
+      />
+
+      <CreateEditMealModal
+        visible={showSaveAsMeal}
+        onClose={() => {
+          setShowSaveAsMeal(false);
+          setSaveAsMealItems([]);
+          setSaveAsMealName("");
+        }}
+        onSave={async (params) => {
+          await handleSaveMeal(params);
+          setShowSaveAsMeal(false);
+          setSaveAsMealItems([]);
+          setSaveAsMealName("");
+        }}
+        editingMeal={null}
+        isSaving={isSavingMeal}
+        initialItems={saveAsMealItems}
+        initialName={saveAsMealName}
       />
 
       <NutritionShareModal

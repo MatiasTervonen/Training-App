@@ -77,8 +77,8 @@ export default function ExerciseDropdownEdit({
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="px-2 w-full z-50 flex-1">
-        <View className="mt-10 w-full px-14">
+      <View className="w-full z-50 flex-1">
+        <View className="w-full px-6 py-6">
           <AppInput
             value={searchQuery}
             placeholder={t("gym.exerciseDropdown.searchPlaceholder")}
@@ -89,8 +89,7 @@ export default function ExerciseDropdownEdit({
         </View>
 
         <View
-          className="w-full border rounded-md 
-                       bg-slate-900 border-gray-100  mt-10 flex-1"
+          className="w-full flex-1"
         >
           {isError ? (
             <ErrorMessage message={t("gym.exerciseDropdown.loadError")} fullPage />
@@ -123,14 +122,14 @@ export default function ExerciseDropdownEdit({
               keyExtractor={(item) => item.id}
               showsVerticalScrollIndicator={false}
               ListHeaderComponent={
-                <AppText className="text-center text-lg bg-blue-500/20 border-y border-blue-500/40 rounded-t-md">
+                <AppText className="text-center text-lg bg-blue-500/20 border-y border-blue-500/40">
                   {t("gym.exerciseDropdownEdit.myExercises")}
                 </AppText>
               }
               renderItem={({ item }) => {
                 return (
                   <AnimatedButton
-                    className="w-full text-left px-4 py-2 z-40 border-b border-gray-400"
+                    className="w-full text-left px-4 py-2 z-40 border-b border-gray-700"
                     onPress={() => handleSelectExercise(item)}
                   >
                     <View className="justify-between">

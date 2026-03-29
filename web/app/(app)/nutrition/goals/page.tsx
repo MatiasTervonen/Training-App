@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, X } from "lucide-react";
 import CustomInput from "@/ui/CustomInput";
@@ -32,25 +32,25 @@ export default function NutritionGoalsPage() {
   const [visibleNutrients, setVisibleNutrients] = useState<string[]>([]);
   const [customMealTypes, setCustomMealTypes] = useState<string[]>([]);
   const [newMealType, setNewMealType] = useState("");
+  const [calorieRingTarget, setCalorieRingTarget] = useState<"goal" | "tdee">("goal");
 
-  const hasInitialized = useRef(false);
-  useEffect(() => {
-    if (goals && !hasInitialized.current) {
-      hasInitialized.current = true;
-      setCalorieGoal(String(goals.calorie_goal ?? 2000));
-      setProteinGoal(goals.protein_goal ? String(goals.protein_goal) : "");
-      setCarbsGoal(goals.carbs_goal ? String(goals.carbs_goal) : "");
-      setFatGoal(goals.fat_goal ? String(goals.fat_goal) : "");
-      setFiberGoal(goals.fiber_goal ? String(goals.fiber_goal) : "");
-      setSugarGoal(goals.sugar_goal ? String(goals.sugar_goal) : "");
-      setSodiumGoal(goals.sodium_goal ? String(goals.sodium_goal) : "");
-      setSaturatedFatGoal(
-        goals.saturated_fat_goal ? String(goals.saturated_fat_goal) : "",
-      );
-      setVisibleNutrients(goals.visible_nutrients ?? []);
-      setCustomMealTypes(goals.custom_meal_types ?? []);
-    }
-  }, [goals]);
+  const [initialized, setInitialized] = useState(false);
+  if (goals && !initialized) {
+    setInitialized(true);
+    setCalorieGoal(String(goals.calorie_goal ?? 2000));
+    setProteinGoal(goals.protein_goal ? String(goals.protein_goal) : "");
+    setCarbsGoal(goals.carbs_goal ? String(goals.carbs_goal) : "");
+    setFatGoal(goals.fat_goal ? String(goals.fat_goal) : "");
+    setFiberGoal(goals.fiber_goal ? String(goals.fiber_goal) : "");
+    setSugarGoal(goals.sugar_goal ? String(goals.sugar_goal) : "");
+    setSodiumGoal(goals.sodium_goal ? String(goals.sodium_goal) : "");
+    setSaturatedFatGoal(
+      goals.saturated_fat_goal ? String(goals.saturated_fat_goal) : "",
+    );
+    setVisibleNutrients(goals.visible_nutrients ?? []);
+    setCustomMealTypes(goals.custom_meal_types ?? []);
+    setCalorieRingTarget(goals.calorie_ring_target ?? "goal");
+  }
 
   const toggleNutrient = (key: string) => {
     setVisibleNutrients((prev) =>
@@ -82,6 +82,7 @@ export default function NutritionGoalsPage() {
       saturatedFatGoal: saturatedFatGoal ? Number(saturatedFatGoal) : null,
       visibleNutrients,
       customMealTypes,
+      calorieRingTarget,
     });
   };
 
@@ -108,6 +109,33 @@ export default function NutritionGoalsPage() {
             inputMode="numeric"
             placeholder="2000"
           />
+        </div>
+
+        {/* Calorie ring target */}
+        <div className="mb-5">
+          <p className="text-sm mb-2">{t("goals.ringTarget")}</p>
+          <div className="flex bg-slate-800 rounded-lg p-1">
+            <button
+              onClick={() => setCalorieRingTarget("goal")}
+              className={`flex-1 py-2 rounded-md text-sm text-center cursor-pointer transition-colors ${
+                calorieRingTarget === "goal"
+                  ? "bg-slate-700 text-green-400"
+                  : "text-slate-400 hover:text-slate-300"
+              }`}
+            >
+              {t("goals.ringGoal")}
+            </button>
+            <button
+              onClick={() => setCalorieRingTarget("tdee")}
+              className={`flex-1 py-2 rounded-md text-sm text-center cursor-pointer transition-colors ${
+                calorieRingTarget === "tdee"
+                  ? "bg-slate-700 text-green-400"
+                  : "text-slate-400 hover:text-slate-300"
+              }`}
+            >
+              {t("goals.ringTdee")}
+            </button>
+          </div>
         </div>
 
         {/* Protein goal */}

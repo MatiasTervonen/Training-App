@@ -12,6 +12,7 @@ export type NutritionGoals = {
   saturated_fat_goal: number | null;
   visible_nutrients: string[] | null;
   custom_meal_types: string[] | null;
+  calorie_ring_target: "goal" | "tdee";
   updated_at: string;
 };
 

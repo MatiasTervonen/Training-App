@@ -8,7 +8,7 @@ export async function getNutritionGoals(): Promise<NutritionGoals | null> {
   const { data, error } = await supabase
     .from("nutrition_goals")
     .select(
-      "calorie_goal, protein_goal, carbs_goal, fat_goal, fiber_goal, sugar_goal, sodium_goal, saturated_fat_goal, visible_nutrients, custom_meal_types, updated_at"
+      "calorie_goal, protein_goal, carbs_goal, fat_goal, fiber_goal, sugar_goal, sodium_goal, saturated_fat_goal, visible_nutrients, custom_meal_types, calorie_ring_target, updated_at"
     )
     .single();
 

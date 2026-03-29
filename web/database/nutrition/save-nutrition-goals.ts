@@ -12,6 +12,7 @@ export async function saveNutritionGoals({
   saturatedFatGoal,
   visibleNutrients,
   customMealTypes,
+  calorieRingTarget,
 }: {
   calorieGoal: number;
   proteinGoal: number | null;
@@ -23,6 +24,7 @@ export async function saveNutritionGoals({
   saturatedFatGoal: number | null;
   visibleNutrients: string[] | null;
   customMealTypes: string[] | null;
+  calorieRingTarget: "goal" | "tdee";
 }) {
   const supabase = createClient();
 
@@ -38,6 +40,7 @@ export async function saveNutritionGoals({
       saturated_fat_goal: saturatedFatGoal,
       visible_nutrients: visibleNutrients,
       custom_meal_types: customMealTypes,
+      calorie_ring_target: calorieRingTarget,
     },
     { onConflict: "user_id" },
   );

@@ -517,7 +517,6 @@ function FlexibleStatsGrid({
   stats,
   theme,
   statSize,
-  minHeight,
 }: {
   stats: StatItem[];
   theme: ShareCardTheme;

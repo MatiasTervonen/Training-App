@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock } from "lucide-react";
+import { Bookmark, Clock } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import TimePicker from "@/components/TimePicker";
 import FoodLogItem from "@/features/nutrition/components/FoodLogItem";
@@ -12,6 +12,7 @@ type MealSectionProps = {
   onPress?: (item: DailyFoodLog) => void;
   onDelete: (id: string) => void;
   onUpdateMealTime?: (mealTime: string) => void;
+  onSaveAsMeal?: () => void;
 };
 
 function getMealTime(items: DailyFoodLog[]): string | null {
@@ -29,6 +30,7 @@ export default function MealSection({
   onPress,
   onDelete,
   onUpdateMealTime,
+  onSaveAsMeal,
 }: MealSectionProps) {
   const { t } = useTranslation("nutrition");
 
@@ -60,9 +62,20 @@ export default function MealSection({
             </span>
           ) : null}
         </div>
-        <span className="font-body text-sm text-slate-400">
-          {Math.round(totalCalories)} kcal
-        </span>
+        <div className="flex items-center gap-2">
+          {onSaveAsMeal && (
+            <button
+              onClick={onSaveAsMeal}
+              className="p-1 rounded hover:bg-slate-700/50 transition-colors cursor-pointer"
+              title={t("savedMeals.saveAsMeal")}
+            >
+              <Bookmark size={14} className="text-slate-500 hover:text-slate-300" />
+            </button>
+          )}
+          <span className="font-body text-sm text-slate-400">
+            {Math.round(totalCalories)} kcal
+          </span>
+        </div>
       </div>
       <div className="flex gap-3">
         <span className="font-body text-xs text-slate-500">

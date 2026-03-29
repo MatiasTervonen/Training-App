@@ -1,8 +1,12 @@
 import AppText from "@/components/AppText";
 import { View, Pressable, Modal, ScrollView, Dimensions } from "react-native";
-import { useState } from "react";
+import { useState, forwardRef, useImperativeHandle } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import AnimatedButton from "@/components/buttons/animatedButton";
+
+export type SelectInputHandle = {
+  open: () => void;
+};
 
 type SelectInputProps = {
   label?: string;
@@ -15,18 +19,28 @@ type SelectInputProps = {
   selectedDisplay?: string;
 };
 
-export default function SelectInput({
-  label,
-  options,
-  value,
-  onChange,
-  disabled,
-  topLabel,
-  placeholder,
-  selectedDisplay,
-}: SelectInputProps) {
+const SelectInput = forwardRef<SelectInputHandle, SelectInputProps>(
+  function SelectInput(
+    {
+      label,
+      options,
+      value,
+      onChange,
+      disabled,
+      topLabel,
+      placeholder,
+      selectedDisplay,
+    },
+    ref,
+  ) {
   const [isOpen, setIsOpen] = useState(false);
   const selectedlabel = options.find((option) => option.value === value)?.label;
+
+  useImperativeHandle(ref, () => ({
+    open: () => {
+      if (!disabled) setIsOpen(true);
+    },
+  }));
 
   const handlePress = () => {
     if (disabled) return; // prevent accidental opens
@@ -110,4 +124,7 @@ export default function SelectInput({
       </Modal>
     </View>
   );
-}
+  },
+);
+
+export default SelectInput;

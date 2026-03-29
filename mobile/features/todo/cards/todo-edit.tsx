@@ -17,6 +17,8 @@ import TodoTaskCard from "@/features/todo/components/TodoTaskCard";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 import AutoSaveIndicator from "@/components/AutoSaveIndicator";
 import { useAutoSave } from "@/hooks/useAutoSave";
+import DraggableList from "@/components/DraggableList";
+import * as Haptics from "expo-haptics";
 
 const applyTaskMedia = (
   tasks: full_todo_session_optional_id["todo_tasks"],
@@ -81,6 +83,7 @@ export default function EditTodo({
     : todo_session;
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [scrollEnabled, setScrollEnabled] = useState(true);
   const mediaAppliedRef = useRef(!!taskMedia);
 
   const [sessionData, setSessionData] = useState(initData);
@@ -171,6 +174,13 @@ export default function EditTodo({
       setExpandedIndex(expandedIndex - 1);
   };
 
+  const handleReorder = (
+    reordered: typeof sessionData.todo_tasks,
+  ) => {
+    setSessionData((prev) => ({ ...prev, todo_tasks: reordered }));
+    setExpandedIndex(null);
+  };
+
   const autoSaveData = useMemo(
     () => ({
       title: sessionData.title,
@@ -255,7 +265,7 @@ export default function EditTodo({
           ? task
           : {
               ...task,
-              id: newTaskIds[task.tempId] ?? task.tempId,
+              id: newTaskIds[task.tempId!] ?? task.tempId,
               draftRecordings: [],
               draftImages: [],
               draftVideos: [],
@@ -328,8 +338,10 @@ export default function EditTodo({
       <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1 }}
+        bottomOffset={50}
         onScroll={handleScroll}
         scrollEventThrottle={16}
+        scrollEnabled={scrollEnabled}
       >
         <Pressable onPress={Keyboard.dismiss} className="flex-1">
           <PageContainer className="justify-between items-center gap-5 max-w-lg">
@@ -347,152 +359,167 @@ export default function EditTodo({
               </View>
 
               <View className="w-full">
-                {sessionData.todo_tasks.map((task, index) => (
-                  <TodoTaskCard
-                    key={task.id ?? task.tempId}
-                    index={index}
-                    task={task.task}
-                    notes={task.notes ?? ""}
-                    isExpanded={expandedIndex === index}
-                    onToggleExpand={() =>
-                      setExpandedIndex(expandedIndex === index ? null : index)
-                    }
-                    onTaskChange={(value) =>
-                      updateTask(index, () => ({ task: value }))
-                    }
-                    onNotesChange={(value) =>
-                      updateTask(index, () => ({ notes: value }))
-                    }
-                    onDelete={() => handleDeleteItem(index)}
-                    draftImages={task.draftImages}
-                    draftVideos={task.draftVideos}
-                    draftRecordings={task.draftRecordings}
-                    existingImages={task.existingImages}
-                    existingVideos={task.existingVideos}
-                    existingVoice={task.existingVoice}
-                    onAddImage={(image) =>
-                      updateTask(index, (t) => ({
-                        draftImages: image.isLoading
-                          ? [...(t.draftImages ?? []), image]
-                          : !image.uri
-                            ? (t.draftImages ?? []).filter(
-                                (img) => img.id !== image.id,
-                              )
-                            : (t.draftImages ?? []).map((img) =>
-                                img.id === image.id ? image : img,
-                              ),
-                      }))
-                    }
-                    onAddVideo={(video) =>
-                      updateTask(index, (t) => ({
-                        draftVideos: (t.draftVideos ?? []).some(
-                          (v) => v.id === video.id,
-                        )
-                          ? !video.uri
-                            ? (t.draftVideos ?? []).filter(
-                                (v) => v.id !== video.id,
-                              )
-                            : (t.draftVideos ?? []).map((v) =>
-                                v.id === video.id ? video : v,
-                              )
-                          : video.isCompressing
-                            ? [...(t.draftVideos ?? []), video]
-                            : (t.draftVideos ?? []),
-                      }))
-                    }
-                    onAddRecording={(uri, durationMs) =>
-                      updateTask(index, (t) => ({
-                        draftRecordings: [
-                          ...(t.draftRecordings ?? []),
-                          {
-                            id: nanoid(),
-                            uri,
-                            createdAt: Date.now(),
-                            durationMs,
-                          },
-                        ],
-                      }))
-                    }
-                    onDeleteDraftImage={(id) =>
-                      updateTask(index, (t) => ({
-                        draftImages: t.draftImages?.filter(
-                          (img) => img.id !== id,
-                        ),
-                      }))
-                    }
-                    onDeleteDraftVideo={(id) =>
-                      updateTask(index, (t) => ({
-                        draftVideos: t.draftVideos?.filter((v) => v.id !== id),
-                      }))
-                    }
-                    onDeleteDraftRecording={(id) =>
-                      updateTask(index, (t) => ({
-                        draftRecordings: t.draftRecordings?.filter(
-                          (r) => r.id !== id,
-                        ),
-                      }))
-                    }
-                    onDeleteExistingImage={(id) => {
-                      const task = sessionData.todo_tasks[index];
-                      const image = task.existingImages?.find(
-                        (img) => img.id === id,
-                      );
-                      if (image) {
-                        setDeletedImagePaths((prev) => [
-                          ...prev,
-                          image.storage_path,
-                        ]);
-                      }
-                      setDeletedImageIds((prev) => [...prev, id]);
-                      updateTask(index, (t) => ({
-                        existingImages: t.existingImages?.filter(
-                          (img) => img.id !== id,
-                        ),
-                      }));
-                    }}
-                    onDeleteExistingVideo={(id) => {
-                      const task = sessionData.todo_tasks[index];
-                      const video = task.existingVideos?.find(
-                        (v) => v.id === id,
-                      );
-                      if (video) {
-                        const paths = [video.storage_path];
-                        if (video.thumbnail_storage_path)
-                          paths.push(video.thumbnail_storage_path);
-                        setDeletedVideoPaths((prev) => [...prev, ...paths]);
-                      }
-                      setDeletedVideoIds((prev) => [...prev, id]);
-                      updateTask(index, (t) => ({
-                        existingVideos: t.existingVideos?.filter(
-                          (v) => v.id !== id,
-                        ),
-                      }));
-                    }}
-                    onDeleteExistingVoice={(id) => {
-                      const task = sessionData.todo_tasks[index];
-                      const voice = task.existingVoice?.find(
-                        (v) => v.id === id,
-                      );
-                      if (voice) {
-                        setDeletedVoicePaths((prev) => [
-                          ...prev,
-                          voice.storage_path,
-                        ]);
-                      }
-                      setDeletedVoiceIds((prev) => [...prev, id]);
-                      updateTask(index, (t) => ({
-                        existingVoice: t.existingVoice?.filter(
-                          (v) => v.id !== id,
-                        ),
-                      }));
-                    }}
-                    onImagePress={(imgIdx) => {
-                      setViewerTaskIndex(index);
-                      setViewerIndex(imgIdx);
-                    }}
-                    cardClassName="bg-white/5 border border-white/10"
-                  />
-                ))}
+                <DraggableList
+                  items={sessionData.todo_tasks}
+                  onReorder={handleReorder}
+                  keyExtractor={(task) => task.id ?? task.tempId ?? ""}
+                  onDragStart={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    setScrollEnabled(false);
+                  }}
+                  onDragEnd={() => setScrollEnabled(true)}
+                  renderItem={(task, index) => {
+                    return (
+                      <TodoTaskCard
+                        index={index}
+                        task={task.task}
+                        notes={task.notes ?? ""}
+                        isExpanded={expandedIndex === index}
+                        onToggleExpand={() =>
+                          setExpandedIndex(
+                            expandedIndex === index ? null : index,
+                          )
+                        }
+                        onTaskChange={(value) =>
+                          updateTask(index, () => ({ task: value }))
+                        }
+                        onNotesChange={(value) =>
+                          updateTask(index, () => ({ notes: value }))
+                        }
+                        onDelete={() => handleDeleteItem(index)}
+                        draftImages={task.draftImages}
+                        draftVideos={task.draftVideos}
+                        draftRecordings={task.draftRecordings}
+                        existingImages={task.existingImages}
+                        existingVideos={task.existingVideos}
+                        existingVoice={task.existingVoice}
+                        onAddImage={(image) =>
+                          updateTask(index, (t) => ({
+                            draftImages: image.isLoading
+                              ? [...(t.draftImages ?? []), image]
+                              : !image.uri
+                                ? (t.draftImages ?? []).filter(
+                                    (img) => img.id !== image.id,
+                                  )
+                                : (t.draftImages ?? []).map((img) =>
+                                    img.id === image.id ? image : img,
+                                  ),
+                          }))
+                        }
+                        onAddVideo={(video) =>
+                          updateTask(index, (t) => ({
+                            draftVideos: (t.draftVideos ?? []).some(
+                              (v) => v.id === video.id,
+                            )
+                              ? !video.uri
+                                ? (t.draftVideos ?? []).filter(
+                                    (v) => v.id !== video.id,
+                                  )
+                                : (t.draftVideos ?? []).map((v) =>
+                                    v.id === video.id ? video : v,
+                                  )
+                              : video.isCompressing
+                                ? [...(t.draftVideos ?? []), video]
+                                : (t.draftVideos ?? []),
+                          }))
+                        }
+                        onAddRecording={(uri, durationMs) =>
+                          updateTask(index, (t) => ({
+                            draftRecordings: [
+                              ...(t.draftRecordings ?? []),
+                              {
+                                id: nanoid(),
+                                uri,
+                                createdAt: Date.now(),
+                                durationMs,
+                              },
+                            ],
+                          }))
+                        }
+                        onDeleteDraftImage={(id) =>
+                          updateTask(index, (t) => ({
+                            draftImages: t.draftImages?.filter(
+                              (img) => img.id !== id,
+                            ),
+                          }))
+                        }
+                        onDeleteDraftVideo={(id) =>
+                          updateTask(index, (t) => ({
+                            draftVideos: t.draftVideos?.filter(
+                              (v) => v.id !== id,
+                            ),
+                          }))
+                        }
+                        onDeleteDraftRecording={(id) =>
+                          updateTask(index, (t) => ({
+                            draftRecordings: t.draftRecordings?.filter(
+                              (r) => r.id !== id,
+                            ),
+                          }))
+                        }
+                        onDeleteExistingImage={(id) => {
+                          const image = task.existingImages?.find(
+                            (img) => img.id === id,
+                          );
+                          if (image) {
+                            setDeletedImagePaths((prev) => [
+                              ...prev,
+                              image.storage_path,
+                            ]);
+                          }
+                          setDeletedImageIds((prev) => [...prev, id]);
+                          updateTask(index, (t) => ({
+                            existingImages: t.existingImages?.filter(
+                              (img) => img.id !== id,
+                            ),
+                          }));
+                        }}
+                        onDeleteExistingVideo={(id) => {
+                          const video = task.existingVideos?.find(
+                            (v) => v.id === id,
+                          );
+                          if (video) {
+                            const paths = [video.storage_path];
+                            if (video.thumbnail_storage_path)
+                              paths.push(video.thumbnail_storage_path);
+                            setDeletedVideoPaths((prev) => [
+                              ...prev,
+                              ...paths,
+                            ]);
+                          }
+                          setDeletedVideoIds((prev) => [...prev, id]);
+                          updateTask(index, (t) => ({
+                            existingVideos: t.existingVideos?.filter(
+                              (v) => v.id !== id,
+                            ),
+                          }));
+                        }}
+                        onDeleteExistingVoice={(id) => {
+                          const voice = task.existingVoice?.find(
+                            (v) => v.id === id,
+                          );
+                          if (voice) {
+                            setDeletedVoicePaths((prev) => [
+                              ...prev,
+                              voice.storage_path,
+                            ]);
+                          }
+                          setDeletedVoiceIds((prev) => [...prev, id]);
+                          updateTask(index, (t) => ({
+                            existingVoice: t.existingVoice?.filter(
+                              (v) => v.id !== id,
+                            ),
+                          }));
+                        }}
+                        onImagePress={(imgIdx) => {
+                          setViewerTaskIndex(index);
+                          setViewerIndex(imgIdx);
+                        }}
+                        cardClassName="bg-white/5 border border-white/10"
+                      />
+                    );
+                  }}
+                />
               </View>
             </View>
 

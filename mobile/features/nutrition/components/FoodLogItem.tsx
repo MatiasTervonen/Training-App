@@ -35,7 +35,7 @@ export default memo(function FoodLogItem({
 
   return (
     <AnimatedButton
-      onPress={onPress}
+      onPress={onPress ?? (() => {})}
       className={`flex-row items-center px-3 py-3 ${showBorder ? "border-b border-slate-700/50" : ""}`}
     >
       <View className="flex-1 mr-3">

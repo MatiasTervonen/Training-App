@@ -7,7 +7,7 @@ import FoodLogItem from "@/features/nutrition/components/FoodLogItem";
 import { DailyFoodLog } from "@/database/nutrition/get-daily-logs";
 import DatePicker from "react-native-date-picker";
 import { useTranslation } from "react-i18next";
-import { Clock } from "lucide-react-native";
+import { Bookmark, Clock } from "lucide-react-native";
 
 type MealSectionProps = {
   title: string;
@@ -15,6 +15,7 @@ type MealSectionProps = {
   onPress?: (item: DailyFoodLog) => void;
   onDelete: (id: string) => void;
   onUpdateMealTime?: (mealTime: string) => void;
+  onSaveAsMeal?: () => void;
 };
 
 function getMealTime(items: DailyFoodLog[]): string | null {
@@ -42,6 +43,7 @@ export default function MealSection({
   onPress,
   onDelete,
   onUpdateMealTime,
+  onSaveAsMeal,
 }: MealSectionProps) {
   const { t, i18n } = useTranslation(["nutrition", "common"]);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -77,9 +79,16 @@ export default function MealSection({
             </AnimatedButton>
           ) : null}
         </View>
-        <BodyTextNC className="text-sm text-slate-400">
-          {Math.round(totalCalories)} kcal
-        </BodyTextNC>
+        <View className="flex-row items-center gap-2">
+          {onSaveAsMeal && (
+            <AnimatedButton onPress={onSaveAsMeal} hitSlop={8}>
+              <Bookmark size={14} color="#64748b" />
+            </AnimatedButton>
+          )}
+          <BodyTextNC className="text-sm text-slate-400">
+            {Math.round(totalCalories)} kcal
+          </BodyTextNC>
+        </View>
       </View>
       <View className="flex-row gap-3">
         <BodyTextNC className="text-xs text-slate-500">

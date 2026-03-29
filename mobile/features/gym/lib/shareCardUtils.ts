@@ -54,5 +54,7 @@ export function getTopExercises(
         reps: bestSet.reps ?? 0,
       };
     })
+    .filter((ex) => ex.weight > 0)
+    .sort((a, b) => b.weight * b.reps - a.weight * a.reps)
     .slice(0, limit);
 }

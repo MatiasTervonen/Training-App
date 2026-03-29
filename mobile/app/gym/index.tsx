@@ -131,7 +131,7 @@ export default function SessionsScreen() {
       <LinkButton label={t("gym.createTemplate")} href="/gym/create-template" gradientColors={colors.gradient} borderColor={colors.border} />
       <LinkButton label={t("gym.templates")} href="/gym/templates" gradientColors={colors.gradient} borderColor={colors.border} />
 
-      <LinkButton label={t("gym.plans.title")} href="/gym/plans" gradientColors={colors.gradient} borderColor={colors.border}>
+      <LinkButton label={t("gym.plans.title")} href={"/gym/plans" as any} gradientColors={colors.gradient} borderColor={colors.border}>
         <ClipboardList color={colors.icon} className="ml-2" />
       </LinkButton>
 

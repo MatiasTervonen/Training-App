@@ -62,7 +62,7 @@ export default function ExerciseCard({
       }
     }
     return indices;
-  }, [exercise.sets.length, bestE1rm]);
+  }, [exercise.sets, bestE1rm]);
 
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";

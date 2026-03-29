@@ -72,7 +72,7 @@ export default function PlansListPage() {
   };
 
   const handleContinueDraft = (draftId: string) => {
-    router.push({ pathname: "/gym/plans/create", params: { draftId } });
+    router.push({ pathname: "/gym/plans/create" as any, params: { draftId } });
   };
 
   const handleDeleteDraft = async (draftId: string) => {
@@ -87,7 +87,7 @@ export default function PlansListPage() {
   };
 
   const handleCreateNew = () => {
-    router.push("/gym/plans/create");
+    router.push("/gym/plans/create" as any);
   };
 
   const hasDrafts = drafts.length > 0;
@@ -172,8 +172,8 @@ export default function PlansListPage() {
                     key={plan.id}
                     item={plan}
                     onDelete={() => handleDeletePlan(plan.id)}
-                    onEdit={() => router.push(`/gym/plans/${plan.id}/edit`)}
-                    onPress={() => router.push(`/gym/plans/${plan.id}`)}
+                    onEdit={() => router.push(`/gym/plans/${plan.id}/edit` as any)}
+                    onPress={() => router.push(`/gym/plans/${plan.id}` as any)}
                   />
                 ))}
               </View>

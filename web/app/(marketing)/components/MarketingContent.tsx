@@ -397,13 +397,23 @@ export default function MarketingContent() {
 
         {/* Activities */}
         <AnimatedSection className="py-16 sm:py-24 px-5 bg-linear-to-br from-slate-950 via-slate-950 to-green-950/30">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl mb-4">
-              {t("activities.heading")}
-            </h2>
-            <p className="font-body text-gray-400 max-w-2xl mx-auto text-lg">
-              {t("activities.description")}
-            </p>
+          <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10 mb-4">
+            <div className="text-center lg:text-left lg:max-w-lg">
+              <h2 className="text-3xl sm:text-4xl mb-4">
+                {t("activities.heading")}
+              </h2>
+              <p className="font-body text-gray-400 text-lg">
+                {t("activities.description")}
+              </p>
+            </div>
+            <div className="shrink-0">
+              <Image
+                src="/marketing/Screenshot_20260327_212010_Kurvi-left.png"
+                alt="Live activity session with map and stats"
+                width={300}
+                height={650}
+              />
+            </div>
           </div>
           <FeatureGrid features={activityFeatures} />
         </AnimatedSection>
@@ -504,6 +514,50 @@ export default function MarketingContent() {
             {t("cta.description")}
           </p>
           {/* Login button hidden — web app not fully ready yet */}
+        </AnimatedSection>
+
+        {/* Follow Us */}
+        <AnimatedSection className="py-16 sm:py-20 px-5 text-center border-t border-slate-800/50">
+          <h2 className="text-2xl sm:text-3xl mb-3">
+            {t("followUs.heading")}
+          </h2>
+          <p className="font-body text-gray-400 text-lg mb-8">
+            {t("followUs.description")}
+          </p>
+          <div className="flex items-center justify-center gap-6">
+            <a
+              href="https://www.instagram.com/kurvi.io/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-pink-400 transition-colors"
+              aria-label="Instagram"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width={32}
+                height={32}
+                fill="currentColor"
+              >
+                <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm5.25-2.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z" />
+              </svg>
+            </a>
+            <a
+              href="https://x.com/kurviapp"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-white transition-colors"
+              aria-label="X"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width={28}
+                height={28}
+                fill="currentColor"
+              >
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z" />
+              </svg>
+            </a>
+          </div>
         </AnimatedSection>
       </div>
 

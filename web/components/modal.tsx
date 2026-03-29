@@ -58,12 +58,14 @@ export default function Modal({
   }, []);
 
   // Reset state when modal opens
-  useEffect(() => {
+  const [prevIsOpen, setPrevIsOpen] = useState(false);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
     if (isOpen) {
       translateY.set(0);
       setShowConfirm(false);
     }
-  }, [isOpen, translateY]);
+  }
 
   // Touch-based swipe-down dismiss (like mobile FullScreenModal)
   useEffect(() => {

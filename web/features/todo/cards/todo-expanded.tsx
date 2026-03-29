@@ -4,7 +4,7 @@ import { formatDate } from "@/lib/formatDate";
 import { full_todo_session } from "@/types/models";
 import { SquareArrowOutUpRight, Check } from "lucide-react";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import Modal from "@/components/modal";
+import Modal, { ModalSwipeBlocker } from "@/components/modal";
 import { checkedTodo } from "@/database/todo/check-todo";
 import ExerciseTypeSelect from "@/features/gym/components/ExerciseTypeSelect";
 import { FeedItemUI } from "@/types/session";
@@ -14,6 +14,9 @@ import AutoSaveIndicator from "@/components/AutoSaveIndicator";
 import { useQuery } from "@tanstack/react-query";
 import { getTodoMedia } from "@/database/media/get-todo-media";
 import SessionMediaGallery from "@/components/media/SessionMediaGallery";
+import { TodoTaskMedia } from "@/types/media";
+import { DragDropProvider, DragOverlay } from "@dnd-kit/react";
+import { useSortable, isSortable, isSortableOperation } from "@dnd-kit/react/sortable";
 
 type TodoSessionProps = {
   initialTodo: full_todo_session;
@@ -44,14 +47,17 @@ export default function TodoSession({
     "original",
   );
   const [originalOrder, setOriginalOrder] = useState(initialTodo.todo_tasks);
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const lastSavedRef = useRef(initialTodo.todo_tasks);
 
   const sessionDataRef = useRef(sessionData);
-  sessionDataRef.current = sessionData;
+  useEffect(() => {
+    sessionDataRef.current = sessionData;
+  }, [sessionData]);
 
   const onSaveRef = useRef(onSave);
-  onSaveRef.current = onSave;
+  useEffect(() => {
+    onSaveRef.current = onSave;
+  }, [onSave]);
 
   // Sync with initialTodo when it changes (after refetch)
   useEffect(() => {
@@ -152,27 +158,26 @@ export default function TodoSession({
     }
   };
 
-  const handleDragStart = (index: number) => {
-    setDraggedIndex(index);
-  };
+  const handleDragEnd = useCallback(
+    (event: { canceled: boolean; operation: Parameters<typeof isSortableOperation>[0] }) => {
+      if (event.canceled) return;
+      if (!isSortableOperation(event.operation)) return;
 
-  const handleDragOver = (e: React.DragEvent, index: number) => {
-    e.preventDefault();
-    if (draggedIndex === null || draggedIndex === index) return;
+      const { source } = event.operation;
+      if (!source) return;
+      const fromIndex = source.initialIndex;
+      const toIndex = source.index;
+      if (fromIndex === toIndex) return;
 
-    setSessionData((prev) => {
-      const updatedTasks = [...prev.todo_tasks];
-      const draggedTask = updatedTasks[draggedIndex];
-      updatedTasks.splice(draggedIndex, 1);
-      updatedTasks.splice(index, 0, draggedTask);
-      return { ...prev, todo_tasks: updatedTasks };
-    });
-    setDraggedIndex(index);
-  };
-
-  const handleDragEnd = () => {
-    setDraggedIndex(null);
-  };
+      setSessionData((prev) => {
+        const updatedTasks = [...prev.todo_tasks];
+        const [moved] = updatedTasks.splice(fromIndex, 1);
+        updatedTasks.splice(toIndex, 0, moved);
+        return { ...prev, todo_tasks: updatedTasks };
+      });
+    },
+    [],
+  );
 
   return (
     <>
@@ -211,79 +216,126 @@ export default function TodoSession({
               {sessionData.title}
             </div>
 
-            <ul className="flex flex-col gap-3">
-              {sessionData.todo_tasks.map((task, index) => {
-                return (
-                  <div
+            <ModalSwipeBlocker>
+            <DragDropProvider onDragEnd={handleDragEnd}>
+              <ul className="flex flex-col gap-3">
+                {sessionData.todo_tasks.map((task, index) => (
+                  <SortableTaskItem
                     key={task.id}
-                    className="flex gap-4 items-center relative"
-                  >
-                    <input
-                      onChange={() => {
-                        toggleCompleted(index);
-                      }}
-                      checked={task.is_completed}
-                      type="checkbox"
-                      className="h-6 w-6 shrink-0 rounded-md border border-slate-600 cursor-pointer transition-colors appearance-none bg-slate-800 checked:bg-blue-500 grid place-content-center before:content-['✓'] before:scale-0 checked:before:scale-100 before:transition-transform"
-                    />
-                    <li
-                      className="w-full items-center border border-slate-700 p-2 rounded-md flex justify-between gap-2 bg-slate-900 min-w-0 cursor-move"
-                      draggable
-                      onDragStart={() => handleDragStart(index)}
-                      onDragOver={(e) => handleDragOver(e, index)}
-                      onDragEnd={handleDragEnd}
-                    >
-                      <p className="text-left line-clamp-1 truncate mr-8 font-body">
-                        {task.task}
-                      </p>
-                    </li>
-                    <button
-                      onClick={() => setOpen(index)}
-                      className="p-1 absolute right-2 cursor-pointer"
-                    >
-                      <SquareArrowOutUpRight size={18} className="text-slate-500" />
-                    </button>
+                    task={task}
+                    index={index}
+                    isOpen={open === index}
+                    onOpenModal={() => setOpen(index)}
+                    onCloseModal={() => setOpen(null)}
+                    onToggleCompleted={() => toggleCompleted(index)}
+                    todoMedia={todoMedia}
+                    t={t}
+                  />
+                ))}
+              </ul>
+              <DragOverlay>
+                {(source) => {
+                  if (!isSortable(source)) return null;
+                  const task = sessionData.todo_tasks.find((t) => t.id === source.id);
+                  if (!task) return null;
+                  return (
+                    <div className="flex gap-4 items-center">
+                      <div className="h-6 w-6 shrink-0" />
+                      <li className="w-full items-center border border-blue-500 p-2 rounded-md flex gap-2 bg-slate-800 min-w-0 shadow-lg shadow-blue-500/20 scale-[1.02] list-none">
 
-                    {open === index && (
-                      <Modal
-                        onClose={() => {
-                          setOpen(null);
-                        }}
-                        isOpen={true}
-                      >
-                        <div className="text-center max-w-lg mx-auto page-padding">
-                          <div className="bg-white/5 border border-white/10 px-5 pt-5 pb-10 rounded-md shadow-md mt-5">
-                            <h3 className="text-xl text-center mb-10 border-b border-gray-700 pb-2 wrap-break-word">
-                              {task.task}
-                            </h3>
-                            <p className="whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full text-left font-body">
-                              {task.notes || t("todo.noNotesAvailable")}
-                            </p>
-                            {todoMedia?.[task.id] && (
-                              <SessionMediaGallery
-                                images={todoMedia[task.id].images}
-                                videos={todoMedia[task.id].videos}
-                                voiceRecordings={todoMedia[task.id].voiceRecordings}
-                              />
-                            )}
-                          </div>
-                        </div>
-                      </Modal>
-                    )}
-                    {task.is_completed && (
-                      <Check
-                        size={50}
-                        color="#15803d"
-                        className="absolute left-1/2 -translate-x-1/2 bg-gray-400/20 w-[110%] pointer-events-none rounded-md"
-                      />
-                    )}
-                  </div>
-                );
-              })}
-            </ul>
+                        <p className="text-left line-clamp-1 truncate mr-8 font-body">
+                          {task.task}
+                        </p>
+                      </li>
+                    </div>
+                  );
+                }}
+              </DragOverlay>
+            </DragDropProvider>
+            </ModalSwipeBlocker>
           </div>
         </div>
       </div>
     </>
+  );
+}
+
+function SortableTaskItem({
+  task,
+  index,
+  isOpen,
+  onOpenModal,
+  onCloseModal,
+  onToggleCompleted,
+  todoMedia,
+  t,
+}: {
+  task: full_todo_session["todo_tasks"][number];
+  index: number;
+  isOpen: boolean;
+  onOpenModal: () => void;
+  onCloseModal: () => void;
+  onToggleCompleted: () => void;
+  todoMedia: TodoTaskMedia | undefined;
+  t: (key: string) => string;
+}) {
+  const { ref, isDragSource } = useSortable({
+    id: task.id,
+    index,
+  });
+
+  return (
+    <div
+      ref={ref}
+      className={`flex gap-4 items-center relative transition-opacity duration-200 ${isDragSource ? "opacity-40" : ""}`}
+    >
+      <input
+        onChange={onToggleCompleted}
+        checked={task.is_completed}
+        type="checkbox"
+        className="h-6 w-6 shrink-0 rounded-md border border-slate-600 cursor-pointer transition-colors appearance-none bg-slate-800 checked:bg-blue-500 grid place-content-center before:content-['✓'] before:scale-0 checked:before:scale-100 before:transition-transform"
+      />
+      <li className="w-full items-center border border-slate-700 p-2 rounded-md flex gap-2 bg-slate-900 min-w-0 cursor-grab active:cursor-grabbing list-none">
+
+        <p className="text-left line-clamp-1 truncate mr-8 font-body">
+          {task.task}
+        </p>
+      </li>
+      <button
+        onClick={onOpenModal}
+        className="p-1 absolute right-2 cursor-pointer"
+      >
+        <SquareArrowOutUpRight size={18} className="text-slate-500" />
+      </button>
+
+      {isOpen && (
+        <Modal onClose={onCloseModal} isOpen={true}>
+          <div className="text-center max-w-lg mx-auto page-padding">
+            <div className="bg-white/5 border border-white/10 px-5 pt-5 pb-10 rounded-md shadow-md mt-5">
+              <h3 className="text-xl text-center mb-10 border-b border-gray-700 pb-2 wrap-break-word">
+                {task.task}
+              </h3>
+              <p className="whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full text-left font-body">
+                {task.notes || t("todo.noNotesAvailable")}
+              </p>
+              {todoMedia?.[task.id] && (
+                <SessionMediaGallery
+                  images={todoMedia[task.id].images}
+                  videos={todoMedia[task.id].videos}
+                  voiceRecordings={todoMedia[task.id].voiceRecordings}
+                />
+              )}
+            </div>
+          </div>
+        </Modal>
+      )}
+      {task.is_completed && (
+        <Check
+          size={50}
+          color="#15803d"
+          className="absolute left-1/2 -translate-x-1/2 bg-gray-400/20 w-[110%] pointer-events-none rounded-md"
+        />
+      )}
+    </div>
   );
 }

@@ -4,7 +4,7 @@ import Svg, { Line } from "react-native-svg";
 import AppText from "@/components/AppText";
 import BodyTextNC from "@/components/BodyTextNC";
 import * as echarts from "echarts/core";
-import { BarChart } from "echarts/charts";
+import { BarChart, LineChart } from "echarts/charts";
 import { GridComponent, MarkLineComponent } from "echarts/components";
 import { SkiaRenderer, SkiaChart } from "@wuba/react-native-echarts";
 import { useTranslation } from "react-i18next";
@@ -50,7 +50,7 @@ function generateDateRange(start: string, end: string): string[] {
   return dates;
 }
 
-echarts.use([SkiaRenderer, BarChart, GridComponent, MarkLineComponent]);
+echarts.use([SkiaRenderer, BarChart, LineChart, GridComponent, MarkLineComponent]);
 
 export default function CalorieTrendChart({
   range,
@@ -70,6 +70,12 @@ export default function CalorieTrendChart({
     return map;
   }, [dailyTotals]);
 
+  const tdeeMap = useMemo(() => {
+    const map = new Map<string, number>();
+    dailyTotals.forEach((d) => map.set(d.date, d.tdee));
+    return map;
+  }, [dailyTotals]);
+
   const fullRange = useMemo(
     () => generateDateRange(startDate, endDate),
     [startDate, endDate],
@@ -80,12 +86,33 @@ export default function CalorieTrendChart({
       label: formatDateLabel(date, range, i18n.language),
       value: dataMap.get(date) ?? 0,
       hasData: dataMap.has(date),
+      tdee: tdeeMap.get(date) ?? null,
     }));
-  }, [fullRange, dataMap, range, i18n.language]);
+  }, [fullRange, dataMap, tdeeMap, range, i18n.language]);
+
+  const balanceStats = useMemo(() => {
+    const daysWithTdee = chartData.filter((d) => d.hasData && d.tdee !== null);
+    if (daysWithTdee.length === 0) return null;
+    let overDays = 0;
+    let underDays = 0;
+    let totalBalance = 0;
+    for (const d of daysWithTdee) {
+      const balance = d.value - d.tdee!;
+      totalBalance += balance;
+      if (balance > 0) overDays++;
+      else underDays++;
+    }
+    return {
+      overDays,
+      underDays,
+      avgBalance: Math.round(totalBalance / daysWithTdee.length),
+    };
+  }, [chartData]);
 
   const maxCal = useMemo(() => {
     const vals = chartData.map((d) => d.value);
-    return Math.max(...vals, calorieGoal, 500);
+    const tdeeVals = chartData.map((d) => d.tdee ?? 0);
+    return Math.max(...vals, ...tdeeVals, calorieGoal, 500);
   }, [chartData, calorieGoal]);
 
   const option = useMemo(
@@ -97,7 +124,7 @@ export default function CalorieTrendChart({
         axisLabel: {
           color: "#f3f4f6",
           fontSize: 10,
-          interval: range === "month" ? 4 : range === "3months" ? 6 : 0,
+          interval: range === "month" ? 4 : range === "3months" ? 13 : 0,
         },
         axisTick: { show: false },
         axisLine: { show: false },
@@ -144,6 +171,15 @@ export default function CalorieTrendChart({
             data: [{ yAxis: calorieGoal }],
           },
         },
+        {
+          type: "line" as const,
+          data: chartData.map((d) => (d.tdee !== null ? d.tdee : null)),
+          connectNulls: false,
+          symbol: "circle",
+          symbolSize: 5,
+          lineStyle: { color: "#38bdf8", width: 2 },
+          itemStyle: { color: "#38bdf8" },
+        },
       ],
       grid: { top: 20, right: 10, bottom: 30, left: 40 },
     }),
@@ -187,14 +223,40 @@ export default function CalorieTrendChart({
       >
         <SkiaChart ref={skiaRef} />
       </View>
-      <View className="flex-row items-center justify-center gap-2 mt-2">
-        <Svg width={24} height={2}>
-          <Line x1={0} y1={1} x2={24} y2={1} stroke="#ff00ff" strokeWidth={2} strokeDasharray="4 3" />
-        </Svg>
-        <BodyTextNC className="text-xs text-fuchsia-400">
-          {t("analytics.charts.goal")} ({calorieGoal} kcal)
-        </BodyTextNC>
+      <View className="flex-row items-center justify-center gap-4 mt-2">
+        <View className="flex-row items-center gap-1.5">
+          <Svg width={24} height={2}>
+            <Line x1={0} y1={1} x2={24} y2={1} stroke="#ff00ff" strokeWidth={2} strokeDasharray="4 3" />
+          </Svg>
+          <BodyTextNC className="text-xs text-fuchsia-400">
+            {t("analytics.charts.goal")} ({calorieGoal} kcal)
+          </BodyTextNC>
+        </View>
+        <View className="flex-row items-center gap-1.5">
+          <Svg width={24} height={10}>
+            <Line x1={0} y1={5} x2={24} y2={5} stroke="#38bdf8" strokeWidth={2} />
+          </Svg>
+          <BodyTextNC className="text-xs text-sky-400">
+            {t("analytics.charts.tdee")}
+          </BodyTextNC>
+        </View>
       </View>
+      {balanceStats && (
+        <View className="flex-row items-center justify-center gap-4 mt-2">
+          <BodyTextNC className="text-xs text-gray-400">
+            {t("analytics.charts.overDays", { count: balanceStats.overDays })}
+            {" / "}
+            {t("analytics.charts.underDays", { count: balanceStats.underDays })}
+          </BodyTextNC>
+          <BodyTextNC
+            className={`text-xs ${balanceStats.avgBalance > 0 ? "text-amber-400" : "text-green-400"}`}
+          >
+            {t("analytics.charts.avgBalance", {
+              value: `${balanceStats.avgBalance > 0 ? "+" : ""}${balanceStats.avgBalance}`,
+            })}
+          </BodyTextNC>
+        </View>
+      )}
     </View>
   );
 }

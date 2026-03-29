@@ -2,14 +2,16 @@
 
 import { useMemo } from "react";
 import {
-  BarChart,
+  ComposedChart,
   Bar,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
   ReferenceLine,
+  Cell,
 } from "recharts";
 import { useTranslation } from "react-i18next";
 import type { DailyTotal } from "@/database/nutrition/get-analytics";
@@ -65,8 +67,8 @@ export default function CalorieTrendChart({
   const calorieGoal = dailyTotals[0]?.calorie_goal ?? 2000;
 
   const dataMap = useMemo(() => {
-    const map = new Map<string, number>();
-    dailyTotals.forEach((d) => map.set(d.date, d.calories));
+    const map = new Map<string, DailyTotal>();
+    dailyTotals.forEach((d) => map.set(d.date, d));
     return map;
   }, [dailyTotals]);
 
@@ -76,18 +78,42 @@ export default function CalorieTrendChart({
   );
 
   const chartData = useMemo(() => {
-    return fullRange.map((date) => ({
-      label: formatDateLabel(date, range, i18n.language),
-      value: dataMap.get(date) ?? 0,
-      date,
-      hasData: dataMap.has(date),
-    }));
+    return fullRange.map((date) => {
+      const d = dataMap.get(date);
+      return {
+        label: formatDateLabel(date, range, i18n.language),
+        value: d?.calories ?? 0,
+        tdee: d?.tdee ?? null,
+        date,
+        hasData: dataMap.has(date),
+      };
+    });
   }, [fullRange, dataMap, range, i18n.language]);
 
   const maxCal = useMemo(() => {
     const vals = chartData.map((d) => d.value);
-    return Math.max(...vals, calorieGoal, 500);
+    const tdeeVals = chartData.map((d) => d.tdee ?? 0);
+    return Math.max(...vals, ...tdeeVals, calorieGoal, 500);
   }, [chartData, calorieGoal]);
+
+  const balanceStats = useMemo(() => {
+    const daysWithTdee = chartData.filter((d) => d.hasData && d.tdee !== null);
+    if (daysWithTdee.length === 0) return null;
+    let overDays = 0;
+    let underDays = 0;
+    let totalBalance = 0;
+    for (const d of daysWithTdee) {
+      const balance = d.value - d.tdee!;
+      totalBalance += balance;
+      if (balance > 0) overDays++;
+      else underDays++;
+    }
+    return {
+      overDays,
+      underDays,
+      avgBalance: Math.round(totalBalance / daysWithTdee.length),
+    };
+  }, [chartData]);
 
   const xAxisInterval = range === "month" ? 4 : range === "3months" ? 6 : 0;
 
@@ -97,7 +123,7 @@ export default function CalorieTrendChart({
         {t("analytics.charts.calories")}
       </h3>
       <ResponsiveContainer width="100%" height={220}>
-        <BarChart data={chartData} margin={{ top: 10, right: 10, bottom: 10, left: 0 }}>
+        <ComposedChart data={chartData} margin={{ top: 10, right: 10, bottom: 10, left: 0 }}>
           <CartesianGrid
             strokeDasharray="3 3"
             stroke="#374151"
@@ -137,29 +163,78 @@ export default function CalorieTrendChart({
               }
               return "";
             }}
-            formatter={(value: number) => [`${value} kcal`]}
+            formatter={(value: number, name: string, _: unknown, index: number, payload: Array<{ payload?: { hasData: boolean; value: number } }>) => {
+              if (name === "tdee") return [<span key="tdee-val" style={{ color: "#38bdf8" }}>{value} kcal</span>, "TDEE"];
+              const entry = payload?.[index]?.payload;
+              const isOver = entry?.hasData && entry.value > calorieGoal * 1.05;
+              return [<span key="cal-val" style={{ color: isOver ? "#f59e0b" : "#22c55e" }}>{value} kcal</span>];
+            }}
           />
+          <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+            {chartData.map((d, i) => (
+              <Cell
+                key={i}
+                fill={
+                  !d.hasData
+                    ? "transparent"
+                    : d.value <= calorieGoal * 1.05
+                      ? "#22c55e"
+                      : "#f59e0b"
+                }
+              />
+            ))}
+          </Bar>
           <ReferenceLine
             y={calorieGoal}
             stroke="#ff00ff"
             strokeDasharray="6 4"
             strokeWidth={1.5}
           />
-          <Bar
-            dataKey="value"
-            radius={[4, 4, 0, 0]}
-            fill="#22c55e"
+          <Line
+            dataKey="tdee"
+            type="monotone"
+            stroke="#38bdf8"
+            strokeWidth={2}
+            dot={{ fill: "#38bdf8", r: 3 }}
+            activeDot={{ r: 4 }}
+            connectNulls={false}
           />
-        </BarChart>
+        </ComposedChart>
       </ResponsiveContainer>
-      <div className="flex items-center justify-center gap-2 mt-2">
-        <svg width="24" height="2">
-          <line x1="0" y1="1" x2="24" y2="1" stroke="#ff00ff" strokeWidth="2" strokeDasharray="4 3" />
-        </svg>
-        <span className="font-body text-xs text-fuchsia-400">
-          {t("analytics.charts.goal")} ({calorieGoal} kcal)
-        </span>
+      {/* Legend */}
+      <div className="flex items-center justify-center gap-4 mt-2">
+        <div className="flex items-center gap-1.5">
+          <svg width="24" height="2">
+            <line x1="0" y1="1" x2="24" y2="1" stroke="#ff00ff" strokeWidth="2" strokeDasharray="4 3" />
+          </svg>
+          <span className="font-body text-xs text-fuchsia-400">
+            {t("analytics.charts.goal")} ({calorieGoal} kcal)
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <svg width="24" height="10">
+            <line x1="0" y1="5" x2="24" y2="5" stroke="#38bdf8" strokeWidth="2" />
+          </svg>
+          <span className="font-body text-xs text-sky-400">
+            {t("analytics.charts.tdee")}
+          </span>
+        </div>
       </div>
+      {/* Balance stats */}
+      {balanceStats && (
+        <div className="flex items-center justify-center gap-4 mt-2">
+          <span className="font-body text-xs text-gray-400">
+            {t("analytics.charts.overDays", { count: balanceStats.overDays })}
+            {" / "}
+            {t("analytics.charts.underDays", { count: balanceStats.underDays })}
+          </span>
+          <span className={`font-body text-xs ${balanceStats.avgBalance > 0 ? "text-amber-400" : "text-green-400"}`}>
+            {t("analytics.charts.avgBalance", {
+              value: `${balanceStats.avgBalance > 0 ? "+" : ""}${balanceStats.avgBalance}`,
+            })}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

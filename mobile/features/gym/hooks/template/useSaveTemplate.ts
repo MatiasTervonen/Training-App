@@ -60,14 +60,14 @@ export default function useSaveTemplate({
           exercises: simplified,
           name: workoutName,
           phases,
-          restTimerSeconds: templateRestTimerSeconds,
+          restTimerSeconds: templateRestTimerSeconds ?? undefined,
         });
       } else {
         await saveTemplate({
           exercises: simplified,
           name: workoutName,
           phases,
-          restTimerSeconds: templateRestTimerSeconds,
+          restTimerSeconds: templateRestTimerSeconds ?? undefined,
         });
       }
 

@@ -2840,6 +2840,61 @@ export type Database = {
           },
         ]
       }
+      training_plan_day_exercises: {
+        Row: {
+          created_at: string | null
+          exercise_id: string
+          id: string
+          plan_day_id: string
+          position: number
+          rest_timer_seconds: number | null
+          superset_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          exercise_id: string
+          id?: string
+          plan_day_id: string
+          position?: number
+          rest_timer_seconds?: number | null
+          superset_id?: string | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string | null
+          exercise_id?: string
+          id?: string
+          plan_day_id?: string
+          position?: number
+          rest_timer_seconds?: number | null
+          superset_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_plan_day_exercises_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: false
+            referencedRelation: "gym_exercises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_plan_day_exercises_plan_day_id_fkey"
+            columns: ["plan_day_id"]
+            isOneToOne: false
+            referencedRelation: "training_plan_days"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_plan_day_exercises_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       training_plan_days: {
         Row: {
           created_at: string | null
@@ -2847,7 +2902,7 @@ export type Database = {
           label: string | null
           plan_id: string
           position: number
-          template_id: string
+          rest_timer_seconds: number | null
           user_id: string
         }
         Insert: {
@@ -2856,7 +2911,7 @@ export type Database = {
           label?: string | null
           plan_id: string
           position: number
-          template_id: string
+          rest_timer_seconds?: number | null
           user_id?: string
         }
         Update: {
@@ -2865,7 +2920,7 @@ export type Database = {
           label?: string | null
           plan_id?: string
           position?: number
-          template_id?: string
+          rest_timer_seconds?: number | null
           user_id?: string
         }
         Relationships: [
@@ -2874,13 +2929,6 @@ export type Database = {
             columns: ["plan_id"]
             isOneToOne: false
             referencedRelation: "training_plans"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "training_plan_days_template_id_fkey"
-            columns: ["template_id"]
-            isOneToOne: false
-            referencedRelation: "gym_templates"
             referencedColumns: ["id"]
           },
           {
@@ -2895,11 +2943,9 @@ export type Database = {
       training_plan_targets: {
         Row: {
           created_at: string | null
-          exercise_id: string
-          exercise_position: number
           id: string
           notes: string | null
-          plan_day_id: string
+          plan_day_exercise_id: string
           set_number: number
           target_reps: number | null
           target_rpe: string | null
@@ -2909,11 +2955,9 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
-          exercise_id: string
-          exercise_position?: number
           id?: string
           notes?: string | null
-          plan_day_id: string
+          plan_day_exercise_id: string
           set_number: number
           target_reps?: number | null
           target_rpe?: string | null
@@ -2923,11 +2967,9 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
-          exercise_id?: string
-          exercise_position?: number
           id?: string
           notes?: string | null
-          plan_day_id?: string
+          plan_day_exercise_id?: string
           set_number?: number
           target_reps?: number | null
           target_rpe?: string | null
@@ -2937,17 +2979,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "training_plan_targets_exercise_id_fkey"
-            columns: ["exercise_id"]
+            foreignKeyName: "training_plan_targets_plan_day_exercise_id_fkey"
+            columns: ["plan_day_exercise_id"]
             isOneToOne: false
-            referencedRelation: "gym_exercises"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "training_plan_targets_plan_day_id_fkey"
-            columns: ["plan_day_id"]
-            isOneToOne: false
-            referencedRelation: "training_plan_days"
+            referencedRelation: "training_plan_day_exercises"
             referencedColumns: ["id"]
           },
           {

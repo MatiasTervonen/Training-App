@@ -17,15 +17,15 @@ function mapFavoriteToSearchResult(fav: FavoriteFood): NutritionSearchResult {
     id: fav.food_id ?? fav.custom_food_id,
     name: fav.name,
     brand: fav.brand,
-    calories_per_100g: fav.calories_per_100g,
-    protein_per_100g: fav.protein_per_100g,
-    carbs_per_100g: fav.carbs_per_100g,
-    fat_per_100g: fav.fat_per_100g,
+    calories_per_100g: fav.calories_per_100g ?? 0,
+    protein_per_100g: fav.protein_per_100g ?? 0,
+    carbs_per_100g: fav.carbs_per_100g ?? 0,
+    fat_per_100g: fav.fat_per_100g ?? 0,
     saturated_fat_per_100g: null,
     sugar_per_100g: null,
     fiber_per_100g: null,
     sodium_per_100g: null,
-    serving_size_g: fav.serving_size_g,
+    serving_size_g: fav.serving_size_g ?? 100,
     serving_description: fav.serving_description,
     image_url: fav.image_url,
     image_nutrition_url: null,
@@ -86,7 +86,7 @@ export default function FavoriteFoodsList({
               )}
             </View>
             <BodyTextNC className="text-sm text-slate-400">
-              {Math.round(item.calories_per_100g)} kcal
+              {Math.round(item.calories_per_100g ?? 0)} kcal
             </BodyTextNC>
           </View>
         </AnimatedButton>

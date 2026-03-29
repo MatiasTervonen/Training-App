@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
 import { getStepsData } from "@/database/activities/get-steps";
 import { getActivitySessionsAnalytics } from "@/database/activities/get-activity-sessions-analytics";
 import StepsChart from "@/features/activities/analytics/StepsChart";
@@ -28,7 +27,6 @@ function getRangeDays(range: RangeType): number {
 }
 
 export default function ActivityAnalytics() {
-  const { t } = useTranslation("activities");
   const [selectedRange, setSelectedRange] = useState<RangeType>("week");
 
   const { data: stepsData = [], isLoading: isLoadingSteps } = useQuery({

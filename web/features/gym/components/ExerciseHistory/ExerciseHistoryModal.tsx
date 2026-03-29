@@ -24,8 +24,7 @@ export default function ExerciseHistoryModal({
   history,
   error,
 }: ExerciseHistoryModalProps) {
-  const { t, i18n } = useTranslation("gym");
-  const locale = i18n.language;
+  const { t } = useTranslation("gym");
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
 
@@ -79,15 +78,6 @@ export default function ExerciseHistoryModal({
     if (bestWeight.weight === 0) return null;
     return { bestWeight, bestE1rm, bestVolume };
   }, [history]);
-
-  const formatDateWithYear = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat(locale, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    }).format(date);
-  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>

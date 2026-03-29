@@ -2057,6 +2057,7 @@ export type Database = {
       nutrition_goals: {
         Row: {
           calorie_goal: number | null
+          calorie_ring_target: string
           carbs_goal: number | null
           created_at: string | null
           custom_meal_types: string[] | null
@@ -2072,6 +2073,7 @@ export type Database = {
         }
         Insert: {
           calorie_goal?: number | null
+          calorie_ring_target?: string
           carbs_goal?: number | null
           created_at?: string | null
           custom_meal_types?: string[] | null
@@ -2087,6 +2089,7 @@ export type Database = {
         }
         Update: {
           calorie_goal?: number | null
+          calorie_ring_target?: string
           carbs_goal?: number | null
           created_at?: string | null
           custom_meal_types?: string[] | null
@@ -2830,6 +2833,204 @@ export type Database = {
           },
           {
             foreignKeyName: "todo_tasks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      training_plan_day_exercises: {
+        Row: {
+          created_at: string | null
+          exercise_id: string
+          id: string
+          plan_day_id: string
+          position: number
+          rest_timer_seconds: number | null
+          superset_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          exercise_id: string
+          id?: string
+          plan_day_id: string
+          position?: number
+          rest_timer_seconds?: number | null
+          superset_id?: string | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string | null
+          exercise_id?: string
+          id?: string
+          plan_day_id?: string
+          position?: number
+          rest_timer_seconds?: number | null
+          superset_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_plan_day_exercises_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: false
+            referencedRelation: "gym_exercises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_plan_day_exercises_plan_day_id_fkey"
+            columns: ["plan_day_id"]
+            isOneToOne: false
+            referencedRelation: "training_plan_days"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_plan_day_exercises_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      training_plan_days: {
+        Row: {
+          created_at: string | null
+          id: string
+          label: string | null
+          plan_id: string
+          position: number
+          rest_timer_seconds: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          label?: string | null
+          plan_id: string
+          position: number
+          rest_timer_seconds?: number | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          label?: string | null
+          plan_id?: string
+          position?: number
+          rest_timer_seconds?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_plan_days_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "training_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_plan_days_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      training_plan_targets: {
+        Row: {
+          created_at: string | null
+          id: string
+          notes: string | null
+          plan_day_exercise_id: string
+          set_number: number
+          target_reps: number | null
+          target_rpe: string | null
+          target_weight: number | null
+          user_id: string
+          week_number: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          plan_day_exercise_id: string
+          set_number: number
+          target_reps?: number | null
+          target_rpe?: string | null
+          target_weight?: number | null
+          user_id?: string
+          week_number: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          plan_day_exercise_id?: string
+          set_number?: number
+          target_reps?: number | null
+          target_rpe?: string | null
+          target_weight?: number | null
+          user_id?: string
+          week_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_plan_targets_plan_day_exercise_id_fkey"
+            columns: ["plan_day_exercise_id"]
+            isOneToOne: false
+            referencedRelation: "training_plan_day_exercises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_plan_targets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      training_plans: {
+        Row: {
+          created_at: string | null
+          current_position: number
+          current_week: number
+          id: string
+          is_active: boolean
+          name: string
+          total_weeks: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_position?: number
+          current_week?: number
+          id?: string
+          is_active?: boolean
+          name: string
+          total_weeks?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string | null
+          current_position?: number
+          current_week?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          total_weeks?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_plans_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
@@ -3717,7 +3918,7 @@ export type Database = {
         Returns: undefined
       }
       nutrition_get_analytics: {
-        Args: { p_end_date: string; p_start_date: string }
+        Args: { p_end_date: string; p_start_date: string; p_tz?: string }
         Returns: Json
       }
       nutrition_get_daily_logs: {
@@ -4105,6 +4306,36 @@ export type Database = {
       toggle_reaction: {
         Args: { p_emoji: string; p_message_id: string }
         Returns: boolean
+      }
+      training_plan_activate: {
+        Args: { p_plan_id: string }
+        Returns: undefined
+      }
+      training_plan_advance: { Args: { p_plan_id: string }; Returns: Json }
+      training_plan_deactivate: {
+        Args: { p_plan_id: string }
+        Returns: undefined
+      }
+      training_plan_get_current: { Args: never; Returns: Json }
+      training_plan_get_full: { Args: { p_plan_id: string }; Returns: Json }
+      training_plan_save: {
+        Args: {
+          p_days?: Json
+          p_name: string
+          p_targets?: Json
+          p_total_weeks?: number
+        }
+        Returns: string
+      }
+      training_plan_update: {
+        Args: {
+          p_days?: Json
+          p_name: string
+          p_plan_id: string
+          p_targets?: Json
+          p_total_weeks?: number
+        }
+        Returns: undefined
       }
       update_last_active: { Args: { p_platform?: string }; Returns: undefined }
       weight_edit_weight: {

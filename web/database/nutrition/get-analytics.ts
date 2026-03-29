@@ -8,6 +8,7 @@ export type DailyTotal = {
   carbs: number;
   fat: number;
   calorie_goal: number;
+  tdee: number;
 };
 
 export type TopFood = {
@@ -27,9 +28,11 @@ export async function getNutritionAnalytics(
 ): Promise<NutritionAnalytics> {
   const supabase = createClient();
 
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const { data, error } = await supabase.rpc("nutrition_get_analytics", {
     p_start_date: startDate,
     p_end_date: endDate,
+    p_tz: tz,
   });
 
   if (error) {

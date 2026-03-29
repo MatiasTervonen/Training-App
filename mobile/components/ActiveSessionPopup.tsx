@@ -17,6 +17,7 @@ import {
 } from "@/native/android/NativeAlarm";
 import { useTranslation } from "react-i18next";
 import { LinearGradient } from "expo-linear-gradient";
+import { getPopupColorsForSession } from "@/lib/sessionColors";
 
 export default function ActiveSessionPopup() {
   const { t } = useTranslation(["gym", "timer", "habits"]);
@@ -55,12 +56,11 @@ export default function ActiveSessionPopup() {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
         >
-          <View className="flex-row items-center justify-center gap-3" style={{ height: 61 }}>
-            <PartyPopper size={22} color="#22c55e" />
+          <View className="flex-row items-center justify-center gap-2" style={{ height: 61 }}>
             <AppText className="text-lg">
               {t("habits:durationCompleted")}
             </AppText>
-            <PartyPopper size={22} color="#22c55e" />
+            <PartyPopper size={20} color="#22c55e" />
           </View>
         </LinearGradient>
         <View className="h-px bg-white/5" />
@@ -105,12 +105,14 @@ export default function ActiveSessionPopup() {
     return null;
   }
 
+  const popupColors = getPopupColorsForSession(activeSession);
+
   return (
     <Animated.View
       style={[
         animatedStyle,
         {
-          shadowColor: alarmFired ? "#ef4444" : "#22d3ee",
+          shadowColor: alarmFired ? "#ef4444" : popupColors.shadow,
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.3,
           shadowRadius: 8,
@@ -120,7 +122,7 @@ export default function ActiveSessionPopup() {
       className="z-0"
     >
       <LinearGradient
-        colors={alarmFired ? ["#3a0a0a", "#1a0f2a"] : ["#0d3326", "#0f172a"]}
+        colors={alarmFired ? ["#3a0a0a", "#1a0f2a"] : popupColors.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
       >

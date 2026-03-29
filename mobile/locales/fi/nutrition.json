@@ -95,6 +95,9 @@
     "customMeals": "Omat ateriatyypit",
     "addMealType": "Lisää ateriatyyppi",
     "mealTypePlaceholder": "esim. Ennen treeniä",
+    "ringTarget": "Kalorirenkaan kohde",
+    "ringGoal": "Tavoite",
+    "ringTdee": "TDEE",
     "saved": "Tavoitteet tallennettu",
     "noGoal": "Ei asetettu"
   },
@@ -148,7 +151,8 @@
     "mealSaved": "Ateria tallennettu",
     "mealDeleted": "Ateria poistettu",
     "mealLogged": "Ateria kirjattu",
-    "emptyMeal": "Lisää vähintään yksi ruoka tähän ateriaan"
+    "emptyMeal": "Lisää vähintään yksi ruoka tähän ateriaan",
+    "saveAsMeal": "Tallenna aterialla"
   },
   "feed": {
     "kcal": "kcal",
@@ -224,7 +228,11 @@
       "calories": "Kalorit",
       "macros": "Makrot",
       "distribution": "Makrojakauma",
-      "goal": "Tavoite"
+      "goal": "Tavoite",
+      "tdee": "TDEE",
+      "overDays": "{{count}} pv yli",
+      "underDays": "{{count}} pv ali",
+      "avgBalance": "Ka: {{value}} kcal/pv"
     },
     "topFoods": {
       "title": "Suosituimmat ruoat",

@@ -32,6 +32,7 @@ export function useLogSavedMeal() {
         }),
         queryClient.invalidateQueries({ queryKey: ["feed"] }),
         queryClient.invalidateQueries({ queryKey: ["recentFoods"] }),
+        queryClient.invalidateQueries({ queryKey: ["energyBalance", params.loggedAt] }),
       ]);
 
       router.back();

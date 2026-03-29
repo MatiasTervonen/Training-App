@@ -155,8 +155,7 @@ export default function ActivityDropdown({ onSelect }: Props) {
           />
         </View>
         <View
-          className="w-full  
-                    bg-slate-900 border border-gray-100 mt-10 flex-1 rounded-md overflow-hidden"
+          className="w-full border border-gray-700 mt-4 flex-1 rounded-md overflow-hidden"
         >
           {isError ? (
             <ErrorMessage message={t("activities.activityDropdown.loadError")} fullPage />

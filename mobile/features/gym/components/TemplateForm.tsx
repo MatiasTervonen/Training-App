@@ -290,7 +290,7 @@ export default function TemplateForm() {
         <KeyboardAwareScrollView
           scrollEnabled={isScrollEnabled}
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={{ paddingBottom: 100 }}
           bottomOffset={80}
           showsVerticalScrollIndicator={false}
         >
@@ -464,6 +464,7 @@ export default function TemplateForm() {
                 setIsExerciseModalOpen(false);
               }}
               scrollable={false}
+              noPadding
             >
               <ExerciseSelectorList
                 draftExercises={
@@ -485,7 +486,7 @@ export default function TemplateForm() {
                 hasCooldown={!!cooldown}
                 onSelectPhase={handlePhaseSelect}
               />
-              <View className="flex-row gap-3 px-2 mt-5 mb-10 right-0 z-50">
+              <View className="flex-row gap-3 px-4 pt-3 mb-4 right-0 z-50">
                 <View className="relative flex-1">
                   <SelectInput
                     value={exerciseType}
@@ -552,28 +553,28 @@ export default function TemplateForm() {
                 <Plus size={20} color="#f3f4f6" />
               </AnimatedButton>
             </View>
-            <View className="flex-row gap-4 mt-14">
-              <View className="flex-1">
-                {templateId ? (
-                  <DeleteButton
-                    confirm={false}
-                    label={t("common:common.cancel")}
-                    onPress={() => router.push("/gym/templates")}
-                  />
-                ) : (
-                  <DeleteButton onPress={resetSession} />
-                )}
-              </View>
-              <View className="flex-1">
-                <SaveButton
-                  disabled={exercises.length === 0}
-                  onPress={handleSaveTemplate}
-                />
-              </View>
-            </View>
           </PageContainer>
         </KeyboardAwareScrollView>
       </TouchableWithoutFeedback>
+      <View className="flex-row gap-4 px-5 pb-4 pt-3 border-t border-gray-700">
+        <View className="flex-1">
+          {templateId ? (
+            <DeleteButton
+              confirm={false}
+              label={t("common:common.cancel")}
+              onPress={() => router.push("/gym/templates")}
+            />
+          ) : (
+            <DeleteButton onPress={resetSession} />
+          )}
+        </View>
+        <View className="flex-1">
+          <SaveButton
+            disabled={exercises.length === 0}
+            onPress={handleSaveTemplate}
+          />
+        </View>
+      </View>
       <PhaseActivityPicker
         isOpen={phasePickerOpen}
         onClose={() => setPhasePickerOpen(false)}

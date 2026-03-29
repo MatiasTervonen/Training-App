@@ -135,16 +135,11 @@ function DraggableItem({
     if (dragIdx === -1) {
       return {
         transform: [
-          { scale: withTiming(1, { duration: 150 }) },
+          { scale: 1 },
           { translateY: 0 },
         ],
-        opacity: withTiming(1, { duration: 150 }),
-        zIndex: 1,
-        shadowColor: "transparent",
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0,
-        shadowRadius: 0,
-        elevation: 0,
+        opacity: 1,
+        zIndex: 0,
       };
     }
 
@@ -163,16 +158,11 @@ function DraggableItem({
 
     return {
       transform: [
-        { scale: withTiming(1, { duration: 150 }) },
+        { scale: 1 },
         { translateY: withTiming(shift, { duration: 200 }) },
       ],
-      opacity: withTiming(1, { duration: 150 }),
-      zIndex: 1,
-      shadowColor: "transparent",
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0,
-      shadowRadius: 0,
-      elevation: 0,
+      opacity: 1,
+      zIndex: 0,
     };
   });
 

@@ -19,6 +19,7 @@ export type SessionSummary = {
   weightUnit: string;
   phases?: SessionSummaryPhase[];
   sessionId?: string;
+  planCompleted?: boolean;
 };
 
 interface SessionSummaryStore {

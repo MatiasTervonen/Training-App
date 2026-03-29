@@ -104,12 +104,22 @@ export default function ExerciseCard({
             {index + 1}. {exercise.name}
           </AppText>
           <View className="flex-row items-center justify-between mt-1">
-            <BodyTextNC className="text-gray-400 shrink" numberOfLines={1}>
-              {t(`gym.equipment.${exercise.equipment?.toLowerCase()}`)} /{" "}
-              {t(
-                `gym.muscleGroups.${exercise.muscle_group?.toLowerCase().replace(/ /g, "_")}`,
+            <View className="flex-row items-center shrink">
+              <BodyTextNC className="text-gray-400" numberOfLines={1}>
+                {t(`gym.equipment.${exercise.equipment?.toLowerCase()}`)} /{" "}
+                {t(
+                  `gym.muscleGroups.${exercise.muscle_group?.toLowerCase().replace(/ /g, "_")}`,
+                )}
+              </BodyTextNC>
+              {exercise.rest_timer_seconds != null && (
+                <View className="flex-row items-center ml-2">
+                  <Timer size={12} color="#60a5fa" />
+                  <BodyTextNC className="text-xs text-blue-400 ml-0.5">
+                    {exercise.rest_timer_seconds}s
+                  </BodyTextNC>
+                </View>
               )}
-            </BodyTextNC>
+            </View>
             {mode === "session" && !showContent && exercise.sets.length > 0 && (
               <View className="bg-gray-600 px-2 py-0.5 rounded ml-2">
                 <BodyTextNC className="text-sm text-gray-300">
@@ -178,14 +188,6 @@ export default function ExerciseCard({
           </Pressable>
         )}
       </View>
-      {exercise.rest_timer_seconds != null && !showRestTimerInput && (
-        <View className="flex-row items-center mt-2">
-          <Timer size={14} color="#60a5fa" />
-          <BodyTextNC className="text-sm text-blue-400 ml-1">
-            {exercise.rest_timer_seconds}s
-          </BodyTextNC>
-        </View>
-      )}
       {showRestTimerInput && mode !== "session" && (
         <View className="mt-3 mb-1">
           <AppInput

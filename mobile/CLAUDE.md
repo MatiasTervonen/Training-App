@@ -11,6 +11,34 @@
 ## Page Structure
 - When creating a new page, always wrap it with `PageContainer`. Never use `ModalPageWrapper` directly — `LayoutWrapper` already handles that.
 - On pages with a `ScrollView`, always put the `ScrollView` outside `PageContainer` — never inside it. This prevents `PageContainer`'s padding from creating a static border around the scrolling content.
+- `ModalPageWrapper` swipe overrides (`useModalPageConfig`) are for **route navigation only** — never use them to change in-page state (e.g., wizard steps). The swipe animation slides the page off-screen and expects a new route to load.
+
+### Page templates — copy the right one for every new page:
+
+**Page with text inputs (form page):**
+```tsx
+<KeyboardAwareScrollView
+  bottomOffset={50}
+  contentContainerStyle={{ flexGrow: 1 }}
+  showsVerticalScrollIndicator={false}
+  keyboardShouldPersistTaps="handled"
+>
+  <Pressable onPress={Keyboard.dismiss} className="flex-1">
+    <PageContainer>
+      {/* content */}
+    </PageContainer>
+  </Pressable>
+</KeyboardAwareScrollView>
+```
+
+**Page without text inputs (list/display page):**
+```tsx
+<ScrollView showsVerticalScrollIndicator={false}>
+  <PageContainer>
+    {/* content */}
+  </PageContainer>
+</ScrollView>
+```
 
 ## Styling
 - Always use NativeWind (`className`) for styling — never use inline `style` props.
@@ -39,7 +67,8 @@
 - Always check `app/components` for existing components before creating new ones.
 
 ## Keyboard
-- On pages with text inputs, always wrap the page content with `<Pressable onPress={Keyboard.dismiss} className="flex-1">` so the keyboard dismisses when tapping outside. Never use `TouchableWithoutFeedback` — always use `Pressable`.
+- On pages with text inputs, always use `KeyboardAwareScrollView` from `react-native-keyboard-controller` instead of plain `ScrollView`. Always set `bottomOffset={50}` and `contentContainerStyle={{ flexGrow: 1 }}`.
+- Place `<Pressable onPress={Keyboard.dismiss} className="flex-1">` **inside** the `KeyboardAwareScrollView`, not outside it — otherwise the scroll breaks. Never use `TouchableWithoutFeedback` — always use `Pressable`.
 - On pages that have BOTH text inputs AND scroll-based pickers (e.g., `TimerPicker`), do NOT use `Pressable` for keyboard dismiss — it intercepts the picker's scroll gestures. Instead, use `<View onTouchStart={Keyboard.dismiss}>` on the outer wrapper and `onTouchStart={(e) => e.stopPropagation()}` on the picker container to prevent keyboard dismiss from firing when interacting with the picker.
 
 ## Imports
